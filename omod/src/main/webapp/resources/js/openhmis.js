@@ -17,6 +17,10 @@ define(openhmis.url.backboneBase + "js/openhmis",
 		var openhmis = window.openhmis || {};
 		openhmis.templates = {};
 		
+		openhmis.url.getPage = function(moduleBaseName) {
+			return openhmis.url.page + openhmis.url[moduleBaseName];
+		}
+		
 		//TODO: Better system for identifying specific errors
 		openhmis.error = function(model, resp) {
 			var handleErrorResp = function(resp) {

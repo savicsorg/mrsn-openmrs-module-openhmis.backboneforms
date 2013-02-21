@@ -10,6 +10,7 @@ define(
 		openhmis.url.backboneBase + 'js/view/list',
 		openhmis.url.backboneBase + 'js/view/paginate',
 		openhmis.url.backboneBase + 'js/view/editors',
+		'link!' + openhmis.url.backboneBase + 'css/style.css',
 		'link!/openmrs/scripts/jquery/dataTables/css/dataTables_jui.css'
 	],
 	function($, _, Backbone, __, openhmis) {

@@ -116,7 +116,7 @@ define(
 					patient: this.model,
 					visit: this.visit,
 					dateFormat: openhmis.dateFormat,
-					dashboardUri: openhmis.url.page + "patientDashboard.form?patientUuid=" + encodeURIComponent(this.model.id),
+					dashboardUri: openhmis.url.getPage("backboneBase") + "patientDashboard.form?patientUuid=" + encodeURIComponent(this.model.id),
 					readOnly: this.readOnly
 				}));
 			}
