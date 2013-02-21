@@ -29,7 +29,11 @@ define(
             parse: function(resp) {
                 this.simplifyIds(resp);
                 return resp;
-            }
+            },
+			
+			toString: function() {
+				return this.get("display") || this.get("name");
+			}
         });
         
         return openhmis;

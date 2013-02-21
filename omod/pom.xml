@@ -198,6 +198,51 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+		        <groupId>com.github.searls</groupId>
+		        <artifactId>jasmine-maven-plugin</artifactId>
+		        <version>1.2.0.0</version>
+		        <extensions>true</extensions>
+<!-- Execution disabled because tests don't run properly outside of a browser -->
+<!-- 		        <executions> -->
+<!-- 		          <execution> -->
+<!-- 		            <goals> -->
+<!-- 		              <goal>test</goal> -->
+<!-- 		            </goals> -->
+<!-- 		          </execution> -->
+<!-- 		        </executions> -->
+		        <configuration>
+		        	<customRunnerTemplate>${project.basedir}/src/test/webapp/resources/js/BlankSpecRunner.htmltemplate</customRunnerTemplate>
+		        	<jsSrcDir>${project.basedir}/src/main/webapp/resources/js</jsSrcDir>
+		       		<jsTestSrcDir>${project.basedir}/src/test/webapp/resources/js</jsTestSrcDir>
+		       		<preloadSources>
+		         		<include>curl.js</include>
+		         		<include>/src/test/webapp/resources/js/test-bootstrap.js</include>
+		         		<include>/src/test/webapp/resources/js/test-data.js</include>
+		         		<include>/src/test/webapp/resources/js/start-tests.js</include>
+		       		</preloadSources>
+		      		<sourceIncludes />
+		     		<specIncludes />
+		        </configuration>
+	      </plugin>
+	      <plugin>
+		      <groupId>net.alchim31.maven</groupId>
+              <artifactId>yuicompressor-maven-plugin</artifactId>
+              <executions>
+                  <execution>
+                      <goals>
+                          <goal>compress</goal>
+                      </goals>
+                  </execution>
+              </executions>        
+              <configuration>
+                  <verbose>true</verbose>
+                  <nosuffix>true</nosuffix>
+                  <excludes>
+                      <exclude>**/*.min.js</exclude>
+                  </excludes>
+              </configuration>
+          </plugin>
 		</plugins>
 	</build>
 
