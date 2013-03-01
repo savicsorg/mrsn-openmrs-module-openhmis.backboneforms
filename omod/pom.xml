@@ -71,7 +71,25 @@
 		</dependency>
 		
 		<!-- End OpenMRS core -->
+		
+		<!-- Begin webservices.rest -->
 
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>webservices.rest-api</artifactId>
+		</dependency>
+
+		<dependency>
+			  <groupId>org.openmrs.module</groupId>
+			  <artifactId>webservices.rest-omod</artifactId>
+		</dependency>
+
+		<!-- End webservices.rest -->
+
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>openhmis.commons-api</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
