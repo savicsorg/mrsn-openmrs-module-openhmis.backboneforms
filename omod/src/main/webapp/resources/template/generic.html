@@ -69,6 +69,9 @@
 				case 'remove': ?>
 					<input type="image" src="/openmrs/images/trash.gif" title="<?= __("Remove %s", model.meta.name) ?>" class="remove"/>
 					<? break;
+				case 'details': ?>
+					<input type="image" src="/openmrs/images/lookup.gif" title="<?= __("Show details for %s", model.meta.name) ?>" class="details"/>
+					<? break;
 			}
 		} ?>
 		</td>

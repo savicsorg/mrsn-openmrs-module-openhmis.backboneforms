@@ -693,6 +693,9 @@ define(
 						case 'remove':
 							this.events['click .remove'] = 'onRemove'
 							break;
+						case 'details':
+							this.events['click .details'] = 'onDetails'
+							break;
 						case 'inlineEdit':
 							var schema = _.extend({}, this.model.schema, this.schema || {});
 							this.form = openhmis.GenericAddEditView.prototype.prepareModelForm.call(this, this.model, {
