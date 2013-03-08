@@ -56,9 +56,9 @@ define(
 
 			/**
 			 * Abstract - should be implemented by extending class.  Should
-			 * call {@link BaseSearchView#fetch}.
+			 * collect and parse input from search form.
 			 */
-			submitForm: function() { throw "A search view needs to implement a submitForm() method!" },
+			commitForm: function() { throw "A search view needs to implement a commitForm() method!" },
 
 			/**
 			 * Abstract - should be implemented by extending class.  Should
@@ -66,12 +66,11 @@ define(
 			 */
 			focus: function() { throw "A search view needs to implement a focus() method!" },
 			
-			// TODO: It might be better to call fetch() here instead of
-			// expecting it to be done in submitForm()
 			/** Called when the search should be submitted */
 			onFormSubmit: function(event) {
 				event.preventDefault();
-				this.submitForm();
+				this.commitForm();
+				this.fetch();
 			},
 			
 			/**
@@ -105,10 +104,9 @@ define(
 			},
 			
 			/** Collect user input */
-			submitForm: function() {
+			commitForm: function() {
 				var name = this.$("#nameSearchName").val();
 				this.searchFilter = name;
-				this.fetch();
 			},
 			
 			/**
