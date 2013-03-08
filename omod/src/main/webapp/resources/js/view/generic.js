@@ -252,9 +252,6 @@ define(
 				this.paginateView.on("fetch", this.fetch);
 				this.fetchable.push(this.paginateView);
 				if (options !== undefined) {
-					//TODO: Remove this  vvv
-					this.addEditView = options.addEditView;
-					
 					this.itemView = options.itemView ? options.itemView : openhmis.GenericListItemView
 					if (options.schema) this.schema = options.schema;
 					
@@ -270,8 +267,6 @@ define(
 					this.options.showRetiredOption = options.showRetiredOption !== undefined ? options.showRetiredOption : true;
 					this.options.hideIfEmpty = options.hideIfEmpty !== undefined ? options.hideIfEmpty : false;
 				}
-				if (this.addEditView !== undefined)
-					this.addEditView.on('cancel', this._deselectAll);
 				this.model.on("reset", this.render);
 				this.model.on("add", this.addOne);
 				this.model.on("remove", this.onItemRemoved);
@@ -365,7 +360,7 @@ define(
 			onItemSelected: function(view) {
 				this._deselectAll();
 				this.selectedItem = view;
-				if (this.addEditView) this.addEditView.edit(view.model);
+				this.trigger("itemSelect", view);
 			},
 			
 			/** Called when the view loses form focus. */
@@ -815,6 +810,8 @@ define(
 			}, options);
 			var listViewType = options.listView ? options.listView : openhmis.GenericListView;
 			var listView = new listViewType(viewOptions);
+			addEditView.on("cancel", listView.blur);
+			listView.on("itemSelect", function(view) { addEditView.edit(view.model) });
 			listView.setElement($('#existing-form'));
 			listView.fetch();
 		}
