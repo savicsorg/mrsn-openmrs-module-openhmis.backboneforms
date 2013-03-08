@@ -48,7 +48,7 @@ input.reason { width: 25em; }
 .bbf-list li { display: block; clear: both; height: 2em; padding-left: 1px; margin-left: -2em; }
 .bbf-editor-container div div { margin-left: 2.5em; }
 .bbf-list button.bbf-remove { float: left; width: 1.9em; margin-top: -2px; }
-.bbf-list-modal { cursor: pointer; }
+.bbf-list-modal { cursor: pointer; color: #003366; text-decoration: underline; }
 .bbf-actions { clear: both; }
 
 .bbf-list .bbf-editor-container { margin-top: 3px; }
