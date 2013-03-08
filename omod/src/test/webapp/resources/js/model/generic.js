@@ -3,13 +3,15 @@ var GenericSubclass = openhmis.GenericModel.extend({
 		name: { type: "Text" },
 		age: { type: "Number" },
 		parent: { type: "Object", objRef: true },
-		sibling: { type: "Object", objRef: true },
+		siblings: { type: 'List', itemType: 'NestedModel', model: null, objRef: true },
 		metadata: { type: "Object", readOnly: true }
 	},
 	toString: function() {
 		return this.get("name");
 	}
 });
+GenericSubclass.prototype.schema.siblings.model = GenericSubclass;
+
 describe('GenericModel', function() {
 	it("should provide a string representation of itself, using 'display' attribute if it exists", function() {
 		var display = "Generic Model";
@@ -70,7 +72,10 @@ describe('GenericModel', function() {
 			name: "Brian",
 			age: 20,
 			parent: new openhmis.GenericModel({ uuid: "e2756470-1c28-11e2-892e-0800200c9a66"}),
-			sibling: "uuid",
+			siblings: [
+				new GenericSubclass({ name: "Ian", uuid: "6b422dda-703d-4c45-b61c-c92eea2fbb3f" }),
+				new GenericSubclass({ name: "Eric", uuid: "883f9142-84ce-42e2-af5d-2b86dc6d535f" })
+			],
 			metadata: { some: "thing", you: "wanted", to: "know"},
 			foo: "bar"
 		});
@@ -80,8 +85,10 @@ describe('GenericModel', function() {
 		expect(obj.age).toEqual(20);
 		// This should be represented as a string as per objRef
 		expect(obj.parent).toEqual("e2756470-1c28-11e2-892e-0800200c9a66");
-		// This was set as a string, so it should remain a string
-		expect(obj.sibling).toEqual("uuid");
+		// The sibling objects should be saved as object references, so the
+		// array should contain two strings
+		expect(obj.siblings[0]).toEqual("6b422dda-703d-4c45-b61c-c92eea2fbb3f");
+		expect(obj.siblings[1]).toEqual("883f9142-84ce-42e2-af5d-2b86dc6d535f");		
 		// This has readOnly=true, so we don't want to try to set it
 		expect(obj.metadata).toBeUndefined();
 		// This isn't part of the schema

@@ -158,6 +158,8 @@ define(
 			
 			toJSON: function(options) {
 				var attributes;
+				if (options && options.objRef === true && this.id !== undefined)
+					return this.id;
 				if (this.schema === undefined)
 					attributes = Backbone.Model.prototype.toJSON.call(this, options);
 				else {
