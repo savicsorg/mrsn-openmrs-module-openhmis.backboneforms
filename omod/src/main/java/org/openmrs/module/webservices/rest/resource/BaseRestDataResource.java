@@ -46,7 +46,7 @@ public abstract class BaseRestDataResource<E extends OpenmrsData> extends DataDe
 	protected DelegatingResourceDescription getDefaultRepresentationDescription() {
 		DelegatingResourceDescription description = new DelegatingResourceDescription();
 		description.addProperty("uuid");
-		//description.addProperty("display", findMethod("getDisplayString"));
+		description.addProperty("display", findMethod("getDisplayString"));
 		description.addProperty("voided");
 		description.addProperty("voidReason");
 		return description;
@@ -66,6 +66,10 @@ public abstract class BaseRestDataResource<E extends OpenmrsData> extends DataDe
 		if (rep instanceof FullRepresentation)
 			description.addProperty("auditInfo", findMethod("getAuditInfo"));
 		return description;
+	}
+
+	public String getDisplayString(E instance) {
+		return instance.getClass().getSimpleName();
 	}
 
 	@Override
