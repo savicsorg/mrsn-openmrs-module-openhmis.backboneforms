@@ -122,6 +122,10 @@
 				<directory>src/test/resources</directory>
 				<filtering>true</filtering>
 			</testResource>
+			<testResource>
+				<directory>src/test/webapp/resources</directory>
+				<filtering>false</filtering>
+			</testResource>
 		</testResources>
 
 		<pluginManagement>
@@ -254,11 +258,14 @@
                   </execution>
               </executions>        
               <configuration>
-                  <verbose>true</verbose>
+                  <jswarn>false</jswarn>
                   <nosuffix>true</nosuffix>
                   <excludes>
                       <exclude>**/*.min.js</exclude>
                   </excludes>
+                  <sourceDirectory>${project.basedir}/src/main/webapp/resources</sourceDirectory>
+                  <outputDirectory>${project.build.outputDirectory}/web/module/resources</outputDirectory>
+                  <warSourceDirectory>${project.basedir}/classes</warSourceDirectory>                  
               </configuration>
           </plugin>
 		</plugins>
