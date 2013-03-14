@@ -239,7 +239,8 @@
 		       		<jsTestSrcDir>${project.basedir}/src/test/webapp/resources/js</jsTestSrcDir>
 		       		<preloadSources>
 		         		<include>curl.js</include>
-		         		<include>/src/test/webapp/resources/js/test-bootstrap.js</include>
+		         		<include>/src/test/webapp/resources/js/test-init.js</include>
+		         		<include>/src/test/webapp/resources/js/test-utils.js</include>
 		         		<include>/src/test/webapp/resources/js/test-data.js</include>
 		         		<include>/src/test/webapp/resources/js/start-tests.js</include>
 		       		</preloadSources>
