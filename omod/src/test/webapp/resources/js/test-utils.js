@@ -60,15 +60,34 @@ openhmis.test.modelToJson = function(model, reference, expectFunc, schema) {
 			}
 			else if (typeof obj[attr] === "object") {
 				var parentIsArray = (obj instanceof Array);
+				var nextSchema;
+				// If the current object is an array then we won't find a schema
+				// in schemaLevel[attr]
+				if (parentIsArray) {
+					// If the array is a list of models, we can find the model's
+					// schema
+					if (schemaLevel.itemType == "NestedModel" && schemaLevel.model)
+						nextSchema = schemaLevel.model.prototype.schema;
+					// Default to the array's (parent's) schema
+					else
+						nextSchema = schemaLevel;
+				}
+				else
+					nextSchema = schemaLevel[attr];
 				testObj(
 					obj[attr].toJSON ? obj[attr].toJSON() : obj[attr],
 					reference[attr],
-					parentIsArray ? schemaLevel : schemaLevel[attr],
-					parentIsArray ? schemaLevel.objRef : schemaLevel[attr].objRef
+					nextSchema,
+					nextSchema.objRef
 				);
 			}
 			else {
-				if (objRef || (schemaLevel[attr] && schemaLevel[attr].objRef)) {
+				if 	(objRef
+						|| (schemaLevel.itemType == "NestedModel"
+							&& schemaLevel.model
+							&& schemaLevel.model.prototype.schema[attr]
+							&& schemaLevel.model.prototype.schema[attr].objRef)
+						|| (schemaLevel[attr] && schemaLevel[attr].objRef)) {
 					var refId = reference[attr].uuid ? reference[attr].uuid : reference[attr];
 					expectFunc(obj[attr]).toEqual(refId);
 				}
