@@ -795,6 +795,8 @@ define(
 		
 		// Create new generic add/edit screen
 		openhmis.startAddEditScreen = function(model, options) {
+			$("#content").append('<div id="add-edit-form"></div>');
+			$("#content").append('<div id="existing-form"></div>');
 			var collection = new openhmis.GenericCollection([], {
 				url: model.prototype.meta.restUrl,
 				model: model
