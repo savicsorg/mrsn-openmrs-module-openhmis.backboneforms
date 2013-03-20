@@ -70,6 +70,7 @@ table.display tr.even.row_selected td, table.display tr.odd.row_selected td,
 table.display tr.row_selected
 { background-color: #f0e68c !important; }
 
+input, textarea { font-size: 100%; }
 td.item-actions input { visibility: hidden; }
 tr.row_selected td.item-actions input, tr:hover td.item-actions input
 { visibility: visible; }
