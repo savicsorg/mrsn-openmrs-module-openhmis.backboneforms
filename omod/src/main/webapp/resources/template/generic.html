@@ -1,10 +1,10 @@
 <script id="add-edit-template" type="text/template">
-	<p><a class="addLink" href="#"><?= __("Add %s", model.meta.name) ?></a></p>
+	<p><a class="addLink" href="#"><?= __("Add %s", model.modelName()) ?></a></p>
 	<b class="boxHeader title" style="display: none"><?= model.isNew()
-		? __("Add New %s", model.meta.name)
-		: __("Edit %s", model.meta.name) ?></b>
+		? __("Add New %s", model.modelName())
+		: __("Edit %s", model.modelName()) ?></b>
 	<div class="box form" style="display: none">
-		<input type="submit" class="submit" value="<?= model.isNew() ? __("Create %s", model.meta.name) : __("Update %s", model.meta.name) ?>" />
+		<input type="submit" class="submit" value="<?= model.isNew() ? __("Create %s", model.modelName()) : __("Update %s", model.modelName()) ?>" />
 		<button class="cancel"><?= __("Cancel") ?></button>
 	</div>
 	<br />
@@ -13,27 +13,27 @@
 			<? var strRetireOrVoid = model.getDataType() === "data" ? "Void" : "Retire" ?>
 			<? if (model.isRetired()) { ?>
 			<? var strUnretire = "Un" + strRetireOrVoid.toLowerCase() ?>
-			<h4><?= __(strUnretire + " %s", model.meta.name) ?></h4>
+			<h4><?= __(strUnretire + " %s", model.modelName()) ?></h4>
 			<button class="unretireOrUnvoid"><?= __(strUnretire) ?></button>
 			<? } else { ?>
-			<h4><?= __(strRetireOrVoid + " %s", model.meta.name) ?></h4>
+			<h4><?= __(strRetireOrVoid + " %s", model.modelName()) ?></h4>
 			<label for="reason">Reason</label> <input name="reason" id="reason" class="reason" type="text" /><br />
 			<button class="retireOrVoid"><?= __(strRetireOrVoid) ?></button>
 			<? } ?>
 		</div>
 		<br />
 		<div class="box">
-			<h4><?= __("Purge %s", model.meta.name) ?></h4>
+			<h4><?= __("Purge %s", model.modelName()) ?></h4>
 			<button class="purge"><?= __("Purge") ?></button>
 		</div>
 	</div>
 </script>
 
 <script id="generic-list" type="text/template">
-<b class="boxHeader"><?= options.listTitle !== undefined ? options.listTitle : __("Current %s", modelMeta.namePlural) ?></b>
+<b class="boxHeader"><?= options.listTitle !== undefined ? options.listTitle : __("Current %s", modelType.modelNamePlural()) ?></b>
 <div class="box">
 	<? if (listLength === 0) { ?>
-		<p class="empty"><?= __("There are currently no %s", modelMeta.namePlural.toLowerCase()) ?></p>
+		<p class="empty"><?= __("There are currently no %s", modelType.modelNamePlural().toLowerCase()) ?></p>
 	<? } else { ?>
 	<table class="display" width="100%">
 		<thead>
@@ -74,10 +74,10 @@
 		<? for (var act in actions) {
 			switch (actions[act]) {
 				case 'remove': ?>
-					<input type="image" src="/openmrs/images/trash.gif" title="<?= __("Remove %s", model.meta.name) ?>" class="remove"/>
+					<input type="image" src="/openmrs/images/trash.gif" title="<?= __("Remove %s", model.modelName()) ?>" class="remove"/>
 					<? break;
 				case 'details': ?>
-					<input type="image" src="/openmrs/images/lookup.gif" title="<?= __("Show details for %s", model.meta.name) ?>" class="details"/>
+					<input type="image" src="/openmrs/images/lookup.gif" title="<?= __("Show details for %s", model.modelName()) ?>" class="details"/>
 					<? break;
 			}
 		} ?>

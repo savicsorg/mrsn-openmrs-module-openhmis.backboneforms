@@ -413,6 +413,7 @@ define(
 					list: this.model,
 					listLength: length,
 					fields: this.fields,
+					modelType: this.model.model.prototype,
 					modelMeta: this.model.model.prototype.meta,
 					modelSchema: this.model.model.prototype.schema,
 					showRetired: this.showRetired,

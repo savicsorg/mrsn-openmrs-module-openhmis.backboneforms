@@ -135,6 +135,16 @@ define(
 				return this.get('retired') || this.get('voided');
 			},
 			
+			modelName: function() {
+				if (!this.meta || !this.meta.name)
+					return "Unnamed Model";
+				return this.meta.name;
+			},
+			
+			modelNamePlural: function() {
+				return openhmis.pluralize(this.modelName());
+			},
+			
 			_setRetired: function(retired) {
 				retired = retired !== undefined ? retired : true;
 				switch (this.getDataType()) {
