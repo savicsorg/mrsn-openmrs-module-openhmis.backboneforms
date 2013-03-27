@@ -26,6 +26,8 @@
 .idea/*datasources.*
 .idea/encodings.xml
 .idea/dictionaries/*
+.idea/modules.xml
+.idea/vcs.xml
 
 # building
 target
