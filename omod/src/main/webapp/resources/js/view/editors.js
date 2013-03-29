@@ -146,6 +146,45 @@ define(
 			}
 		});
 		
+		editors.Autocomplete = editors.Select.extend({
+			tagName: "input",
+
+			initialize: function(options) {
+				editors.Select.prototype.initialize.call(this, options);
+				this.$el.attr('type', 'text');
+			},
+			
+			onSelect: function(event, ui) {
+				var a = 1;
+			},
+			
+			renderOptions: function(options) {
+				var source;
+				var isBbCollection = false
+				if (options instanceof Backbone.Collection) {
+					isBbCollection = true;
+					source = options.map(function(item) {
+						return { label: item.toString(), value: item }
+					});
+				}
+				else
+					source = this.schema.options;
+				
+				var $autoComplete = this.$el.autocomplete({
+					minLength: 2,
+					source: source,
+					select: this.onSelect,
+					autoFocus: true
+				});
+				if (isBbCollection) {
+					$autoComplete.data("autocomplete")._renderItem = function(ul, item) {
+						return $("<li></li>").data("item.autocomplete", item)
+							.append("<a>" + item.label + "</a>").appendTo(ul);
+					};
+				}
+			}
+		});
+		
 		return editors;
 	}
 )

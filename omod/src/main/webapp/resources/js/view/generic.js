@@ -420,7 +420,13 @@ define(
 					pagingEnabled: pagingEnabled,
 					options: this.options
 				}
-				if (extraContext !== undefined) context = _.extend(context, extraContext);
+				if (extraContext !== undefined) {
+					if (extraContext.options) {
+						context.options = _.extend({}, context.options, extraContext.options);
+						delete extraContext.options;
+					}
+					context = _.extend(context, extraContext);
+				}
 				this.$el.html(this.template(context));
 				if (pagingEnabled) {
 					this.paginateView.setElement(this.$(".paging-container"));
@@ -499,8 +505,86 @@ define(
 				this.fetch();
 			}
 		});
-		
 
+
+		/*======================================================================
+		 *
+		 * GenericListEntryView
+		 *
+		 */
+		openhmis.GenericListEntryView = openhmis.GenericListView.extend({
+			initialize: function(options) {
+				var billOptions = { showRetiredOption: false, showPaging: false }
+				options = _.extend(billOptions, options);
+				openhmis.GenericListView.prototype.initialize.call(this, options);
+			},
+			
+			addOne: function(model, schema) {
+				var view = openhmis.GenericListView.prototype.addOne.call(this, model, schema);
+				if (this.newItem && view.model.cid === this.newItem.cid) {
+					this.selectedItem = view;
+					view.on("change", this.setupNewItem);
+				}
+				else
+					view.on("change remove", this.bill.setUnsaved);
+				view.on("focusNext", this.focusNextFormItem);
+				return view;
+			},
+			
+			onItemRemoved: function(item) {
+				delete item.view;
+				openhmis.GenericListView.prototype.onItemRemoved.call(this, item);
+				if (item === this.newItem && !item.view) {
+					this.setupNewItem();
+				}
+			},
+			
+			focusNextFormItem: function(itemView) {
+				var index = this.model.indexOf(itemView.model);
+				var next = (index >= 0) ? this.model.at(index + 1) : undefined;
+				if (next !== undefined)
+					next.view.focus();
+				else if (itemView.model !== this.newItem)
+					this.newItem.view.focus();
+				else
+					this.trigger("focusNext", this);
+			},
+			
+			/**
+			 * Set up an empty input item and line.  Can be called without
+			 * parameters, or by a lineItemView that is transitioning from being
+			 * a new item to a validated item.
+			 */
+			setupNewItem: function(lineItemView) {
+				// Handle adding an item from the input line
+				if (lineItemView !== undefined) {
+					// Prevent multiple change events causing duplicate views
+					if (this.model.getByCid(lineItemView.model.cid)) return;
+					lineItemView.off("change", this.setupNewItem);
+					this.model.add(lineItemView.model, { silent: true });
+					this._deselectAll();
+				}
+				this.newItem = new this.model.model();
+				// Don't add the item to the collection, but give it a reference
+				this.newItem.collection = this.model;
+				// If the list is completely empty, we will rerender
+				if (this.$('p.empty').length > 0)
+					this.render();
+				else {
+					var view = this.addOne(this.newItem);
+					view.focus();
+				}
+			},
+			
+			render: function(extraContext) {
+				if (this.newItem) this.model.add(this.newItem, { silent: true });
+				openhmis.GenericListView.prototype.render.call(this, extraContext);
+				if (this.newItem) this.model.remove(this.newItem, { silent: true });
+				return this;
+			}
+		});
+		
+		
 		/*======================================================================
 		 *
 		 * GenericListItemView
