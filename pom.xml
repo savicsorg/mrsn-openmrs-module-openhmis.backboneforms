@@ -6,7 +6,7 @@
 	<artifactId>openhmis.backboneforms</artifactId>
 	<version>1.5-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>Backbone Forms Module</name>
+	<name>OpenHMIS Backbone Forms Module</name>
 	<description>Use Backbone-based forms with OpenMRS</description>
 	<url>https://wiki.openmrs.org/display/docs/Backbone+Forms+Module+Module</url>
 	
