@@ -682,16 +682,22 @@ define(
 			},
 			
 			/**
-			 * <b>ABSTRACT</b> - Define a way to display validation errors for
-			 * the view, for example in the case that it supports inline editing
-			 * of fields.
+			 * Default way to display validation errors for the view, for
+			 * example in the case that it supports inline editing of fields.
 			 *
 			 * @param {map} errorMap A map from model attributes or form fields
 			 *     to error messages
 			 * @param {event} event Optional. The event that triggered the
 			 *     failed validation.
 			 */
-			displayErrors: undefined,
+			displayErrors: function(errorMap, event) {
+				for(var item in errorMap) {
+					var $errorEl = this.$('.field-' + item + ' .editor');
+					if ($errorEl.length > 0) {
+						openhmis.validationMessage($errorEl, errorMap[item]);
+					}
+				}
+			},
 			
 			/**
 			 * Commit the current form data, triggering validation.

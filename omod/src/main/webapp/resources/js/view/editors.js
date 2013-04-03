@@ -151,11 +151,12 @@ define(
 
 			initialize: function(options) {
 				editors.Select.prototype.initialize.call(this, options);
+				_.bindAll(this, "onSelect");
 				this.$el.attr('type', 'text');
 			},
 			
 			onSelect: function(event, ui) {
-				var a = 1;
+				this.trigger("select", ui.item);
 			},
 			
 			renderOptions: function(options) {
