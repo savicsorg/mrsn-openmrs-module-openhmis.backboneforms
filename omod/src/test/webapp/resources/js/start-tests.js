@@ -16,6 +16,7 @@ curl(
 				'js!' + testBaseUrl + '/openhmis.js',
 				'js!' + testBaseUrl + '/model/generic.js',
 				'js!' + testBaseUrl + '/view/generic.js',
+				'js!' + testBaseUrl + '/view/editors.js',
 				'js!' + testBaseUrl + '/view/paginate.js',
 				'js!' + testBaseUrl + '/lib/i18n.js'
 			],

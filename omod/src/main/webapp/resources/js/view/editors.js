@@ -152,11 +152,23 @@ define(
 			initialize: function(options) {
 				editors.Select.prototype.initialize.call(this, options);
 				_.bindAll(this, "onSelect");
+				this.minLength = options.schema.minLength ? options.schema.minLength : 2;
 				this.$el.attr('type', 'text');
+				this.selectedItem = null;
 			},
 			
 			onSelect: function(event, ui) {
-				this.trigger("select", ui.item);
+				if (ui && ui.item) {
+					this.selectedItem = ui.item;
+					this.trigger("select", ui.item);
+				}
+			},
+			
+			getValue: function() {
+				if (this.selectedItem && this.selectedItem.label === this.$el.val())
+					return this.selectedItem.value;
+				else
+					return this.$el.val();
 			},
 			
 			renderOptions: function(options) {
@@ -172,7 +184,7 @@ define(
 					source = this.schema.options;
 				
 				var $autoComplete = this.$el.autocomplete({
-					minLength: 2,
+					minLength: this.minLength,
 					source: source,
 					select: this.onSelect,
 					autoFocus: true
