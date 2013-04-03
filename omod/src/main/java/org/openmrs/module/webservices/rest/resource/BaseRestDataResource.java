@@ -100,7 +100,8 @@ public abstract class BaseRestDataResource<E extends OpenmrsData> extends DataDe
 	}
 
 	@Override
-	protected AlreadyPaged<E> doSearch(String query, RequestContext context) {
+	protected AlreadyPaged<E> doSearch(RequestContext context) {
+		String query = context.getRequest().getParameter("q");
 		return new ServiceSearcher<E>(this.getServiceClass(), "getResources", "getCountOfResources").search(query,
                context);
 	}

@@ -95,8 +95,9 @@ public abstract class BaseRestMetadataResource<E extends OpenmrsMetadata> extend
 	}
 
 	@Override
-	protected PageableResult doSearch(String query, RequestContext context) {
+	protected PageableResult doSearch(RequestContext context) {
 		context.setRepresentation(Representation.REF);
+		String query = context.getParameter("q");
 		return new MetadataSearcher<E>(getServiceClass()).searchByName(query, context);
 	}
 }
