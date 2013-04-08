@@ -60,10 +60,11 @@ define(
 			 */
 			prepareModelForm: function(model, options) {
 				options = options ? options : {};
+				var schema = options.schema ? options.schema : model.schema;
 				var formFields = [];
-				for (var key in model.schema) {
+				for (var key in schema) {
 					if (key === 'retired') continue;
-					if (model.schema[key].hidden === true) continue;
+					if (schema[key].hidden === true) continue;
 					formFields.push(key);
 				}
 				var formOptions = {
@@ -415,7 +416,7 @@ define(
 					fields: this.fields,
 					modelType: this.model.model.prototype,
 					modelMeta: this.model.model.prototype.meta,
-					modelSchema: this.model.model.prototype.schema,
+					modelSchema: schema,
 					showRetired: this.showRetired,
 					pagingEnabled: pagingEnabled,
 					options: this.options
