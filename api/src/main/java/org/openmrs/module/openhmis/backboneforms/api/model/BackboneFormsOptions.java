@@ -1,4 +1,4 @@
-package org.openmrs.module.openhmis.backboneforms.model;
+package org.openmrs.module.openhmis.backboneforms.api.model;
 
 public class BackboneFormsOptions {
 	private String restUrl;

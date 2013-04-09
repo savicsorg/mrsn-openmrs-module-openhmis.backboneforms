@@ -14,17 +14,12 @@
 	<description>API project for BackboneForms</description>
 
 	<dependencies>
-	
-		<!-- 
-		Add other dependencies from parent's pom:
-		<dependency>
-			<groupId>org.other.library</groupId> 
-			<artifactId>library-name</artifactId>
-		</dependency> 
-		-->
 
-		
-		
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>openhmis.commons-api</artifactId>
+			<type>jar</type>
+		</dependency>
 
 		<!-- Begin OpenMRS core -->
 		
