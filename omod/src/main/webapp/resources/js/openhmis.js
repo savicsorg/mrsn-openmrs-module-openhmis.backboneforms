@@ -143,22 +143,21 @@ define(openhmis.url.backboneBase + "js/openhmis",
 		}
 		
 		openhmis.fromFuzzyDate = function(fuzzyString, carry) {
-			carry = carry !== undefined ? carry : 0;
 			var timeChunks = [
 				["year", 31536000],
 				["week", 604800],
 				["day", 86400]
 			];
-			var matches = openhmis.tryParsingFuzzyDate(fuzzyString)
+			var matches = openhmis.tryParsingFuzzyDate($.trim(fuzzyString))
 			if (matches) {
 				for (var i in timeChunks) {
 					var chunk = timeChunks[i];
 					if (matches[2] === chunk[0] || matches[2] === (chunk[0] + "s")) {
 						var seconds = matches[1] * chunk[1];
 						if (matches[3])
-							return openhmis.fromFuzzyDate(matches[3], seconds + carry);
+							return openhmis.fromFuzzyDate(matches[3], seconds + (carry || 0));
 						else
-							return seconds + carry;
+							return seconds + (carry || 0);
 					}
 				}
 			}

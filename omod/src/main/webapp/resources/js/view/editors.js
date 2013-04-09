@@ -148,10 +148,11 @@ define(
 		
 		editors.Autocomplete = editors.Select.extend({
 			tagName: "span",
+			previousValue: "",
 
 			initialize: function(options) {
+				_.bindAll(this, "onSelect", "determineTextChange");
 				editors.Select.prototype.initialize.call(this, options);
-				_.bindAll(this, "onSelect");
 				this.minLength = options.schema.minLength ? options.schema.minLength : 2;
 				this.selectedItem = null;
 			},
@@ -161,6 +162,10 @@ define(
 					this.selectedItem = ui.item;
 					this.trigger("select", ui.item);
 				}
+				var self = this;
+				setTimeout(function() {
+					self.determineTextChange(event, ui.item.label)
+				}, 0);
 			},
 			
 			getValue: function() {
@@ -182,6 +187,15 @@ define(
 			blur: function() {
 				if (!this.hasFocus) return;
 				this.$text.blur();
+			},
+			
+			determineTextChange: function(event, value) {
+				var currentValue = value ? value : this.$text.val();
+				var changed = (currentValue !== this.previousValue);  
+				if (changed) {
+					this.previousValue = currentValue;
+					this.$text.change();
+				}
 			},
 			
 			renderOptions: function(options) {
@@ -211,9 +225,16 @@ define(
 			},
 			
 			render: function() {
+				var self = this;
 				if (this.$el.html() === "")
 					this.$el.html('<input type="text" />');
 				this.$text = this.$('input[type="text"]');
+				this.$text.keyup(this.determineChange);
+				this.$text.keypress(function() {
+			        setTimeout(function() {
+						self.determineTextChange();
+					}, 0);
+				});
 				editors.Select.prototype.render.call(this);
 				return this;
 			}
