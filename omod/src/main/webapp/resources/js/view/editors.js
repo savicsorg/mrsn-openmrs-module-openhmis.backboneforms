@@ -147,13 +147,12 @@ define(
 		});
 		
 		editors.Autocomplete = editors.Select.extend({
-			tagName: "input",
+			tagName: "span",
 
 			initialize: function(options) {
 				editors.Select.prototype.initialize.call(this, options);
 				_.bindAll(this, "onSelect");
 				this.minLength = options.schema.minLength ? options.schema.minLength : 2;
-				this.$el.attr('type', 'text');
 				this.selectedItem = null;
 			},
 			
@@ -165,10 +164,24 @@ define(
 			},
 			
 			getValue: function() {
-				if (this.selectedItem && this.selectedItem.label === this.$el.val())
+				if (this.selectedItem && this.selectedItem.label === this.$text.val())
 					return this.selectedItem.value;
 				else
-					return this.$el.val();
+					return this.$text.val();
+			},
+			
+			setValue: function(value) {
+				this.$text.val(value);
+			},
+			
+		    focus: function() {
+				if (this.hasFocus) return;
+	  			this.$text.focus();
+			},
+			
+			blur: function() {
+				if (!this.hasFocus) return;
+				this.$text.blur();
 			},
 			
 			renderOptions: function(options) {
@@ -183,7 +196,7 @@ define(
 				else
 					source = this.schema.options;
 				
-				var $autoComplete = this.$el.autocomplete({
+				var $autoComplete = this.$text.autocomplete({
 					minLength: this.minLength,
 					source: source,
 					select: this.onSelect,
@@ -195,6 +208,14 @@ define(
 							.append("<a>" + item.label + "</a>").appendTo(ul);
 					};
 				}
+			},
+			
+			render: function() {
+				if (this.$el.html() === "")
+					this.$el.html('<input type="text" />');
+				this.$text = this.$('input[type="text"]');
+				editors.Select.prototype.render.call(this);
+				return this;
 			}
 		});
 		

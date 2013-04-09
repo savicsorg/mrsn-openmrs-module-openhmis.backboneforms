@@ -108,6 +108,63 @@ define(openhmis.url.backboneBase + "js/openhmis",
 			return d.getUTCFullYear() + '-' +  padZero(d.getUTCMonth() + 1) + '-' + padZero(d.getUTCDate()) + 'T' + padZero(d.getUTCHours()) + ':' +  padZero(d.getUTCMinutes()) + ':' + padZero(d.getUTCSeconds()) + '.' + pad2Zeros(d.getUTCMilliseconds()) + '+0000';
 		}
 		
+		openhmis.tryParsingFuzzyDate = function(fuzzyString) {
+			var numberOfSomething = /^([0-9]+)\s?(\w+)(\s+.*)?$/;
+			var matches = fuzzyString.match(numberOfSomething);
+			var number;
+			if (matches && matches[2] && !isNaN(number = parseInt(matches[1]))) {
+				matches[1] = number;
+				return matches;
+			}
+			return null;
+		}
+		
+		openhmis.toFuzzyDate = function(seconds) {
+			var timeChunks = [
+				[31536000, __("year")],
+				[604800, __("week")],
+				[86400, __("day")]
+			];
+			for (var i in timeChunks) {
+				var chunk = timeChunks[i]
+				var numberOfChunks;
+				if ((numberOfChunks = Math.floor(seconds / chunk[0])) >= 1) {
+					var string = numberOfChunks === 1
+						? __("%d %s", numberOfChunks, chunk[1])
+						: __("%d %s", numberOfChunks, openhmis.pluralize(chunk[1]));
+					var remainder = seconds % chunk[0];
+					if (remainder > 0)
+						return string + " " + openhmis.toFuzzyDate(remainder);
+					else
+						return string;
+				}
+			}
+			return null;
+		}
+		
+		openhmis.fromFuzzyDate = function(fuzzyString, carry) {
+			carry = carry !== undefined ? carry : 0;
+			var timeChunks = [
+				["year", 31536000],
+				["week", 604800],
+				["day", 86400]
+			];
+			var matches = openhmis.tryParsingFuzzyDate(fuzzyString)
+			if (matches) {
+				for (var i in timeChunks) {
+					var chunk = timeChunks[i];
+					if (matches[2] === chunk[0] || matches[2] === (chunk[0] + "s")) {
+						var seconds = matches[1] * chunk[1];
+						if (matches[3])
+							return openhmis.fromFuzzyDate(matches[3], seconds + carry);
+						else
+							return seconds + carry;
+					}
+				}
+			}
+			return carry;
+		}
+		
 		openhmis.validationMessage = function(parentEl, message, inputEl) {
 			if ($(parentEl).length > 1) parentEl = $(parentEl)[0];
 			if ($(parentEl).find('.validation').length > 0) return;
