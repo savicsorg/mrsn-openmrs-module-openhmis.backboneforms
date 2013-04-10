@@ -1,4 +1,5 @@
 /* General styles */
+button::-moz-focus-inner { border: 0; }
 h2 span.heading_annotation {
 	font-size: 10pt;
 	font-weight: normal;
