@@ -23,5 +23,5 @@
 	<!-- Annotation based controllers -->
 	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
 	
-	<context:component-scan base-package="org.openmrs.module.openhmis.cashier.web" />
+	<context:component-scan base-package="org.openmrs.module.openhmis.backboneforms.web" />
 </beans>
