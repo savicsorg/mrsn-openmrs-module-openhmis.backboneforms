@@ -93,4 +93,5 @@ div.validation {
 	color: #fff;
 	padding: 2px 4px;
 	z-index: 10;
+	white-space: nowrap;
 }
