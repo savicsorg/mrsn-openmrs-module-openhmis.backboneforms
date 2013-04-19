@@ -524,7 +524,7 @@ define(
 				var view = openhmis.GenericListView.prototype.addOne.call(this, model, schema);
 				if (this.newItem && view.model.cid === this.newItem.cid) {
 					this.selectedItem = view;
-					view.on("change", this.setupNewItem);
+					view.on("change", this._addItemFromInputLine);
 				}
 				else
 					view.on("change remove", this.bill.setUnsaved);
@@ -552,19 +552,9 @@ define(
 			},
 			
 			/**
-			 * Set up an empty input item and line.  Can be called without
-			 * parameters, or by a lineItemView that is transitioning from being
-			 * a new item to a validated item.
+			 * Set up an empty input item and line.
 			 */
-			setupNewItem: function(lineItemView) {
-				// Handle adding an item from the input line
-				if (lineItemView !== undefined) {
-					// Prevent multiple change events causing duplicate views
-					if (this.model.getByCid(lineItemView.model.cid)) return;
-					lineItemView.off("change", this.setupNewItem);
-					this.model.add(lineItemView.model, { silent: true });
-					this._deselectAll();
-				}
+			setupNewItem: function() {
 				this.newItem = new this.model.model();
 				// Don't add the item to the collection, but give it a reference
 				this.newItem.collection = this.model;
@@ -582,6 +572,19 @@ define(
 				openhmis.GenericListView.prototype.render.call(this, extraContext);
 				if (this.newItem) this.model.remove(this.newItem, { silent: true });
 				return this;
+			},
+			
+			/**
+			 * Add the item from the input line to the main collection, and set
+			 * up a new input line.
+			 */
+			_addItemFromInputLine: function(inputLineView) {
+				// Prevent multiple change events causing duplicate views
+				if (this.model.getByCid(inputLineView.model.cid)) return;
+				inputLineView.off("change", this._addItemFromInputLine);
+				this.model.add(inputLineView.model, { silent: true });
+				this._deselectAll();
+				this.setupNewItem();
 			}
 		});
 		

@@ -12,6 +12,9 @@ ul.floating li {
 	float: left;
 }
 
+div.box, div.combineBoxes { margin-bottom: 1em; }
+.combineBoxes div.box { margin-bottom: 0; }
+
 /* General form styles */
 /* Table styles */
 table.form td { padding-right: 20px; }
