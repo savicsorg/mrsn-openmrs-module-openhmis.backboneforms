@@ -151,8 +151,12 @@ define(
 			previousValue: "",
 
 			initialize: function(options) {
-				_.bindAll(this, "onSelect", "determineTextChange");
+				_.bindAll(this, "onSelect");
 				editors.Select.prototype.initialize.call(this, options);
+				this.text = new editors.Text();
+				var self = this;
+				this.text.on("focus", function(event) { self.trigger("focus", self); });
+				this.text.on("blur", function(event) { self.trigger("blur", self); });
 				this.minLength = options.schema.minLength ? options.schema.minLength : 2;
 				this.selectedItem = null;
 			},
@@ -162,40 +166,28 @@ define(
 					this.selectedItem = ui.item;
 					this.trigger("select", ui.item);
 				}
-				var self = this;
-				setTimeout(function() {
-					self.determineTextChange(event, ui.item.label)
-				}, 0);
+				this.trigger("change", this);
 			},
 			
 			getValue: function() {
-				if (this.selectedItem && this.selectedItem.label === this.$text.val())
+				if (this.selectedItem && this.selectedItem.label === this.text.getValue())
 					return this.selectedItem.value;
 				else
-					return this.$text.val();
+					return this.text.getValue();
 			},
 			
 			setValue: function(value) {
-				this.$text.val(value);
+				this.text.setValue(value);
 			},
 			
 		    focus: function() {
 				if (this.hasFocus) return;
-	  			this.$text.focus();
+					this.text.focus();
 			},
 			
 			blur: function() {
 				if (!this.hasFocus) return;
-				this.$text.blur();
-			},
-			
-			determineTextChange: function(event, value) {
-				var currentValue = value ? value : this.$text.val();
-				var changed = (currentValue !== this.previousValue);  
-				if (changed) {
-					this.previousValue = currentValue;
-					this.$text.change();
-				}
+					this.$text.blur();
 			},
 			
 			renderOptions: function(options) {
@@ -210,7 +202,7 @@ define(
 				else
 					source = this.schema.options;
 				
-				var $autoComplete = this.$text.autocomplete({
+				var $autoComplete = this.text.$el.autocomplete({
 					minLength: this.minLength,
 					source: source,
 					select: this.onSelect,
@@ -227,14 +219,7 @@ define(
 			render: function() {
 				var self = this;
 				if (this.$el.html() === "")
-					this.$el.html('<input type="text" />');
-				this.$text = this.$('input[type="text"]');
-				this.$text.keyup(this.determineChange);
-				this.$text.keypress(function() {
-			        setTimeout(function() {
-						self.determineTextChange();
-					}, 0);
-				});
+					this.$el.append(this.text.el);
 				editors.Select.prototype.render.call(this);
 				return this;
 			}

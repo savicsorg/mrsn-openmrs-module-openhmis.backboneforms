@@ -175,7 +175,8 @@ define(openhmis.url.backboneBase + "js/openhmis",
 			if (inputEl !== undefined) $(inputEl).focus();
 			setTimeout(function() {
 				$(el).remove();
-				$(parentEl).css("position", prevPosition);
+				if (prevPosition !== "static")
+					$(parentEl).css("position", prevPosition);
 			}, 5000);
 		},
 		
