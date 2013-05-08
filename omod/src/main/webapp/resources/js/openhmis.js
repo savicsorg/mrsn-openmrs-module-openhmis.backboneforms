@@ -17,10 +17,14 @@ define(openhmis.url.backboneBase + "js/openhmis",
 		var openhmis = window.openhmis || {};
 		openhmis.templates = {};
 		
+		openhmis.url.getPage = function(moduleBaseName) {
+			return openhmis.url.page + openhmis.url[moduleBaseName];
+		}
+		
 		//TODO: Better system for identifying specific errors
 		openhmis.error = function(model, resp) {
 			var handleErrorResp = function(resp) {
-				var o = $.parseJSON(resp).error;
+				var o = (typeof resp === "string") ? $.parseJSON(resp).error : resp;
 				if (o.detail.indexOf("ContextAuthenticationException") !== -1) {
 					alert(__("Your session has timed out.  You will be redirected to the login page."));
 					window.location.reload();
@@ -33,16 +37,22 @@ define(openhmis.url.backboneBase + "js/openhmis",
 						alert(__("You do not have the required privileges to adjust a bill.\n\nPlease contact your supervisor about adjusting a bill."));
 					}
 				}
+				else if (o.message.indexOf("no rounding item ID") !== -1) {
+					alert(__(o.message + "\n\nPlease specify a rounding item or disable rounding."));
+				}
 				else {
 					console.log("Message: " + o.message + "\n" + "Code: " + o.code + "\n" + "Detail: " + o.detail);
 					var firstLfPos = o.detail.indexOf('\n');
 					if (firstLfPos !== -1)
 						o.detail = o.detail.substring(0, firstLfPos);
 					alert('An error occurred during the request.\n\n' + o.message + '\n\nCode: ' + o.code + '\n\n' + o.detail);
-				}				
+				}
 			}
 			if (!(model instanceof Backbone.Model)) {
-				handleErrorResp(model.responseText);
+				if (model.responseText)
+					handleErrorResp(model.responseText);
+				else
+					handleErrorResp(model);
 			}
 			else if (resp !== undefined) {
 				handleErrorResp(resp.responseText);

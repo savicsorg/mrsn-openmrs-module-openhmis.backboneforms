@@ -14,6 +14,14 @@ define(
             
             initialize: function() {
     			this.simplifyIds(this.attributes);
+				var display = this.get("display") || "";
+				var parts = display.match(/(.*) - (.*)/);
+				if (parts && parts.length === 3) {
+					this.get("identifiers").push({ display: parts[1] });
+					if (!this.get("person"))
+						this.set("person", {});
+					this.get("person").display = parts[2];
+				}
             },
             
     		// Bit of a hack to get patient identifier from the REF representation
@@ -24,12 +32,18 @@ define(
 					if (pos !== -1)
 						ids[i].display = ids[i].display.substring(pos + 2);
 				}}}
+				else
+					attrs.identifiers = [];
             },
             
             parse: function(resp) {
                 this.simplifyIds(resp);
                 return resp;
-            }
+            },
+			
+			toString: function() {
+				return this.get("display") || this.get("name");
+			}
         });
         
         return openhmis;

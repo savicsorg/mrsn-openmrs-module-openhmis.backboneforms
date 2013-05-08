@@ -1,11 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>org.openmrs.module</groupId>
 		<artifactId>openhmis.backboneforms</artifactId>
-		<version>1.0-SNAPSHOT</version>
+		<version>1.0.0</version>
 	</parent>
 
 	<artifactId>openhmis.backboneforms-omod</artifactId>
@@ -71,7 +70,25 @@
 		</dependency>
 		
 		<!-- End OpenMRS core -->
+		
+		<!-- Begin webservices.rest -->
 
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>webservices.rest-api</artifactId>
+		</dependency>
+
+		<dependency>
+			  <groupId>org.openmrs.module</groupId>
+			  <artifactId>webservices.rest-omod</artifactId>
+		</dependency>
+
+		<!-- End webservices.rest -->
+
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>openhmis.commons-api</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -104,6 +121,10 @@
 				<directory>src/test/resources</directory>
 				<filtering>true</filtering>
 			</testResource>
+			<testResource>
+				<directory>src/test/webapp/resources</directory>
+				<filtering>false</filtering>
+			</testResource>
 		</testResources>
 
 		<pluginManagement>
@@ -133,7 +154,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore></ignore>
+										<ignore />
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -146,7 +167,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore></ignore>
+										<ignore />
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
@@ -198,6 +219,55 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+		        <groupId>com.github.searls</groupId>
+		        <artifactId>jasmine-maven-plugin</artifactId>
+		        <version>1.2.0.0</version>
+		        <extensions>true</extensions>
+<!-- Execution disabled because tests don't run properly outside of a browser -->
+<!-- 		        <executions> -->
+<!-- 		          <execution> -->
+<!-- 		            <goals> -->
+<!-- 		              <goal>test</goal> -->
+<!-- 		            </goals> -->
+<!-- 		          </execution> -->
+<!-- 		        </executions> -->
+		        <configuration>
+		        	<customRunnerTemplate>${project.basedir}/src/test/webapp/resources/js/BlankSpecRunner.htmltemplate</customRunnerTemplate>
+		        	<jsSrcDir>${project.basedir}/src/main/webapp/resources/js</jsSrcDir>
+		       		<jsTestSrcDir>${project.basedir}/src/test/webapp/resources/js</jsTestSrcDir>
+		       		<preloadSources>
+		         		<include>curl.js</include>
+		         		<include>/src/test/webapp/resources/js/test-init.js</include>
+		         		<include>/src/test/webapp/resources/js/test-utils.js</include>
+		         		<include>/src/test/webapp/resources/js/test-data.js</include>
+		         		<include>/src/test/webapp/resources/js/start-tests.js</include>
+		       		</preloadSources>
+		      		<sourceIncludes />
+		     		<specIncludes />
+		        </configuration>
+	      </plugin>
+	      <plugin>
+		      <groupId>net.alchim31.maven</groupId>
+              <artifactId>yuicompressor-maven-plugin</artifactId>
+              <executions>
+                  <execution>
+                      <goals>
+                          <goal>compress</goal>
+                      </goals>
+                  </execution>
+              </executions>        
+              <configuration>
+                  <jswarn>false</jswarn>
+                  <nosuffix>true</nosuffix>
+                  <excludes>
+                      <exclude>**/*.min.js</exclude>
+                  </excludes>
+                  <sourceDirectory>${project.basedir}/src/main/webapp/resources</sourceDirectory>
+                  <outputDirectory>${project.build.outputDirectory}/web/module/resources</outputDirectory>
+                  <warSourceDirectory>${project.basedir}/classes</warSourceDirectory>                  
+              </configuration>
+          </plugin>
 		</plugins>
 	</build>
 

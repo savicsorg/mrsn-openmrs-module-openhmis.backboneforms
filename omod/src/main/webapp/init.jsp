@@ -1,9 +1,10 @@
+<%@ page contentType="text/javascript" %>
 (function() {
 	window.openhmis = {};
 	openhmis.url = {};
-	var openmrsUrlRoot = "/openmrs/";
+	var openmrsUrlRoot = "${contextPath}/";
 	openhmis.url.openmrs = openmrsUrlRoot;
-	openhmis.url.rest = openmrsUrlRoot + "ws/rest/";
+	openhmis.url.rest = "${restUrl}";
 	openhmis.url.resources = openmrsUrlRoot + "moduleResources/openhmis/";
 	openhmis.url.page = openmrsUrlRoot + "module/openhmis/";
 	openhmis.url.backboneBase = "backboneforms/";

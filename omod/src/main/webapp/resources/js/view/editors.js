@@ -9,6 +9,10 @@ define(
 	function($, Backbone, _, openhmis) {
 		var editors = Backbone.Form.editors;
 		
+		editors.isNumeric = function(strVal) {
+			return /^-?[0-9]*\.?[0-9]*?$/.test(strVal);
+		}
+		
 		editors.BasicNumber = editors.Number.extend({
 			initialize: function(options) {
 				this.defaultValue = null;
@@ -35,9 +39,7 @@ define(
 				//Get the whole new value so that we can prevent things like double decimals points etc.
 				var newVal = this.$el.val() + String.fromCharCode(event.which);
 		  
-				var numeric = /^[0-9]*\.?[0-9]*?$/.test(newVal);
-		  
-				if (numeric) {
+				if (editors.isNumeric(newVal)) {
 				  delayedDetermineChange();
 				}
 				else {
@@ -50,6 +52,11 @@ define(
 					this.$el.val(this.schema.format(value));
 				else
 					this.$el.val(value);
+		   },
+		   
+		   focus: function(select) {
+				editors.Number.prototype.focus.call(this);
+				if (select === true) this.$el.select();
 		   }
 		});
 		
@@ -79,9 +86,7 @@ define(
 			  //Get the whole new value so that we can prevent things like double decimals points etc.
 			  var newVal = this.$el.val() + String.fromCharCode(event.which);
 		
-			  var numeric = /^[0-9]*\.?[0-9]*?$/.test(newVal);
-		
-			  if (numeric) {
+			  if (editors.isNumeric(newVal)) {
 				delayedDetermineChange();
 			  }
 			  else {
@@ -100,13 +105,12 @@ define(
 					return;
 				}
 				editors.Number.prototype.determineChange.call(this, event);
-			}
-			//valueChanged: function(event) {
-			//		this.$el.val(this.el.defaultValue);
-			//		return;
-			//	}
-			//	event.target.defaultValue = event.target.value;
-			//}
+			},
+			
+		   focus: function(select) {
+				editors.Number.prototype.focus.call(this);
+				if (select === true) this.$el.select();
+		   }
 		});
 		
 		editors.GenericModelSelect = editors.Select.extend({

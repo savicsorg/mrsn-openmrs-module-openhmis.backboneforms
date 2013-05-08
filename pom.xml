@@ -1,15 +1,22 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>openhmis.backboneforms</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>pom</packaging>
 	<name>Backbone Forms Module</name>
 	<description>Use Backbone-based forms with OpenMRS</description>
 	<url>https://wiki.openmrs.org/display/docs/Backbone+Forms+Module+Module</url>
-	
+
+	<distributionManagement>
+		<repository>
+			<id>openmrs-repo</id>
+			<name>Modules</name>
+			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/modules/</url>
+		</repository>
+	</distributionManagement>
+
 	<developers>
 		<developer>
 			<name>OpenHMIS</name>
@@ -22,10 +29,11 @@
 	</organization>
 
 	<scm>
-		<connection>scm:svn:https://svn.openmrs.org/openmrs-modules/openhmis.backboneforms/trunk/</connection>
-		<developerConnection>scm:svn:https://svn.openmrs.org/openmrs-modules/openhmis.backboneforms/trunk/</developerConnection>
-		<url>https://svn.openmrs.org/openmrs-modules/openhmis.backboneforms/trunk/</url>
-	</scm>
+		<connection>scm:git:git@github.com:OpenHMIS/openmrs-module-openhmis.backboneforms.git</connection>
+		<developerConnection>scm:git:git@github.com:OpenHMIS/openmrs-module-openhmis.backboneforms.git</developerConnection>
+		<url>scm:git:git@github.com:OpenHMIS/openmrs-module-openhmis.backboneforms.git</url>
+	  <tag>v1.0.0</tag>
+  </scm>
 
 	<modules>
 		<module>api</module>
@@ -40,19 +48,6 @@
 	<dependencyManagement>
 		<dependencies>
 		
-			<!--
-			Libraries to add as dependencies with compile or runtime scope:
-			Find matching dependencies in the maven central repository.
-			<dependency>
-				<groupId>org.other.library</groupId>
-				<artifactId>library-name</artifactId>
-				<version>library.version</version>
-				<scope>compile</scope>
-			</dependency>
-			-->
-			
-			
-
 			<!-- Begin OpenMRS core -->
 			
 			<dependency>
@@ -96,6 +91,27 @@
 			</dependency>
 						
 			<!-- End OpenMRS core -->
+			
+			<dependency>
+				<groupId>org.openmrs.module</groupId>
+				<artifactId>webservices.rest-api</artifactId>
+				<version>1.1</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.openmrs.module</groupId>
+				<artifactId>webservices.rest-omod</artifactId>
+				<version>1.1</version>
+				<scope>provided</scope>
+			</dependency>
+			
+			<dependency>
+				<groupId>org.openmrs.module</groupId>
+				<artifactId>openhmis.commons-api</artifactId>
+				<version>1.5.0.0</version>
+				<scope>provided</scope>
+			</dependency>
 
 		</dependencies>
 	</dependencyManagement>
@@ -120,6 +136,38 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
 					<version>2.4</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.3.2</version>
+					<configuration>
+						<tagNameFormat>v@{project.version}</tagNameFormat>
+						<autoVersionSubmodules>true</autoVersionSubmodules>
+						<pushChanges>false</pushChanges>
+						<localCheckout>true</localCheckout>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>2.3.2</version>
+					<configuration>
+						<archive>
+							<manifestEntries>
+								<Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
+								<Specification-Version>${project.version}</Specification-Version>
+								<Specification-Vendor>${project.name}</Specification-Vendor>
+							</manifestEntries>
+						</archive>
+					</configuration>
+					<executions>
+						<execution>
+							<goals>
+								<goal>test-jar</goal>
+							</goals>
+						</execution>
+					</executions>
 				</plugin>
 			</plugins>
 		</pluginManagement>
