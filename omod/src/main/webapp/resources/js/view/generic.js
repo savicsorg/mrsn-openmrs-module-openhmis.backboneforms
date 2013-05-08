@@ -887,8 +887,16 @@ define(
 		
 		// Create new generic add/edit screen
 		openhmis.startAddEditScreen = function(model, options) {
-			$("#content").append('<div id="add-edit-form"></div>');
-			$("#content").append('<div id="existing-form"></div>');
+			if (!options.listElement) {
+                $("#content").append('<div id="existing-form"></div>');
+                options.listElement = $("#existing-form");
+            }
+
+            if (!options.addEditElement) {
+                $("#content").append('<div id="add-edit-form"></div>');
+                options.addEditElement = $("#add-edit-form");
+            }
+
 			var collection = new openhmis.GenericCollection([], {
 				url: model.prototype.meta.restUrl,
 				model: model
@@ -896,7 +904,7 @@ define(
 			var addEditView = options.addEditViewType
 				? new options.addEditViewType({ collection: collection })
 				: new openhmis.GenericAddEditView({ collection: collection });
-			addEditView.setElement($('#add-edit-form'));
+			addEditView.setElement(options.addEditElement);
 			addEditView.render();
 			var viewOptions = _.extend({
 				model: collection,
@@ -906,7 +914,7 @@ define(
 			var listView = new listViewType(viewOptions);
 			addEditView.on("cancel", listView.blur);
 			listView.on("itemSelect", function(view) { addEditView.edit(view.model) });
-			listView.setElement($('#existing-form'));
+			listView.setElement(options.listElement);
 			listView.fetch();
 		}
 		
