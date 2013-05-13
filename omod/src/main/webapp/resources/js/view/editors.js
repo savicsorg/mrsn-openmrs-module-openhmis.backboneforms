@@ -5,6 +5,7 @@ define(
 		openhmis.url.backboneBase + 'js/lib/underscore',
 		openhmis.url.backboneBase + 'js/lib/backbone-forms',
 		openhmis.url.backboneBase + 'js/lib/labelOver',
+		openhmis.url.backboneBase + 'js/view/list'
 	],
 	function($, Backbone, _, openhmis) {
 		var editors = Backbone.Form.editors;
@@ -143,6 +144,40 @@ define(
 				else
 					this.setOptions(this.schema.options);
 				return this;
+			}
+		});
+		
+		editors.List.NestedModel = editors.List.NestedModel.extend({
+			onModalSubmitted: function(form, modal) {
+				var isNew = !this.value;
+		  
+				//Stop if there are validation errors
+				var error = form.validate();
+				if (error) return modal.preventClose();
+				this.modal = null;
+		
+				var idAttribute = Backbone.Model.prototype.idAttribute;
+				if (this.value) {
+					var id = this.value[idAttribute];
+					var cid = this.value.cid;
+				}
+		  
+				//If OK, render the list item
+				this.value = form.getValue();
+		
+				if (this.schema.itemType == 'NestedModel') {
+					if (id !== undefined) this.value[idAttribute] = id;
+					if (cid !== undefined) this.value.cid = cid;
+				}
+		  
+				this.renderSummary();
+		  
+				if (isNew) this.trigger('readyToAdd');
+				
+				this.trigger('change', this);
+				
+				this.trigger('close', this);
+				this.trigger('blur', this);
 			}
 		});
 		
