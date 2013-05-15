@@ -157,18 +157,14 @@ define(
 				this.modal = null;
 		
 				var idAttribute = Backbone.Model.prototype.idAttribute;
-				if (this.value) {
-					var id = this.value[idAttribute];
-					var cid = this.value.cid;
-				}
+				if (this.value)
+					var id = this.value.id || this.value[idAttribute];
 		  
 				//If OK, render the list item
 				this.value = form.getValue();
 		
-				if (this.schema.itemType == 'NestedModel') {
-					if (id !== undefined) this.value[idAttribute] = id;
-					if (cid !== undefined) this.value.cid = cid;
-				}
+				if (id !== undefined)
+					this.value[idAttribute] = id;
 		  
 				this.renderSummary();
 		  
