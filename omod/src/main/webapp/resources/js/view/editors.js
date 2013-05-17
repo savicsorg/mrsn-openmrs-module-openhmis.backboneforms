@@ -147,7 +147,6 @@ define(
 			}
 		});
 		
-<<<<<<< HEAD
 		editors.Autocomplete = editors.Select.extend({
 			tagName: "span",
 			previousValue: "",
