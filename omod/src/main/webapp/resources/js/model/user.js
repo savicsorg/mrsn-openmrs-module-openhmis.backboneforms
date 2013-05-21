@@ -4,7 +4,7 @@ define(
 		openhmis.url.backboneBase + 'js/model/generic'
 	],
 	function(openhmis, __) {
-		openhmis.Category = openhmis.GenericModel.extend({
+		openhmis.User = openhmis.GenericModel.extend({
 			meta: {
 				restUrl: 'v1/user'
 			},
