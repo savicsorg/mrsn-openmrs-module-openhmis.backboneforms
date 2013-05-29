@@ -90,7 +90,7 @@ public abstract class BaseRestMetadataResource<E extends OpenmrsMetadata> extend
 	@Override
 	protected PageableResult doGetAll(RequestContext context) throws ResponseException {
 		IMetadataDataService<E> service = Context.getService(getServiceClass());
-		PagingInfo pagingInfo = MetadataSearcher.getPagingInfoFromContext(context);
+		PagingInfo pagingInfo = PagingUtil.getPagingInfoFromContext(context);
 		return new AlreadyPagedWithLength<E>(context, service.getAll(context.getIncludeAll(), pagingInfo), pagingInfo.hasMoreResults(), pagingInfo.getTotalRecordCount());
 	}
 
