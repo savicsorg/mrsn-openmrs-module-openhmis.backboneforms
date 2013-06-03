@@ -30,14 +30,10 @@ public class MetadataSearcher<E extends OpenmrsMetadata> {
 	}
 	
 	public AlreadyPaged<E> searchByName(String nameFragment, RequestContext context) {
-		PagingInfo pagingInfo = getPagingInfoFromContext(context);
+		PagingInfo pagingInfo = PagingUtil.getPagingInfoFromContext(context);
 		List<E> results = service.findByName(nameFragment, context.getIncludeAll(), pagingInfo);
 		Boolean hasMoreResults = (pagingInfo.getPage() * pagingInfo.getPageSize()) < pagingInfo.getTotalRecordCount();
 		return new AlreadyPagedWithLength<E>(context, results, hasMoreResults, pagingInfo.getTotalRecordCount());
 	}
-	
-	public static PagingInfo getPagingInfoFromContext(RequestContext context) {
-		Integer page = (context.getStartIndex() / context.getLimit()) + 1;
-		return new PagingInfo(page, context.getLimit());
-	}
+
 }

@@ -16,7 +16,5 @@ package org.openmrs.module.webservices.rest.resource;
 import org.openmrs.OpenmrsMetadata;
 import org.openmrs.module.openhmis.commons.api.entity.IMetadataDataService;
 
-public interface IMetadataDataServiceResource<T extends OpenmrsMetadata> {
-	public Class<? extends IMetadataDataService<T>> getServiceClass();
-
+public interface IMetadataDataServiceResource<T extends OpenmrsMetadata> extends IObjectDataServiceResource<T, IMetadataDataService<T>> {
 }

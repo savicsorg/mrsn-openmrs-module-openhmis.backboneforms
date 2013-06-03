@@ -45,22 +45,25 @@ public abstract class BaseRestMetadataResource<E extends OpenmrsMetadata> extend
 		description.addProperty("description");
 		description.addProperty("retired");
 		description.addProperty("retireReason");
+
 		return description;
 	}
 	
 	@Override
-	public DelegatingResourceDescription getRepresentationDescription(
-			Representation rep) {
+	public DelegatingResourceDescription getRepresentationDescription(Representation rep) {
+		DelegatingResourceDescription description;
 		if (rep instanceof RefRepresentation) {
-			DelegatingResourceDescription description = new DelegatingResourceDescription();
+			description = new DelegatingResourceDescription();
+
 			description.addProperty("uuid");
 			description.addProperty("name");
-			description.addProperty("retired");			
-			return description;
-		}
-		DelegatingResourceDescription description = getDefaultRepresentationDescription();		
-		if (rep instanceof FullRepresentation) {
-			description.addProperty("auditInfo", findMethod("getAuditInfo"));
+			description.addProperty("retired");
+		} else {
+			description = getDefaultRepresentationDescription();
+
+			if (rep instanceof FullRepresentation) {
+				description.addProperty("auditInfo", findMethod("getAuditInfo"));
+			}
 		}
 		return description;
 	}
@@ -70,19 +73,19 @@ public abstract class BaseRestMetadataResource<E extends OpenmrsMetadata> extend
 		DelegatingResourceDescription description = getDefaultRepresentationDescription();
 		description.removeProperty("uuid");
 		description.removeProperty("retireReason");
+
 		return description;
 	}
 
 	@Override
 	public E getByUniqueId(String uniqueId) {
 		IMetadataDataService<E> service = Context.getService(getServiceClass());
-		E entity = service.getByUuid(uniqueId);
-		return entity;
+
+		return service.getByUuid(uniqueId);
 	}
 
 	@Override
-	public void purge(E delegate, RequestContext context)
-			throws ResponseException {
+	public void purge(E delegate, RequestContext context) throws ResponseException {
 		IMetadataDataService<E> service = Context.getService(getServiceClass());
 		service.purge(delegate);		
 	}
@@ -90,7 +93,8 @@ public abstract class BaseRestMetadataResource<E extends OpenmrsMetadata> extend
 	@Override
 	protected PageableResult doGetAll(RequestContext context) throws ResponseException {
 		IMetadataDataService<E> service = Context.getService(getServiceClass());
-		PagingInfo pagingInfo = MetadataSearcher.getPagingInfoFromContext(context);
+		PagingInfo pagingInfo = PagingUtil.getPagingInfoFromContext(context);
+
 		return new AlreadyPagedWithLength<E>(context, service.getAll(context.getIncludeAll(), pagingInfo), pagingInfo.hasMoreResults(), pagingInfo.getTotalRecordCount());
 	}
 
@@ -98,6 +102,7 @@ public abstract class BaseRestMetadataResource<E extends OpenmrsMetadata> extend
 	protected PageableResult doSearch(RequestContext context) {
 		context.setRepresentation(Representation.REF);
 		String query = context.getParameter("q");
+
 		return new MetadataSearcher<E>(getServiceClass()).searchByName(query, context);
 	}
 }

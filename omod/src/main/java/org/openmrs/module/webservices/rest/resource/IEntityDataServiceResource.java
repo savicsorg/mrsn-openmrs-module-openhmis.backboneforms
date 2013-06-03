@@ -16,7 +16,6 @@ package org.openmrs.module.webservices.rest.resource;
 import org.openmrs.OpenmrsData;
 import org.openmrs.module.openhmis.commons.api.entity.IEntityDataService;
 
-public interface IEntityDataServiceResource<T extends OpenmrsData> {
-
-	public Class<? extends IEntityDataService<T>> getServiceClass();
+public interface IEntityDataServiceResource<T extends OpenmrsData> extends IObjectDataServiceResource<T, IEntityDataService<T>> {
 }
+
