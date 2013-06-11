@@ -18,6 +18,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.openhmis.commons.api.PagingInfo;
 import org.openmrs.module.openhmis.commons.api.entity.IMetadataDataService;
 import org.openmrs.module.webservices.rest.web.RequestContext;
+import org.openmrs.module.webservices.rest.web.annotation.PropertyGetter;
 import org.openmrs.module.webservices.rest.web.representation.FullRepresentation;
 import org.openmrs.module.webservices.rest.web.representation.RefRepresentation;
 import org.openmrs.module.webservices.rest.web.representation.Representation;
@@ -99,5 +100,10 @@ public abstract class BaseRestMetadataResource<E extends OpenmrsMetadata> extend
 		context.setRepresentation(Representation.REF);
 		String query = context.getParameter("q");
 		return new MetadataSearcher<E>(getServiceClass()).searchByName(query, context);
+	}
+	
+	@PropertyGetter("retired")
+	public Boolean getRetired(E delegate) {
+		return delegate.isRetired();
 	}
 }
