@@ -3,7 +3,7 @@ define(
 		openhmis.url.backboneBase + 'js/lib/backbone',
 		openhmis.url.backboneBase + 'js/model/generic'
 	],
-	function(openhmis, __) {
+	function(Backbone, openhmis) {
 		openhmis.User = openhmis.GenericModel.extend({
 			meta: {
 				restUrl: 'v1/user'
