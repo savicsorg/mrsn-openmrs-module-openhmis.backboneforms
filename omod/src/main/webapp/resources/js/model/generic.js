@@ -185,8 +185,13 @@ define(
 							if (this.schema[attr].objRef === true) {
 								if (attributes[attr] instanceof openhmis.GenericCollection)
 									attributes[attr] = attributes[attr].toJSON({ objRef: true })
-								else if (attributes[attr] instanceof Array)
-									attributes[attr] = new openhmis.GenericCollection(attributes[attr]).toJSON({ objRef: true });
+								else if (attributes[attr] instanceof Array) {
+									var model = this.schema[attr].model || Backbone.Model;
+									attributes[attr] = new openhmis.GenericCollection(
+										attributes[attr],
+										{ model: model })
+									.toJSON({ objRef: true });
+								}
 								else if (attributes[attr].id !== undefined)
 									attributes[attr] = attributes[attr].id;
 							}
@@ -196,8 +201,13 @@ define(
 						}
 					}
 				}
-				// This is never createable in the REST interface
-				delete attributes[this.idAttribute];
+				if (options
+						&& (options.objRef === true || options.subResource === true)
+						&& this.attributes[this.idAttribute])
+					attributes[this.idAttribute] = this.attributes[this.idAttribute];
+				else
+					// This is never createable for the base resource
+					delete attributes[this.idAttribute];
 				return attributes;
 			},
 			

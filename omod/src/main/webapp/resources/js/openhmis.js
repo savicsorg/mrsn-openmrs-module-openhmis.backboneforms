@@ -227,10 +227,11 @@ define(openhmis.url.backboneBase + "js/openhmis",
 			var augmentedTemplate = function(context) {
 				if (context !== undefined) {
 					context.__ = context.__ ? context.__ : __;
+					context.urls = context.urls ? context.urls : openhmis.url;
 					context.helpers = context.helpers ? context.helpers : Backbone.Form.helpers
 					context.pluralize = openhmis.pluralize;
 				}
-				return template(context);
+				return template.call(this, context);
 			}
 			return augmentedTemplate;
 		}

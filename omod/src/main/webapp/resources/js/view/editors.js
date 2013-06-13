@@ -114,7 +114,18 @@ define(
 		   }
 		});
 		
+		/**
+		 * "Abstract" editor class.  Extend and specify modelType and
+		 * displayAttr properties.  See cashier module editors.js for examples.
+		 **/
 		editors.GenericModelSelect = editors.Select.extend({
+		    initialize: function(options) {
+				editors.Select.prototype.initialize.call(this, options);
+				if (this.schema.modelType)
+					this.modelType = this.schema.modelType;
+				if (this.schema.displayAttr)
+					this.displayAttr = this.schema.displayAttr;
+			},
 		    getValue: function() {
 				$selected = this.$('option:selected');
 				var model = new this.modelType({ uuid: $selected.val() })

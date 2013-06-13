@@ -192,7 +192,7 @@ define(
 			 */
 			render: function() {
 				this.$el.html(this.template({ model: this.model }));
-				this.addLinkEl = this.$('a.addLink');
+				this.addLinkEl = this.$('p.addLink');
 				this.titleEl = this.$('b.title');
 				this.formEl = this.$('div.form');
 				this.retireVoidPurgeEl = this.$('div.retireVoidPurge');
@@ -264,7 +264,11 @@ define(
 					this.template = this.getTemplate();
 					
 					this.options.listTitle = options.listTitle;
+
 					this.options.itemActions = options.itemActions || [];
+					var itemViewActions = this.itemView.prototype.actions;
+					if (itemViewActions) this.options.itemActions = this.options.itemActions.concat(itemViewActions);
+
 					this.options.includeFields = options.listFields;
 					this.options.excludeFields = options.listExcludeFields;
 					this.options.showPaging = options.showPaging !== undefined ? options.showPaging : true;
@@ -638,7 +642,7 @@ define(
 			initialize: function(options) {
 				if (options !== undefined) {
 					this.fields = options.fields ? options.fields : _.keys(this.model.schema);
-					if (options.actions) this.actions = options.actions;
+					if (options.actions) this.actions = this.actions.concat(options.actions);
 					if (options.schema) this.schema = options.schema;
 				}
 				_.bindAll(this);
@@ -815,6 +819,95 @@ define(
 			}
 		});
 		
+
+		/*======================================================================
+		 *
+		 * NestedListItemView
+		 *
+		 */
+		openhmis.NestedListItemView = openhmis.GenericListItemView.extend(
+		/** @lends NestedListItemView.prototype */
+		{
+			// Property name on model to access nested objects
+			modelChildren: "children",
+			
+			// Action for expanding to show nested items
+			actions: ["expand"],
+			
+			initialize: function(options) {
+				if (options) {
+					this.modelChildren = options.modelChildren || this.model.meta.children || this.modelChildren;
+				}
+				this.expandArrowTemplate = this.getTemplate("", "#expand-arrow-template");
+				this.expandRowTemplate = this.getTemplate("", "#expand-row-template");
+				openhmis.GenericListItemView.prototype.initialize.call(this, options);
+			},
+			
+			select: function() {
+				openhmis.GenericListItemView.prototype.select.call(this);
+				if (this.$("input.expand").hasClass("collapsed"))
+					this.expandCollapse({ target: this.$("input.expand") });
+			},
+			
+			expandCollapse: function(event) {
+				var $el = $(event.target);
+				// Expand
+				if ($el.hasClass("collapsed")) {
+					$el.removeClass("collapsed");
+					$el.addClass("expanded");
+					$el.attr("src", openhmis.url.backbone + "images/expanded.png");
+					if (!this.$nestedRow)
+						this._addNestedView();
+					var self = this;
+					this.$nestedRow.stop().hide().show(0, function() { self.childrenView.$el.stop().hide().slideDown(100); });
+				}
+				// Collapse
+				else {
+					$el.removeClass("expanded");
+					$el.addClass("collapsed");
+					$el.attr("src", openhmis.url.backbone + "images/collapsed.png");
+					if (this.$nestedRow) {
+						var self = this;
+						this.childrenView.$el.stop().show().slideUp(100, function() { self.$nestedRow.stop().show().hide() });
+					}
+				}
+				if (event.stopPropagation) event.stopPropagation();
+			},
+			
+			render: function() {
+				openhmis.GenericListItemView.prototype.render.call(this);
+				if (this.model.get(this.modelChildren).length > 0) {
+					this.$(".item-actions").append(this.expandArrowTemplate({}));
+				}
+				return this;
+			},
+			
+			_addNestedView: function() {
+				this.$nestedRow = $(this.expandRowTemplate({ colspan: this.fields.length }));
+				this.$nestedRow.addClass(this.$el.hasClass("evenRow") ? "evenRow" : "oddRow");
+				this.$el.after(this.$nestedRow);
+				this.childrenView = new openhmis.GenericListView({
+					model: this.model.get("workOrders"),
+					listFields: this.fields,
+					listTitle: "",
+					itemView: openhmis.NestedListItemView,
+					showRetiredOption: false,
+					showPaging: false
+				});
+				var self = this;
+				this.childrenView.on("itemSelect", function(view) {
+					self.trigger("select", view);
+				});
+				this.$nestedRow.find(".children").append(this.childrenView.render().el);
+			},
+			
+			_enableActions: function() {
+				openhmis.GenericListItemView.prototype._enableActions.call(this);
+				if (this.model.get(this.modelChildren).length > 0) {
+					this.events['click .expand'] = 'expandCollapse';
+				}
+			}
+		});
 		
 		/**
 		 * <b>Not a real class!</b>  Interface/pseudoclass for documentation

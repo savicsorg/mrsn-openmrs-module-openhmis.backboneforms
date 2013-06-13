@@ -1,5 +1,4 @@
 <script id="add-edit-template" type="text/template">
-	<p><a class="addLink" href="#"><?= __("Add %s", model.modelName()) ?></a></p>
 	<b class="boxHeader title" style="display: none"><?= model.isNew()
 		? __("Add New %s", model.modelName())
 		: __("Edit %s", model.modelName()) ?></b>
@@ -27,6 +26,7 @@
 			<button class="purge"><?= __("Purge") ?></button>
 		</div>
 	</div>
+	<p class="addLink"><a class="addLink" href="#"><?= __("Add %s", model.modelName()) ?></a></p>
 </script>
 
 <script id="generic-list" type="text/template">
@@ -74,10 +74,10 @@
 		<? for (var act in actions) {
 			switch (actions[act]) {
 				case 'remove': ?>
-					<input type="image" src="/openmrs/images/trash.gif" title="<?= __("Remove %s", model.modelName()) ?>" class="remove"/>
+					<input type="image" src="<?= urls.openmrs ?>images/trash.gif" title="<?= __("Remove %s", model.modelName()) ?>" class="remove"/>
 					<? break;
 				case 'details': ?>
-					<input type="image" src="/openmrs/images/lookup.gif" title="<?= __("Show details for %s", model.modelName()) ?>" class="details"/>
+					<input type="image" src="<?= urls.openmrs ?>images/lookup.gif" title="<?= __("Show details for %s", model.modelName()) ?>" class="details"/>
 					<? break;
 			}
 		} ?>
@@ -110,4 +110,15 @@
 		</td>
 		<? } ?>
 	<? } ?>
+</script>
+
+<script id="expand-arrow-template" type="text/template">
+	<input type="image" class="expand collapsed" src="<?= urls.backbone ?>images/collapsed.png" style="visibility: visible !important;" />
+</script>
+
+<script id="expand-row-template" type="text/template">
+	<tr class="nested">
+		<td class="item-actions end"></td>
+		<td class="children" colspan="<?= colspan ?>"></td>
+	</tr>
 </script>
