@@ -42,7 +42,7 @@ define(
 					else
 						throw e;
 				}
-				return url;
+				return url + (this.meta && this.meta.modelType ? "?t=" + this.meta.modelType : "");
 			},
 			
 			setUnsaved: function() {
@@ -264,7 +264,12 @@ define(
 					if (error !== undefined)
 						error(model, data);
 				}
-				if (options.queryString) options.url = this.url + "?" + options.queryString;
+				if (this.model.prototype.meta && this.model.prototype.meta.modelType) {
+					options.queryString = openhmis.addQueryStringParameter(options.queryString,
+							"t=" + this.model.prototype.meta.modelType);
+				}
+				if (options.queryString)
+					options.url = this.url + "?" + options.queryString;
 				options.silent = true; // So that events aren't triggered too soon
 				Backbone.Collection.prototype.fetch.call(this, options)
 			},

@@ -203,6 +203,221 @@ define(
 		
 		/*======================================================================
 		 *
+		 * GenericListItemView
+		 *
+		 */
+		openhmis.GenericListItemView = Backbone.View.extend(
+		/** @lends GenericListItemView.prototype */
+		{
+			// Name of the HTML tag to use for the view's containing element
+			tagName: "tr",
+			
+			// The template file to use
+			tmplFile: openhmis.url.backboneBase + "template/generic.html",
+
+			// The jQuery selector for the template
+			tmplSelector: '#generic-list-item',
+
+			/**
+			 * List of actions (strings) that the view should support by default.
+			 * GenericListItemView supports: <ul>
+			 *     <li><b>remove:</b> Support removing list items</li>
+			 *     <li><b>inlineEdit:</b> Support editing the values of the item attributes</li>
+			 * </ul>
+			 *
+			 * @type Array
+			 */
+			actions: [], // see enableActions()
+
+			/**
+			 * @class GenericListItemView
+			 * @classdesc Displays a single model in a GenericListView
+			 * @constructor GenericListItemView
+			 * @param {map} options Options for the GenericListItemView
+			 */
+			initialize: function(options) {
+				if (options !== undefined) {
+					this.fields = options.fields ? options.fields : _.keys(this.model.schema);
+					if (options.actions) this.actions = this.actions.concat(options.actions);
+					if (options.schema) this.schema = options.schema;
+				}
+				_.bindAll(this);
+				this.template = this.getTemplate();
+				this.model.on("sync", this.render);
+				this.model.on('destroy', this.remove);
+				this.model.on("change", this.onModelChange);
+				this._enableActions();
+			},
+			
+			events: {
+				'click td': 'select',
+			},
+			
+			/**
+			 * Cause the item to be selected
+			 * @fires select
+			 */
+			select: function() {
+				// If this list item has a form, we'll use that for focus
+				if (this.form !== undefined) return;
+				if (this.$el.hasClass("row_selected")) return;
+				this.trigger('select', this);
+				this.$el.addClass("row_selected");
+			},
+			
+			/**
+			 * Focus the item
+			 * @fires focus
+			 */
+			focus: function() {
+				this.trigger("focus", this);
+				this.$el.addClass("row_selected");
+			},
+			
+			/**
+			 * Blur the item (cancel focus)
+			 * @param {event} event Optional. Because blur will commit form data
+			 *     if applicable, it may be helpful to pass on an event, if this
+			 *     method is used as an event handler.
+			 */
+			blur: function(event) {
+				//this.trigger("blur", this);
+				this.$el.removeClass("row_selected");
+				this.commitForm(event);
+			},
+			
+			/**
+			 * Called when the view's model changes
+			 * 
+			 * @param {Model} model The model that has changed
+			 * @fires change
+			 */
+			onModelChange: function(model) {
+				if (model.hasChanged())
+					this.trigger("change", this);
+			},
+			
+			/**
+			 * Default way to display validation errors for the view, for
+			 * example in the case that it supports inline editing of fields.
+			 *
+			 * @param {map} errorMap A map from model attributes or form fields
+			 *     to error messages
+			 * @param {event} event Optional. The event that triggered the
+			 *     failed validation.
+			 */
+			displayErrors: function(errorMap, event) {
+				for(var item in errorMap) {
+					var $errorEl = this.$('.field-' + item + ' .editor');
+					if ($errorEl.length > 0) {
+						openhmis.validationMessage($errorEl, errorMap[item]);
+					}
+				}
+			},
+			
+			/**
+			 * Commit the current form data, triggering validation.
+			 *
+			 * @param {event} event Optional. Triggering event.
+			 * @returns {map} A map from field names to error messages, or
+			 *     undefined if validation is successful
+			 */
+			commitForm: function(event) {
+				var errors = this.form.commit();
+				if (errors && this.displayErrors) this.displayErrors(errors, event);
+				return errors;
+			},
+			
+			/**
+			 * Called when the remove action has been chosen for the item
+			 *
+			 * @param {event} event Optional. Triggering event.
+			 */
+			onRemove: function(event) {
+				if (confirm(__("Are you sure you want to remove the selected item?"))) {
+					this._removeItem(event);
+					return true;
+				}
+				// Prevent this event from propagating
+				else return false;
+			},
+			
+			/**
+			 * Render the list item
+			 * 
+			 * @returns {View} The rendered view
+			 */
+			render: function() {
+				this.$el.html(this.template({
+					model: this.model,
+					actions: this.actions,
+					fields: this.fields,
+					GenericCollection: openhmis.GenericCollection
+				})).addClass("selectable");
+				if (_.indexOf(this.actions, 'inlineEdit') !== -1) {
+					//this.form.render();
+					this.$el.append(this.form.$('td'));
+				}
+				return this;
+			},
+
+			
+			/**
+			 * Remove this item
+			 *
+			 * @private
+			 */
+			_removeItem: function(event) {
+				this._removeModel();
+				Backbone.View.prototype.remove.call(this);
+				this.trigger('remove', this.model);
+				this.off();
+			},
+			
+			/**
+			 * Destroy the view's model
+			 *
+			 * @private
+			 */
+			_removeModel: function() {
+				this.model.destroy();
+			},
+			
+			/**
+			 * Enable actions according to this.actions
+			 *
+			 * @private
+			 */
+			_enableActions: function() {
+				for (var act in this.actions) {
+					switch (this.actions[act]) {
+						// Display remove action for the item
+						case 'remove':
+							this.events['click .remove'] = 'onRemove'
+							break;
+						case 'details':
+							this.events['click .details'] = 'onDetails'
+							break;
+						case 'inlineEdit':
+							var schema = _.extend({}, this.model.schema, this.schema || {});
+							this.form = openhmis.GenericAddEditView.prototype.prepareModelForm.call(this, this.model, {
+								schema: schema,
+								template: 'trForm',
+								fieldsetTemplate: 'blankFieldset',
+								fieldTemplate: 'tableField'
+							});
+							this.form.on('blur', this.blur);
+							this.form.on('focus', this.focus);
+							break;
+					}
+				}
+				this.delegateEvents();
+			}
+		});
+		
+		
+		/*======================================================================
+		 *
 		 * GenericListView
 		 *
 		 */
@@ -247,13 +462,16 @@ define(
 			 *    </ul>
 			 */
 			initialize: function(options) {
+				var itemView = this.itemView; // bindAll can messes this up for extending classes
 				_.bindAll(this);
+				this.itemView = itemView;
+				
 				this.options = {};
 				this.paginateView = new openhmis.PaginateView({ model: this.model, pageSize: 5 });
 				this.paginateView.on("fetch", this.fetch);
 				this.fetchable.push(this.paginateView);
 				if (options !== undefined) {
-					this.itemView = options.itemView ? options.itemView : openhmis.GenericListItemView
+					this.itemView = options.itemView ? options.itemView : this.itemView
 					if (options.schema) this.schema = options.schema;
 					
 					// Why is this inside options??
@@ -595,221 +813,6 @@ define(
 		
 		/*======================================================================
 		 *
-		 * GenericListItemView
-		 *
-		 */
-		openhmis.GenericListItemView = Backbone.View.extend(
-		/** @lends GenericListItemView.prototype */
-		{
-			// Name of the HTML tag to use for the view's containing element
-			tagName: "tr",
-			
-			// The template file to use
-			tmplFile: openhmis.url.backboneBase + "template/generic.html",
-
-			// The jQuery selector for the template
-			tmplSelector: '#generic-list-item',
-
-			/**
-			 * List of actions (strings) that the view should support by default.
-			 * GenericListItemView supports: <ul>
-			 *     <li><b>remove:</b> Support removing list items</li>
-			 *     <li><b>inlineEdit:</b> Support editing the values of the item attributes</li>
-			 * </ul>
-			 *
-			 * @type Array
-			 */
-			actions: [], // see enableActions()
-
-			/**
-			 * @class GenericListItemView
-			 * @classdesc Displays a single model in a GenericListView
-			 * @constructor GenericListItemView
-			 * @param {map} options Options for the GenericListItemView
-			 */
-			initialize: function(options) {
-				if (options !== undefined) {
-					this.fields = options.fields ? options.fields : _.keys(this.model.schema);
-					if (options.actions) this.actions = this.actions.concat(options.actions);
-					if (options.schema) this.schema = options.schema;
-				}
-				_.bindAll(this);
-				this.template = this.getTemplate();
-				this.model.on("sync", this.render);
-				this.model.on('destroy', this.remove);
-				this.model.on("change", this.onModelChange);
-				this._enableActions();
-			},
-			
-			events: {
-				'click td': 'select',
-			},
-			
-			/**
-			 * Cause the item to be selected
-			 * @fires select
-			 */
-			select: function() {
-				// If this list item has a form, we'll use that for focus
-				if (this.form !== undefined) return;
-				if (this.$el.hasClass("row_selected")) return;
-				this.trigger('select', this);
-				this.$el.addClass("row_selected");
-			},
-			
-			/**
-			 * Focus the item
-			 * @fires focus
-			 */
-			focus: function() {
-				this.trigger("focus", this);
-				this.$el.addClass("row_selected");
-			},
-			
-			/**
-			 * Blur the item (cancel focus)
-			 * @param {event} event Optional. Because blur will commit form data
-			 *     if applicable, it may be helpful to pass on an event, if this
-			 *     method is used as an event handler.
-			 */
-			blur: function(event) {
-				//this.trigger("blur", this);
-				this.$el.removeClass("row_selected");
-				this.commitForm(event);
-			},
-			
-			/**
-			 * Called when the view's model changes
-			 * 
-			 * @param {Model} model The model that has changed
-			 * @fires change
-			 */
-			onModelChange: function(model) {
-				if (model.hasChanged())
-					this.trigger("change", this);
-			},
-			
-			/**
-			 * Default way to display validation errors for the view, for
-			 * example in the case that it supports inline editing of fields.
-			 *
-			 * @param {map} errorMap A map from model attributes or form fields
-			 *     to error messages
-			 * @param {event} event Optional. The event that triggered the
-			 *     failed validation.
-			 */
-			displayErrors: function(errorMap, event) {
-				for(var item in errorMap) {
-					var $errorEl = this.$('.field-' + item + ' .editor');
-					if ($errorEl.length > 0) {
-						openhmis.validationMessage($errorEl, errorMap[item]);
-					}
-				}
-			},
-			
-			/**
-			 * Commit the current form data, triggering validation.
-			 *
-			 * @param {event} event Optional. Triggering event.
-			 * @returns {map} A map from field names to error messages, or
-			 *     undefined if validation is successful
-			 */
-			commitForm: function(event) {
-				var errors = this.form.commit();
-				if (errors && this.displayErrors) this.displayErrors(errors, event);
-				return errors;
-			},
-			
-			/**
-			 * Called when the remove action has been chosen for the item
-			 *
-			 * @param {event} event Optional. Triggering event.
-			 */
-			onRemove: function(event) {
-				if (confirm(__("Are you sure you want to remove the selected item?"))) {
-					this._removeItem(event);
-					return true;
-				}
-				// Prevent this event from propagating
-				else return false;
-			},
-			
-			/**
-			 * Render the list item
-			 * 
-			 * @returns {View} The rendered view
-			 */
-			render: function() {
-				this.$el.html(this.template({
-					model: this.model,
-					actions: this.actions,
-					fields: this.fields,
-					GenericCollection: openhmis.GenericCollection
-				})).addClass("selectable");
-				if (_.indexOf(this.actions, 'inlineEdit') !== -1) {
-					//this.form.render();
-					this.$el.append(this.form.$('td'));
-				}
-				return this;
-			},
-
-			
-			/**
-			 * Remove this item
-			 *
-			 * @private
-			 */
-			_removeItem: function(event) {
-				this._removeModel();
-				Backbone.View.prototype.remove.call(this);
-				this.trigger('remove', this.model);
-				this.off();
-			},
-			
-			/**
-			 * Destroy the view's model
-			 *
-			 * @private
-			 */
-			_removeModel: function() {
-				this.model.destroy();
-			},
-			
-			/**
-			 * Enable actions according to this.actions
-			 *
-			 * @private
-			 */
-			_enableActions: function() {
-				for (var act in this.actions) {
-					switch (this.actions[act]) {
-						// Display remove action for the item
-						case 'remove':
-							this.events['click .remove'] = 'onRemove'
-							break;
-						case 'details':
-							this.events['click .details'] = 'onDetails'
-							break;
-						case 'inlineEdit':
-							var schema = _.extend({}, this.model.schema, this.schema || {});
-							this.form = openhmis.GenericAddEditView.prototype.prepareModelForm.call(this, this.model, {
-								schema: schema,
-								template: 'trForm',
-								fieldsetTemplate: 'blankFieldset',
-								fieldTemplate: 'tableField'
-							});
-							this.form.on('blur', this.blur);
-							this.form.on('focus', this.focus);
-							break;
-					}
-				}
-				this.delegateEvents();
-			}
-		});
-		
-
-		/*======================================================================
-		 *
 		 * NestedListItemView
 		 *
 		 */
@@ -829,12 +832,6 @@ define(
 				this.expandArrowTemplate = this.getTemplate("", "#expand-arrow-template");
 				this.expandRowTemplate = this.getTemplate("", "#expand-row-template");
 				openhmis.GenericListItemView.prototype.initialize.call(this, options);
-			},
-			
-			select: function() {
-				openhmis.GenericListItemView.prototype.select.call(this);
-				if (this.$("input.expand").hasClass("collapsed"))
-					this.expandCollapse({ target: this.$("input.expand") });
 			},
 			
 			expandCollapse: function(event) {

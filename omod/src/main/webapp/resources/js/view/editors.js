@@ -178,7 +178,7 @@ define(
 					this.selectedItem = ui.item;
 					this.trigger("select", ui.item);
 				}
-				this.trigger("change", this);
+				this.text.trigger("change", this);
 			},
 			
 			getValue: function() {
