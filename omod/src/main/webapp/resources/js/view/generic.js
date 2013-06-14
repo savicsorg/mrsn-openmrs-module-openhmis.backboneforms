@@ -465,11 +465,13 @@ define(
 				var itemView = this.itemView; // bindAll can messes this up for extending classes
 				_.bindAll(this);
 				this.itemView = itemView;
-				
 				this.options = {};
+
 				this.paginateView = new openhmis.PaginateView({ model: this.model, pageSize: 5 });
 				this.paginateView.on("fetch", this.fetch);
 				this.fetchable.push(this.paginateView);
+
+				// Load options
 				if (options !== undefined) {
 					this.itemView = options.itemView ? options.itemView : this.itemView
 					if (options.schema) this.schema = options.schema;
@@ -490,9 +492,11 @@ define(
 					this.options.showRetiredOption = options.showRetiredOption !== undefined ? options.showRetiredOption : true;
 					this.options.hideIfEmpty = options.hideIfEmpty !== undefined ? options.hideIfEmpty : false;
 				}
+
 				this.model.on("reset", this.render);
 				this.model.on("add", this.addOne);
 				this.model.on("remove", this.onItemRemoved);
+
 				this.showRetired = false;
 				this._determineFields();
 			},
@@ -612,7 +616,13 @@ define(
 					if (this.fetchable[f] !== sender)
 						options = this.fetchable[f].getFetchOptions(options);
 				}
-				if(this.showRetired) options.queryString = openhmis.addQueryStringParameter(options.queryString, "includeAll=true");
+
+				if(this.showRetired) {
+					options.queryString = openhmis.addQueryStringParameter(options.queryString, "includeAll=true");
+				}
+
+				this.trigger("fetch", options, this);
+
 				this.model.fetch(options);
 			},
 			
