@@ -473,7 +473,7 @@ define(
 
 				// Load options
 				if (options !== undefined) {
-					this.itemView = options.itemView ? options.itemView : this.itemView
+					this.itemView = options.itemView ? options.itemView : openhmis.GenericListItemView;
 					if (options.schema) this.schema = options.schema;
 					
 					// Why is this inside options??
