@@ -142,7 +142,11 @@ define(
 			},
 			
 			modelNamePlural: function() {
-				return openhmis.pluralize(this.modelName());
+				if (!this.meta || !this.meta.namePlural) {
+					return openhmis.pluralize(this.modelName());
+				}
+
+				return this.meta.namePlural;
 			},
 			
 			_setRetired: function(retired) {
