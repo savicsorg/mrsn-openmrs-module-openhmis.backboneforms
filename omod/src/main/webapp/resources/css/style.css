@@ -50,6 +50,7 @@ div.add-edit-half {
 	margin-right: 2%;
 	float: left;
 }
+.field-name input, .field-description input { width: 20em; }
 input.reason { width: 25em; }
 .selectable { cursor: pointer; }
 

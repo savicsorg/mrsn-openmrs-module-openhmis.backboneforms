@@ -205,6 +205,19 @@ define(openhmis.url.backboneBase + "js/openhmis",
 			return !isNaN(parseFloat(n)) && isFinite(n);
 		}
 		
+		openhmis.toCamelCase = function(str, firstCapital) {
+			firstCapital = firstCapital !== undefined ? firstCapital : false;
+			str.replace(
+				/\b(\S)(\S*)/g,
+				function(match, first, rest) {
+					return first.toUpperCase() + rest.toLowerCase();
+				}
+			);
+			if (!firstCapital)
+				str = str.charAt(0).toLowerCase() + str.substring(1);
+			return str;
+		}
+		
 		// Use uuid for id
 		Backbone.Model.prototype.idAttribute = 'uuid';
 		
