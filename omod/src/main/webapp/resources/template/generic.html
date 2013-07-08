@@ -92,7 +92,7 @@
 		<? cssClass = "field-" + fields[field];
 			if (model.isRetired()) cssClass += " retired";
 			if (model.schema[fields[field]] !== undefined
-					&& model.schema[fields[field]].type in {'Number':0, 'BasicNumber':0})
+					&& model.schema[fields[field]].type in {'Number':0, 'BasicNumber':0, 'Date':0, 'DateTime':0})
 				cssClass += " numeric"; ?>
 		<td class="<?= cssClass ?>">
 			<? if (model.schema[fields[field]] === undefined) {
