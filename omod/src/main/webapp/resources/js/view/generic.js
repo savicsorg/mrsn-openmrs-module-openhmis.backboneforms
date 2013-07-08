@@ -440,7 +440,7 @@ define(
 			 * 
 			 * @type Array
 			 */
-			fetchable: [],
+			fetchable: null,
 			
 			/**
 			 * @class GenericListView
@@ -469,6 +469,7 @@ define(
 
 				this.paginateView = new openhmis.PaginateView({ model: this.model, pageSize: 5 });
 				this.paginateView.on("fetch", this.fetch);
+				this.fetchable = [];
 				this.fetchable.push(this.paginateView);
 
 				// Load options

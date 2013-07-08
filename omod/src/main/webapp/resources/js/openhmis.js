@@ -103,12 +103,19 @@ define(openhmis.url.backboneBase + "js/openhmis",
 		}
 
 		openhmis.dateFormatLocale = function(date) {
-			return date.toLocaleDateString();
+			if (typeof date === "string") {
+				date = new Date(date);
+			}
+
+			return date ? date.toLocaleDateString() : "";
 		}
 		openhmis.dateTimeFormatLocale = function(date) {
-			return date.toLocaleString();
-		}
+			if (typeof date === "string") {
+				date = new Date(date);
+			}
 
+			return date ? date.toLocaleString() : "";
+		}
 		openhmis.iso8601Date = function(d) {
 			var padZero = openhmis.padZero;
 			var pad2Zeros = openhmis.pad2Zeros;
