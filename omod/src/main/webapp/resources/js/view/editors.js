@@ -122,6 +122,8 @@ define(
 		 * displayAttr properties.  See cashier module editors.js for examples.
 		 **/
 		editors.GenericModelSelect = editors.Select.extend({
+			blankItem: null,
+
 		    initialize: function(options) {
 				editors.Select.prototype.initialize.call(this, options);
 
@@ -132,13 +134,34 @@ define(
 				if (this.schema.displayAttr) {
 					this.displayAttr = this.schema.displayAttr;
 				}
+
+			    this.blankItem = new this.modelType({ name: "- Not Defined -"});
+			},
+
+			renderOptions: function(options) {
+				// Add in the "Not Defined" item before rendering the options
+				if (this.allowNull) {
+					var item0 = options.at(0);
+					if (item0 != null && item0.id != this.blankItem.id) {
+						options.add(this.blankItem, {
+							at: 0,
+							silent: true
+						});
+					}
+				}
+
+				editors.Select.prototype.renderOptions.call(this, options);
 			},
 
 		    getValue: function() {
 				$selected = this.$('option:selected');
 
 			    var model = new this.modelType({ uuid: $selected.val() });
-				model.set(this.displayAttr, $selected.text());
+				if (model == this.blankItem) {
+					model.set(this.displayAttr, null);
+				} else {
+			        model.set(this.displayAttr, $selected.text());
+				}
 
 				return model;
 			},
@@ -296,7 +319,8 @@ define(
 
 		editors.LocationSelect = editors.GenericModelSelect.extend({
 			modelType: openhmis.Location,
-			displayAttr: "name"
+			displayAttr: "name",
+			allowNull: true
 		});
 
 		return editors;
