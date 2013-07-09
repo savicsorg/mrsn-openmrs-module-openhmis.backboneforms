@@ -3,16 +3,18 @@ define(
 		openhmis.url.backboneBase + 'js/lib/jquery',
 		openhmis.url.backboneBase + 'js/lib/backbone',
 		openhmis.url.backboneBase + 'js/lib/underscore',
+		openhmis.url.backboneBase + 'js/model/generic',
 		openhmis.url.backboneBase + 'js/lib/backbone-forms',
 		openhmis.url.backboneBase + 'js/lib/labelOver',
-		openhmis.url.backboneBase + 'js/view/list'
+		openhmis.url.backboneBase + 'js/view/list',
+		openhmis.url.backboneBase + 'js/model/location'
 	],
 	function($, Backbone, _, openhmis) {
 		var editors = Backbone.Form.editors;
 		
 		editors.isNumeric = function(strVal) {
 			return /^-?[0-9]*\.?[0-9]*?$/.test(strVal);
-		}
+		};
 		
 		editors.BasicNumber = editors.Number.extend({
 			initialize: function(options) {
@@ -42,22 +44,23 @@ define(
 		  
 				if (editors.isNumeric(newVal)) {
 				  delayedDetermineChange();
-				}
-				else {
+				} else {
 				  event.preventDefault();
 				}
 		   },
 		   
 		   setValue: function(value) {
-				if (value !== undefined && value !== null && this.schema.format)
+				if (value !== undefined && value !== null && this.schema.format) {
 					this.$el.val(this.schema.format(value));
-				else
+				} else {
 					this.$el.val(value);
+				}
 		   },
 		   
 		   focus: function(select) {
 				editors.Number.prototype.focus.call(this);
-				if (select === true) this.$el.select();
+
+			   if (select === true) this.$el.select();
 		   }
 		});
 		
@@ -76,7 +79,7 @@ define(
 					setTimeout(function() {
 					  self.determineChange();
 					}, 0);
-				  }
+				  };
 				  
 			  //Allow backspace and minus character
 			  if (event.which == 8 || event.which == 45) {
@@ -89,8 +92,7 @@ define(
 		
 			  if (editors.isNumeric(newVal)) {
 				delayedDetermineChange();
-			  }
-			  else {
+			  } else {
 				event.preventDefault();
 			  }
 			},
@@ -105,6 +107,7 @@ define(
 					this.$el.val(this.minimum);
 					return;
 				}
+
 				editors.Number.prototype.determineChange.call(this, event);
 			},
 			
@@ -121,39 +124,50 @@ define(
 		editors.GenericModelSelect = editors.Select.extend({
 		    initialize: function(options) {
 				editors.Select.prototype.initialize.call(this, options);
-				if (this.schema.modelType)
+
+				if (this.schema.modelType) {
 					this.modelType = this.schema.modelType;
-				if (this.schema.displayAttr)
+		        }
+
+				if (this.schema.displayAttr) {
 					this.displayAttr = this.schema.displayAttr;
+				}
 			},
+
 		    getValue: function() {
 				$selected = this.$('option:selected');
-				var model = new this.modelType({ uuid: $selected.val() })
+
+			    var model = new this.modelType({ uuid: $selected.val() });
 				model.set(this.displayAttr, $selected.text());
+
 				return model;
 			},
 			
 			setValue: function(value) {
-				var flt = parseFloat(value);
-				if (value === null)
+				if (value === null) {
 					return;
-				else if (_.isString(value))
+				}
+
+				if (_.isString(value)) {
 					this.$el.val(value);
-				else if (value.attributes)
+				} else if (value.attributes) {
 					this.$el.val(value.id); // Backbone model
+				} else if (!isNaN(parseFloat(value))) {
 				// This should be after Backbone model because it can evaluate
 				// to a number :S
-				else if (!isNaN(parseFloat(value)))
 					this.$el.val(value);
-				else
+				} else {
 					this.$el.val(value.uuid); // bare object
+				}
 			},
 			
 			render: function() {
-				if (this.options.options !== undefined)
+				if (this.options.options !== undefined) {
 					this.setOptions(this.options.options);
-				else
+				} else {
 					this.setOptions(this.schema.options);
+				}
+
 				return this;
 			}
 		});
@@ -178,14 +192,16 @@ define(
 					this.selectedItem = ui.item;
 					this.trigger("select", ui.item);
 				}
+
 				this.text.trigger("change", this);
 			},
 			
 			getValue: function() {
-				if (this.selectedItem && this.selectedItem.label === this.text.getValue())
+				if (this.selectedItem && this.selectedItem.label === this.text.getValue()) {
 					return this.selectedItem.value;
-				else
+				} else {
 					return this.text.getValue();
+				}
 			},
 			
 			setValue: function(value) {
@@ -193,13 +209,15 @@ define(
 			},
 			
 		    focus: function() {
-				if (this.hasFocus) return;
+				if (this.hasFocus) return; {
 					this.text.focus();
+			    }
 			},
 			
 			blur: function() {
-				if (!this.hasFocus) return;
+				if (this.hasFocus) {
 					this.$text.blur();
+				}
 			},
 			
 			renderOptions: function(options) {
@@ -210,9 +228,9 @@ define(
 					source = options.map(function(item) {
 						return { label: item.toString(), value: item }
 					});
-				}
-				else
+				} else {
 					source = this.schema.options;
+				}
 				
 				var $autoComplete = this.text.$el.autocomplete({
 					minLength: this.minLength,
@@ -220,6 +238,7 @@ define(
 					select: this.onSelect,
 					autoFocus: true
 				});
+
 				if (isBbCollection) {
 					$autoComplete.data("autocomplete")._renderItem = function(ul, item) {
 						return $("<li></li>").data("item.autocomplete", item)
@@ -229,10 +248,12 @@ define(
 			},
 			
 			render: function() {
-				var self = this;
-				if (this.$el.html() === "")
+				if (this.$el.html() === "") {
 					this.$el.append(this.text.el);
+				}
+
 				editors.Select.prototype.render.call(this);
+
 				return this;
 			}
 		});
@@ -243,22 +264,28 @@ define(
 		  
 				//Stop if there are validation errors
 				var error = form.validate();
-				if (error) return modal.preventClose();
+				if (error) {
+					return modal.preventClose();
+				}
 				this.modal = null;
 		
 				var idAttribute = Backbone.Model.prototype.idAttribute;
-				if (this.value)
+				if (this.value) {
 					var id = this.value.id || this.value[idAttribute];
-		  
+				}
+
 				//If OK, render the list item
 				this.value = form.getValue();
 		
-				if (id !== undefined)
+				if (id !== undefined) {
 					this.value[idAttribute] = id;
-		  
+				}
+
 				this.renderSummary();
 		  
-				if (isNew) this.trigger('readyToAdd');
+				if (isNew) {
+					this.trigger('readyToAdd');
+				}
 				
 				this.trigger('change', this);
 				
@@ -266,7 +293,12 @@ define(
 				this.trigger('blur', this);
 			}
 		});
-		
+
+		editors.LocationSelect = editors.GenericModelSelect.extend({
+			modelType: openhmis.Location,
+			displayAttr: "name"
+		});
+
 		return editors;
 	}
-)
+);
