@@ -25,6 +25,8 @@ define(
 		{
 			tmplFile: openhmis.url.backboneBase + 'template/generic.html',
 			tmplSelector: '#add-edit-template',
+			titleSelector: 'b.title',
+			formSelector: 'div.form',
 			
 			/**
 			 * @class GenericAddEditView
@@ -193,8 +195,8 @@ define(
 			render: function() {
 				this.$el.html(this.template({ model: this.model }));
 				this.addLinkEl = this.$('p.addLink');
-				this.titleEl = this.$('b.title');
-				this.formEl = this.$('div.form');
+				this.titleEl = this.$(this.titleSelector);
+				this.formEl = this.$(this.formSelector);
 				this.retireVoidPurgeEl = this.$('div.retireVoidPurge');
 				return this;
 			}
