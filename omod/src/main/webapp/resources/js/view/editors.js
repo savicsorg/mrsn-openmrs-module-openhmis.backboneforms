@@ -323,6 +323,12 @@ define(
 			allowNull: true
 		});
 
+		editors.UserSelect = editors.GenericModelSelect.extend({
+			modelType: openhmis.User,
+			displayAttr: "name",
+			allowNull: true
+		});
+
 		return editors;
 	}
 );
