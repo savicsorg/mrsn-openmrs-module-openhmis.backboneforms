@@ -21,7 +21,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.openhmis.commons.api.entity.IEntityDataService;
 import org.openmrs.module.openhmis.commons.api.entity.IObjectDataService;
-import org.openmrs.module.openhmis.commons.api.entity.model.InstanceType;
+import org.openmrs.module.openhmis.commons.api.entity.model.IInstanceType;
 import org.openmrs.module.webservices.rest.web.RequestContext;
 import org.openmrs.module.webservices.rest.web.representation.FullRepresentation;
 import org.openmrs.module.webservices.rest.web.representation.RefRepresentation;
@@ -126,8 +126,8 @@ public abstract class BaseRestDataResource<E extends OpenmrsData> extends DataDe
 				throw new APIException("Couldn't find property '" + attributeName + "'");
 			Collection<T> collection = (Collection<T>) descriptor.getReadMethod().invoke(instance);
 			if (collection == null) {
-				// This is a bit ugly, but an InstanceType wants a list, the instance itself wants a Set
-				Collection<T> initialize = InstanceType.class.isAssignableFrom(instance.getClass()) ? new ArrayList<T>(toSet.size()) : new HashSet<T>();
+				// This is a bit ugly, but an IInstanceType wants a list, the instance itself wants a Set
+				Collection<T> initialize = IInstanceType.class.isAssignableFrom(instance.getClass()) ? new ArrayList<T>(toSet.size()) : new HashSet<T>();
 				descriptor.getWriteMethod().invoke(instance, initialize);
 			}
 			updateCollection(collection, (Collection<T>) toSet,

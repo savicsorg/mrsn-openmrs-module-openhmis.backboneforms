@@ -15,7 +15,7 @@ package org.openmrs.module.webservices.rest.resource;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.hibernate.proxy.HibernateProxy;
-import org.openmrs.module.openhmis.commons.api.entity.model.InstanceAttributeType;
+import org.openmrs.module.openhmis.commons.api.entity.model.IInstanceAttributeType;
 import org.openmrs.module.webservices.rest.web.RequestContext;
 import org.openmrs.module.webservices.rest.web.RestConstants;
 import org.openmrs.module.webservices.rest.web.annotation.Resource;
@@ -24,8 +24,8 @@ import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingResourceD
 import org.openmrs.module.webservices.rest.web.resource.impl.MetadataDelegatingCrudResource;
 import org.openmrs.module.webservices.rest.web.response.ResponseException;
 
-@Resource(name = RestConstants.VERSION_2 + "/openhmis/attributetype", supportedClass = InstanceAttributeType.class, supportedOpenmrsVersions = {"1.8.*", "1.9.*"})
-public class InstanceAttributeTypeConverter<T extends InstanceAttributeType<?>> extends MetadataDelegatingCrudResource<T> {
+@Resource(name = RestConstants.VERSION_2 + "/openhmis/attributetype", supportedClass = IInstanceAttributeType.class, supportedOpenmrsVersions = {"1.8.*", "1.9.*"})
+public class InstanceAttributeTypeConverter<T extends IInstanceAttributeType<?>> extends MetadataDelegatingCrudResource<T> {
 	private static final String NEED_SUBCLASS_HANDLER = "This operation should be handled by a subclass handler.";
 	
 	@Override
