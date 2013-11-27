@@ -146,6 +146,7 @@ public abstract class BaseRestDataResource<E extends OpenmrsData> extends DataDe
 			collectionMap.put(item.getUuid(), item);
 		for (E item : update)
 			updateMap.put(item.getUuid(), item);
+
 		// First compare update to existing collection
 		try {
 			for (E item : collectionMap.values()) {
@@ -167,7 +168,45 @@ public abstract class BaseRestDataResource<E extends OpenmrsData> extends DataDe
 			t.printStackTrace();
 		}
 	}
-	
+
+	/**
+	 * Syncs the base collection with the items in the sync collection. This will add any missing items, updating
+	 * existing items, and delete any items not found in the sync collection.
+	 * @param base The collection to update.
+	 * @param sync The collection used to update the base.
+	 * @param <E> The {@link OpenmrsObject} stored in the collection.
+	 */
+	public static <E extends OpenmrsObject> void syncCollection(Collection<E> base, Collection<E> sync) {
+		Map<String, E> baseMap = new HashMap<String, E>(base.size());
+		Map<String, E> syncMap = new HashMap<String, E>(sync.size());
+		for (E item : base) {
+			baseMap.put(item.getUuid(), item);
+		}
+		for (E item : sync) {
+			syncMap.put(item.getUuid(), item);
+		}
+
+		for (E item : baseMap.values()) {
+			if (syncMap.containsKey(item.getUuid())) {
+				// Update the existing item
+				E syncItem = syncMap.get(item.getUuid());
+				syncItem.setId(item.getId());
+
+				BeanUtils.copyProperties(syncItem, item);
+			} else {
+				// Delete item that is not in the sync collection
+				base.remove(item);
+			}
+		}
+
+		for (E item : syncMap.values()) {
+			if (!baseMap.containsKey(item.getUuid())) {
+				// Add the item not in the base collection
+				base.add(item);
+			}
+		}
+	}
+
 	/**
 	 * Update a collection according to another collection
 	 * 
