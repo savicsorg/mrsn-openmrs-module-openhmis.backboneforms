@@ -22,6 +22,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.openhmis.commons.api.entity.IEntityDataService;
 import org.openmrs.module.openhmis.commons.api.entity.IObjectDataService;
 import org.openmrs.module.openhmis.commons.api.entity.model.IInstanceType;
+import org.openmrs.module.openhmis.commons.api.f.Action2;
 import org.openmrs.module.webservices.rest.web.RequestContext;
 import org.openmrs.module.webservices.rest.web.representation.FullRepresentation;
 import org.openmrs.module.webservices.rest.web.representation.RefRepresentation;
@@ -32,11 +33,7 @@ import org.springframework.beans.BeanUtils;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 public abstract class BaseRestDataResource<E extends OpenmrsData> extends DataDelegatingCrudResource<E> implements IEntityDataServiceResource<E> {
 
@@ -177,6 +174,23 @@ public abstract class BaseRestDataResource<E extends OpenmrsData> extends DataDe
 	 * @param <E> The {@link OpenmrsObject} stored in the collection.
 	 */
 	public static <E extends OpenmrsObject> void syncCollection(Collection<E> base, Collection<E> sync) {
+		syncCollection(base, sync,
+				new Action2<Collection<E>, E>() {
+					@Override
+					public void apply(Collection<E> collection, E entity) {
+						collection.add(entity);
+					}
+				},
+				new Action2<Collection<E>, E>() {
+					@Override
+					public void apply(Collection<E> collection, E entity) {
+						collection.remove(entity);
+					}
+				});
+	}
+
+	public static <E extends OpenmrsObject> void syncCollection(Collection<E> base, Collection<E> sync,
+	                                                            Action2<Collection<E>, E> add, Action2<Collection<E>, E> remove) {
 		Map<String, E> baseMap = new HashMap<String, E>(base.size());
 		Map<String, E> syncMap = new HashMap<String, E>(sync.size());
 		for (E item : base) {
@@ -195,14 +209,14 @@ public abstract class BaseRestDataResource<E extends OpenmrsData> extends DataDe
 				BeanUtils.copyProperties(syncItem, item);
 			} else {
 				// Delete item that is not in the sync collection
-				base.remove(item);
+				remove.apply(base, item);
 			}
 		}
 
 		for (E item : syncMap.values()) {
 			if (!baseMap.containsKey(item.getUuid())) {
 				// Add the item not in the base collection
-				base.add(item);
+				add.apply(base, item);
 			}
 		}
 	}
