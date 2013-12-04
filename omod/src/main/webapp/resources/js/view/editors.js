@@ -170,10 +170,11 @@ define(
 				$selected = this.$('option:selected');
 
 			    var model = new this.modelType({ uuid: $selected.val() });
+			    var displayAttr = this.displayAttr || "display";
 				if (model == this.blankItem) {
-					model.set(this.displayAttr, null);
+					model.set(displayAttr, null, { silent: true });
 				} else {
-			        model.set(this.displayAttr, $selected.text());
+			        model.set(displayAttr, $selected.text(), { silent: true });
 				}
 
 				return model;
@@ -340,6 +341,54 @@ define(
 			modelType: openhmis.User,
 			displayAttr: "name",
 			allowNull: true
+		});
+		
+		editors.ListSelect = editors.Base.extend({
+			modalWidth: 600,
+			initialize: function(options) {
+				options = options || {};
+				editors.Base.prototype.initialize.call(this, options);
+				if (!options.schema.options) {
+					throw "Missing required schema.options.";
+				}
+			},
+
+			getValue: function() {
+				if (this.listView.selectedItem)
+					return this.listView.selectedItem.model;
+		      return null;
+		    },
+		    
+		    setValue: function(value) { 
+		    	// not really supported yet
+		    },
+		    
+		    focus: function() {
+		      if (this.hasFocus) return;
+
+		      this.trigger("focus");
+		    },
+		    
+		    blur: function() {
+		      if (!this.hasFocus) return;
+
+		      this.trigger("blur");
+		    },
+		    
+		    initListView: function() {
+		    	var options = this.schema.editorOptions || {};
+		    	options.model = this.schema.options;
+		    	this.listView = new openhmis.GenericListView(options);		    	
+		    },
+		    
+		    render: function() {
+		    	this.initListView();
+		    	this.$el.html("");
+		    	this.$el.append(this.listView.el);
+		    	this.listView.fetch();
+		    	return this;
+		    }
+		    
 		});
 
 		return editors;

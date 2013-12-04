@@ -114,6 +114,8 @@ define(
           animate: false,
           template: template
         }, options);
+        if (this.options.disableEnter)
+        	delete this.events.keypress;
       },
   
       /**
@@ -157,11 +159,11 @@ define(
         //Create it
         $el.dialog({
           modal: true,
-          width: 400
+          width: this.options.width || 400
         });
   
         //Focus OK button
-        $el.find('input')[0].focus();
+        //$el.find('input')[0].focus();
   
         //Adjust the modal and backdrop z-index; for dealing with multiple modals
         var numModals = Modal.count,
