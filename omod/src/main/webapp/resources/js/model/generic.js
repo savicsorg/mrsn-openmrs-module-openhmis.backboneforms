@@ -209,8 +209,10 @@ define(
 										{ model: model })
 									.toJSON({ objRef: true });
 								}
-								else if (attributes[attr].id !== undefined)
+								else if (attributes[attr] && attributes[attr].id !== undefined)
 									attributes[attr] = attributes[attr].id;
+								else
+									attributes[attr] = this.attributes[attr];
 							}
 						}
 						else if (attr === "retired" || attr === "voided" && this.attributes[attr]) {

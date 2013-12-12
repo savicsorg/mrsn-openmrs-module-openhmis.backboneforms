@@ -346,6 +346,7 @@ define(
 		editors.ListSelect = editors.Base.extend({
 			modalWidth: 600,
 			initialize: function(options) {
+				_.bindAll(this, 'updateSelected', 'clearSelection');
 				options = options || {};
 				editors.Base.prototype.initialize.call(this, options);
 				if (!options.schema.options) {
@@ -354,13 +355,12 @@ define(
 			},
 
 			getValue: function() {
-				if (this.listView.selectedItem)
-					return this.listView.selectedItem.model;
-		      return null;
+				return this.value;
 		    },
 		    
 		    setValue: function(value) { 
-		    	// not really supported yet
+		    	this.value = value;
+		    	this.updateSelected();
 		    },
 		    
 		    focus: function() {
@@ -381,11 +381,29 @@ define(
 		    	this.listView = new openhmis.GenericListView(options);		    	
 		    },
 		    
+		    updateSelected: function(view) {
+		    	if (view && view.model)
+		    		this.value = view.model;
+		    	else if (view === null)
+		    		this.value = null;
+		    	this.$(".selected").text("Selected: " + (this.value || "None"));
+	    		this.$(".clear_selection").css("display", this.value ? "inline" : "none");
+		    },
+
+		    clearSelection: function(event) {
+		    	event.preventDefault();
+		    	this.updateSelected(null);
+		    	this.listView.blur();
+		    },
+
 		    render: function() {
 		    	this.initListView();
-		    	this.$el.html("");
+		    	this.$el.html('<p><span class="selected"></span> <a href="#" title="Clear selection" class="clear_selection">Clear</a></p>');
 		    	this.$el.append(this.listView.el);
 		    	this.listView.fetch();
+		    	this.updateSelected();
+		    	this.listView.on("itemSelect", this.updateSelected);
+		    	this.$(".clear_selection").click(this.clearSelection);
 		    	return this;
 		    }
 		    
