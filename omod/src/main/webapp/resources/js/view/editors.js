@@ -155,7 +155,7 @@ define(
 				// Add in the "Not Defined" item before rendering the options
 				if (this.allowNull) {
 					var item0 = options.at(0);
-					if (item0 != null && item0.id != this.blankItem.id) {
+					if (!item0 || item0.id != this.blankItem.id) {
 						options.add(this.blankItem, {
 							at: 0,
 							silent: true
