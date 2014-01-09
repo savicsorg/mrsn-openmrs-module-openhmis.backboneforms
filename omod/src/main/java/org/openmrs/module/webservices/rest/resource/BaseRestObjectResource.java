@@ -18,34 +18,37 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.openhmis.commons.api.PagingInfo;
 import org.openmrs.module.openhmis.commons.api.entity.IObjectDataService;
 import org.openmrs.module.webservices.rest.web.RequestContext;
+import org.openmrs.module.webservices.rest.web.representation.DefaultRepresentation;
 import org.openmrs.module.webservices.rest.web.representation.Representation;
 import org.openmrs.module.webservices.rest.web.resource.api.PageableResult;
 import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingCrudResource;
 import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingResourceDescription;
 import org.openmrs.module.webservices.rest.web.response.ResponseException;
 
+import java.lang.reflect.ParameterizedType;
+
 public abstract class BaseRestObjectResource<E extends OpenmrsObject>
 		extends DelegatingCrudResource<E>
 		implements IObjectDataServiceResource<E, IObjectDataService<E>> {
+	private Class<E> entityClass = null;
+
 	@Override
 	public abstract E newDelegate();
 
-	protected DelegatingResourceDescription getDefaultRepresentationDescription() {
-		DelegatingResourceDescription description = new DelegatingResourceDescription();
+	@Override
+	public abstract Class<? extends IObjectDataService<E>> getServiceClass();
 
+	@Override
+	public DelegatingResourceDescription getRepresentationDescription(Representation rep) {
+		DelegatingResourceDescription description = new DelegatingResourceDescription();
 		description.addProperty("uuid");
 
 		return description;
 	}
 
 	@Override
-	public DelegatingResourceDescription getRepresentationDescription(Representation rep) {
-		return getDefaultRepresentationDescription();
-	}
-
-	@Override
 	public DelegatingResourceDescription getCreatableProperties() {
-		DelegatingResourceDescription description = getDefaultRepresentationDescription();
+		DelegatingResourceDescription description = getRepresentationDescription(new DefaultRepresentation());
 		description.removeProperty("uuid");
 
 		return description;
@@ -101,5 +104,24 @@ public abstract class BaseRestObjectResource<E extends OpenmrsObject>
 		IObjectDataService<E> service = Context.getService(clazz);
 		PagingInfo pagingInfo = PagingUtil.getPagingInfoFromContext(context);
 		return new AlreadyPagedWithLength<E>(context, service.getAll(pagingInfo), pagingInfo.hasMoreResults(), pagingInfo.getTotalRecordCount());
+	}
+
+	protected IObjectDataService<E> getService() {
+		return Context.getService(getServiceClass());
+	}
+
+	/**
+	 * Gets a usable instance of the actual class of the generic type E defined by the implementing sub-class.
+	 * @return The class object for the entity.
+	 */
+	@SuppressWarnings("unchecked")
+	public Class<E> getEntityClass() {
+		if (entityClass == null) {
+			ParameterizedType parameterizedType = (ParameterizedType)getClass().getGenericSuperclass();
+
+			entityClass = (Class) parameterizedType.getActualTypeArguments()[0];
+		}
+
+		return entityClass;
 	}
 }

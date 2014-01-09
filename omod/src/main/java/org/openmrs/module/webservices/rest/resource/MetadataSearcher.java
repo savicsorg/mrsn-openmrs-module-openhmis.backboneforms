@@ -28,10 +28,18 @@ public class MetadataSearcher<E extends OpenmrsMetadata> {
 	public MetadataSearcher(Class<? extends IMetadataDataService<E>> serviceClass) {
 		this.service = Context.getService(serviceClass);
 	}
-	
+
+	/**
+	 * Searches for entities using the specified name fragment.
+	 * @param nameFragment The name search fragment
+	 * @param context The request context
+	 * @return The paged search results
+	 */
 	public AlreadyPaged<E> searchByName(String nameFragment, RequestContext context) {
 		PagingInfo pagingInfo = PagingUtil.getPagingInfoFromContext(context);
+
 		List<E> results = service.findByName(nameFragment, context.getIncludeAll(), pagingInfo);
+
 		Boolean hasMoreResults = (pagingInfo.getPage() * pagingInfo.getPageSize()) < pagingInfo.getTotalRecordCount();
 		return new AlreadyPagedWithLength<E>(context, results, hasMoreResults, pagingInfo.getTotalRecordCount());
 	}
