@@ -14,7 +14,7 @@ import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingSubclassH
 import org.openmrs.module.webservices.rest.web.response.ResourceDoesNotSupportOperationException;
 
 public abstract class BaseRestInstanceAttributeTypeResource<
-		E extends BaseInstanceAttributeType,
+		E extends BaseInstanceAttributeType<TInstanceType>,
 		TOwner extends ICustomizableInstance<TInstanceType, TAttribute>,
 		TInstanceType extends IInstanceType<E>,
 		TAttribute extends IInstanceAttribute<TOwner, E>>
