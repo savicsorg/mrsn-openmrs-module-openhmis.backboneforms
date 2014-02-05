@@ -45,7 +45,9 @@ define(
 						self.determineChange();
 					  }, 0);
 					}
-					
+				if (event.which == 0) { //<TAB> should actually be 9 but is 0 somehow
+					return;
+				}
 				//Allow backspace && enter
 				if (event.which == 8 || event.which == 13) {
 				  delayedDetermineChange();
@@ -69,7 +71,7 @@ define(
 					this.$el.val(value);
 				}
 		   },
-		   
+
 		   focus: function(select) {
 				editors.Number.prototype.focus.call(this);
 
@@ -87,14 +89,16 @@ define(
 			},
 			
 			onKeyPress: function(event) {
-			  var self = this,
-				  delayedDetermineChange = function() {
-					setTimeout(function() {
-					  self.determineChange();
-					}, 0);
-				  };
-				  
-			  //Allow backspace and minus character
+				var self = this,
+					delayedDetermineChange = function() {
+						setTimeout(function() {
+							self.determineChange();
+						}, 0);
+					};
+				if (event.which == 0) { //<TAB> should actually be 9 but is 0 somehow
+					return;
+				}
+					//Allow backspace and minus character
 			  if (event.which == 8 || event.which == 45) {
 				delayedDetermineChange();
 				return;
@@ -120,7 +124,6 @@ define(
 					this.$el.val(this.minimum);
 					return;
 				}
-
 				editors.Number.prototype.determineChange.call(this, event);
 			},
 			
