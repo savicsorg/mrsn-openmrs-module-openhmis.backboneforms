@@ -24,17 +24,17 @@ define(
 	],
 	function($, Backbone, _, openhmis) {
 		var editors = Backbone.Form.editors;
-		
+
 		editors.isNumeric = function(strVal) {
 			return /^-?[0-9]*\.?[0-9]*?$/.test(strVal);
 		};
-		
+
 		editors.BasicNumber = editors.Number.extend({
 			initialize: function(options) {
 				this.defaultValue = null;
 				editors.Text.prototype.initialize.call(this, options);
 			},
-			
+
 			/**
 			* Check value is numeric
 			*/
@@ -45,40 +45,40 @@ define(
 						self.determineChange();
 					  }, 0);
 					}
-				if (event.which == 0) { //<TAB> should actually be 9 but is 0 somehow
+				if (event.keyCode == 9) {
 					return;
 				}
 				//Allow backspace && enter
 				if (event.which == 8 || event.which == 13) {
-				  delayedDetermineChange();
-				  return;
+					delayedDetermineChange();
+					return;
 				}
-				
+
 				//Get the whole new value so that we can prevent things like double decimals points etc.
 				var newVal = this.$el.val() + String.fromCharCode(event.which);
-		  
+
 				if (editors.isNumeric(newVal)) {
-				  delayedDetermineChange();
+					delayedDetermineChange();
 				} else {
-				  event.preventDefault();
+					event.preventDefault();
 				}
-		   },
-		   
-		   setValue: function(value) {
+			},
+
+			setValue: function(value) {
 				if (value !== undefined && value !== null && this.schema.format) {
 					this.$el.val(this.schema.format(value));
 				} else {
 					this.$el.val(value);
 				}
-		   },
+			},
 
-		   focus: function(select) {
+			focus: function(select) {
 				editors.Number.prototype.focus.call(this);
 
-			   if (select === true) this.$el.select();
-		   }
+				if (select === true) this.$el.select();
+			}
 		});
-		
+
 		editors.CustomNumber = editors.Number.extend({
 			initialize: function(options) {
 				this.events = _.extend(this.events, {
@@ -87,7 +87,7 @@ define(
 				editors.Number.prototype.initialize.call(this, options);
 				if (options && options.schema) this.minimum = options.schema.minimum;
 			},
-			
+
 			onKeyPress: function(event) {
 				var self = this,
 					delayedDetermineChange = function() {
@@ -95,30 +95,30 @@ define(
 							self.determineChange();
 						}, 0);
 					};
-				if (event.which == 0) { //<TAB> should actually be 9 but is 0 somehow
+				if (event.keyCode == 9) {
 					return;
 				}
 					//Allow backspace and minus character
-			  if (event.which == 8 || event.which == 45) {
-				delayedDetermineChange();
-				return;
-			  }
-			  
-			  //Get the whole new value so that we can prevent things like double decimals points etc.
-			  var newVal = this.$el.val() + String.fromCharCode(event.which);
-		
-			  if (editors.isNumeric(newVal)) {
-				delayedDetermineChange();
-			  } else {
-				event.preventDefault();
-			  }
+				if (event.which == 8 || event.which == 45) {
+					delayedDetermineChange();
+					return;
+				}
+
+				//Get the whole new value so that we can prevent things like double decimals points etc.
+				var newVal = this.$el.val() + String.fromCharCode(event.which);
+
+				if (editors.isNumeric(newVal)) {
+					delayedDetermineChange();
+				} else {
+					event.preventDefault();
+				}
 			},
 
 			setValue: function(value) {
 				this.el.defaultValue = value;
 				editors.Number.prototype.setValue.call(this, value);
 			},
-			
+
 			determineChange: function(event) {
 				if (this.minimum && parseInt(this.$el.val()) < this.minimum) {
 					this.$el.val(this.minimum);
@@ -126,13 +126,13 @@ define(
 				}
 				editors.Number.prototype.determineChange.call(this, event);
 			},
-			
-		   focus: function(select) {
+
+			focus: function(select) {
 				editors.Number.prototype.focus.call(this);
 				if (select === true) this.$el.select();
-		   }
+			}
 		});
-		
+
 		/**
 		 * "Abstract" editor class.  Extend and specify modelType and
 		 * displayAttr properties.  See cashier module editors.js for examples.
@@ -140,18 +140,18 @@ define(
 		editors.GenericModelSelect = editors.Select.extend({
 			blankItem: null,
 
-		    initialize: function(options) {
+			initialize: function(options) {
 				editors.Select.prototype.initialize.call(this, options);
 
 				if (this.schema.modelType) {
 					this.modelType = this.schema.modelType;
-		        }
+				}
 
 				if (this.schema.displayAttr) {
 					this.displayAttr = this.schema.displayAttr;
 				}
 
-			    this.blankItem = new this.modelType({ name: "- Not Defined -"});
+				this.blankItem = new this.modelType({ name: "- Not Defined -"});
 			},
 
 			renderOptions: function(options) {
@@ -182,7 +182,7 @@ define(
 
 				return model;
 			},
-			
+
 			setValue: function(value) {
 				if (value === null) {
 					return;
@@ -200,7 +200,7 @@ define(
 					this.$el.val(value.uuid); // bare object
 				}
 			},
-			
+
 			render: function() {
 				if (this.options.options !== undefined) {
 					this.setOptions(this.options.options);
@@ -211,7 +211,7 @@ define(
 				return this;
 			}
 		});
-		
+
 		editors.Autocomplete = editors.Select.extend({
 			tagName: "span",
 			previousValue: "",
@@ -226,7 +226,7 @@ define(
 				this.minLength = options.schema.minLength ? options.schema.minLength : 2;
 				this.selectedItem = null;
 			},
-			
+
 			onSelect: function(event, ui) {
 				if (ui && ui.item) {
 					this.selectedItem = ui.item;
@@ -235,7 +235,7 @@ define(
 
 				this.text.trigger("change", this);
 			},
-			
+
 			getValue: function() {
 				if (this.selectedItem && this.selectedItem.label === this.text.getValue()) {
 					return this.selectedItem.value;
@@ -243,23 +243,23 @@ define(
 					return this.text.getValue();
 				}
 			},
-			
+
 			setValue: function(value) {
 				this.text.setValue(value);
 			},
-			
+
 		    focus: function() {
 				if (this.hasFocus) return; {
 					this.text.focus();
 			    }
 			},
-			
+
 			blur: function() {
 				if (this.hasFocus) {
 					this.$text.blur();
 				}
 			},
-			
+
 			renderOptions: function(options) {
 				var source;
 				var isBbCollection = false
@@ -271,7 +271,7 @@ define(
 				} else {
 					source = this.schema.options;
 				}
-				
+
 				var $autoComplete = this.text.$el.autocomplete({
 					minLength: this.minLength,
 					source: source,
@@ -286,7 +286,7 @@ define(
 					};
 				}
 			},
-			
+
 			render: function() {
 				if (this.$el.html() === "") {
 					this.$el.append(this.text.el);
@@ -301,14 +301,14 @@ define(
 		editors.List.NestedModel = editors.List.NestedModel.extend({
 			onModalSubmitted: function(form, modal) {
 				var isNew = !this.value;
-		  
+
 				//Stop if there are validation errors
 				var error = form.validate();
 				if (error) {
 					return modal.preventClose();
 				}
 				this.modal = null;
-		
+
 				var idAttribute = Backbone.Model.prototype.idAttribute;
 				if (this.value) {
 					var id = this.value.id || this.value[idAttribute];
@@ -316,19 +316,19 @@ define(
 
 				//If OK, render the list item
 				this.value = form.getValue();
-		
+
 				if (id !== undefined) {
 					this.value[idAttribute] = id;
 				}
 
 				this.renderSummary();
-		  
+
 				if (isNew) {
 					this.trigger('readyToAdd');
 				}
-				
+
 				this.trigger('change', this);
-				
+
 				this.trigger('close', this);
 				this.trigger('blur', this);
 			}
@@ -345,7 +345,7 @@ define(
 			displayAttr: "name",
 			allowNull: true
 		});
-		
+
 		editors.ListSelect = editors.Base.extend({
 			modalWidth: 600,
 			initialize: function(options) {
@@ -360,30 +360,30 @@ define(
 			getValue: function() {
 				return this.value;
 		    },
-		    
-		    setValue: function(value) { 
+
+		    setValue: function(value) {
 		    	this.value = value;
 		    	this.updateSelected();
 		    },
-		    
+
 		    focus: function() {
 		      if (this.hasFocus) return;
 
 		      this.trigger("focus");
 		    },
-		    
+
 		    blur: function() {
 		      if (!this.hasFocus) return;
 
 		      this.trigger("blur");
 		    },
-		    
+
 		    initListView: function() {
 		    	var options = this.schema.editorOptions || {};
 		    	options.model = this.schema.options;
-		    	this.listView = new openhmis.GenericListView(options);		    	
+		    	this.listView = new openhmis.GenericListView(options);
 		    },
-		    
+
 		    updateSelected: function(view) {
 		    	if (view && view.model)
 		    		this.value = view.model;
@@ -409,7 +409,7 @@ define(
 		    	this.$(".clear_selection").click(this.clearSelection);
 		    	return this;
 		    }
-		    
+
 		});
 
 		return editors;
