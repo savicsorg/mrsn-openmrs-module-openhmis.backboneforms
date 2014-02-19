@@ -1,3 +1,7 @@
+/* import spinner css*/
+@import "jquery.stepper.css";
+
+
 /* General styles */
 button::-moz-focus-inner { border: 0; }
 h2 span.heading_annotation {
@@ -14,6 +18,14 @@ ul.floating li {
 
 div.box, div.combineBoxes { margin-bottom: 1em; }
 .combineBoxes div.box { margin-bottom: 0; }
+
+/* disable spinner on numeric fields */
+/* this is done because the spinner does not automatically appear in every browser. Thus it's done via js*/
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 
 /* General form styles */
 /* Table styles */
