@@ -81,7 +81,7 @@ define(
           this.close();
         },
         'keypress': function(event) {
-          if (event.charCode === 13) {
+          if (event.keyCode === 13) {
             event.preventDefault();
             this.trigger('ok');
             this.close();
@@ -161,9 +161,6 @@ define(
           modal: true,
           width: this.options.width || 'auto'
         });
-
-        //Focus OK button
-        //$el.find('input')[0].focus();
 
         //Adjust the modal and backdrop z-index; for dealing with multiple modals
         var numModals = Modal.count,
