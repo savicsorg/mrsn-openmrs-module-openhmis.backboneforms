@@ -135,7 +135,7 @@ define(
 
 		/**
 		 * "Abstract" editor class.  Extend and specify modelType and
-		 * displayAttr properties.  See cashier module editors.js for examples.
+		 * displayAttr properties.  See inventory module editors.js for examples.
 		 **/
 		editors.GenericModelSelect = editors.Select.extend({
 			blankItem: null,
