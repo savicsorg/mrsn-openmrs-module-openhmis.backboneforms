@@ -132,6 +132,13 @@ define(
 				if (select === true) this.$el.select();
 			}
 		});
+		
+		editors.TrueFalseCheckbox = editors.Checkbox.extend({
+			getValue: function() {
+				var tmpValue = editors.Checkbox.prototype.getValue.call(this);
+				return tmpValue == true ? true : false;
+			}
+		});
 
 		/**
 		 * "Abstract" editor class.  Extend and specify modelType and
