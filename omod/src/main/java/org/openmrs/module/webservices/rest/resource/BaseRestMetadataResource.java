@@ -13,6 +13,8 @@
  */
 package org.openmrs.module.webservices.rest.resource;
 
+import java.lang.reflect.ParameterizedType;
+
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.OpenmrsMetadata;
 import org.openmrs.api.context.Context;
@@ -28,8 +30,6 @@ import org.openmrs.module.webservices.rest.web.resource.api.PageableResult;
 import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingResourceDescription;
 import org.openmrs.module.webservices.rest.web.resource.impl.MetadataDelegatingCrudResource;
 import org.openmrs.module.webservices.rest.web.response.ResponseException;
-
-import java.lang.reflect.ParameterizedType;
 
 /**
  * The base class for metadata entity resources.
