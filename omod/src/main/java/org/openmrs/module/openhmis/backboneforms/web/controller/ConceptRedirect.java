@@ -30,5 +30,4 @@ public class ConceptRedirect {
         Concept concept = service.getConceptByUuid(conceptUuid);
         return "redirect:/dictionary/concept.htm?conceptId=" + concept.getId();
     }
-
 }
