@@ -7,17 +7,24 @@ define(
     	openhmis.Drug = openhmis.GenericModel.extend({
     		meta: {
     			name: "Drug",
-                restUrl: 'v1/drug'
+                namePlural: "Drugs",
     		},
     		schema: {
     			name: "Text",
-    			description: "Text"
+    			description: "Text",
+    			display: { type: 'Text' },
     		},
     		parse: function(resp) {
     			if (resp && (!resp.name && resp.display))
     				resp.name = resp.display;
     			return resp;
-    		}
+    		},
+
+    		toString: function() {
+    			return this.get('display');
+			}
     	});
+
+    	return openhmis;
     }
 );
