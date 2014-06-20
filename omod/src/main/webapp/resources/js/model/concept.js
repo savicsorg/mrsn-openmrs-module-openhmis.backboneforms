@@ -8,6 +8,7 @@ define(
     		meta: {
     			name: "Concept",
                 namePlural: "Concepts",
+                restUrl: 'v1/concept'
     		},
     		schema: {
     			display: { type: 'Text' },

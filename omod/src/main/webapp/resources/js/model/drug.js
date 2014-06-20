@@ -8,6 +8,7 @@ define(
     		meta: {
     			name: "Drug",
                 namePlural: "Drugs",
+                restUrl: 'v1/drug'
     		},
     		schema: {
     			name: "Text",
