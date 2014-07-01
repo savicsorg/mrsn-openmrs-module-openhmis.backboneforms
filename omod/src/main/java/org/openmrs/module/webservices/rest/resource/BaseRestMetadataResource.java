@@ -70,10 +70,10 @@ public abstract class BaseRestMetadataResource<E extends OpenmrsMetadata>
 		DelegatingResourceDescription description = new DelegatingResourceDescription();
 		description.addProperty("uuid");
 		description.addProperty("name");
+		description.addProperty("description");
 		description.addProperty("retired");
 
 		if (!(rep instanceof RefRepresentation))  {
-			description.addProperty("description");
 			description.addProperty("retireReason");
 
 			if (rep instanceof FullRepresentation) {
