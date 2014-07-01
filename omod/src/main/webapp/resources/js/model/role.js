@@ -17,11 +17,11 @@ define(
 		openhmis.url.backboneBase + 'js/lib/i18n'
 	],
 	function(openhmis, __) {
-		openhmis.Location = openhmis.GenericModel.extend({
+		openhmis.Role = openhmis.GenericModel.extend({
 			meta: {
-				name: __("Location"),
-				namePlural: __("Locations"),
-				restUrl: 'v1/location'
+				name: __("Role"),
+				namePlural: __("Roles"),
+				restUrl: 'v1/role'
 			},
 
 			schema: {

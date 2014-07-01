@@ -20,7 +20,9 @@ define(
 		openhmis.url.backboneBase + 'js/lib/backbone-forms',
 		openhmis.url.backboneBase + 'js/lib/labelOver',
 		openhmis.url.backboneBase + 'js/view/list',
-		openhmis.url.backboneBase + 'js/model/location'
+		openhmis.url.backboneBase + 'js/model/location',
+		openhmis.url.backboneBase + 'js/model/user',
+		openhmis.url.backboneBase + 'js/model/role'
 	],
 	function($, Backbone, _, openhmis) {
 		var editors = Backbone.Form.editors;
@@ -349,6 +351,12 @@ define(
 
 		editors.UserSelect = editors.GenericModelSelect.extend({
 			modelType: openhmis.User,
+			displayAttr: "name",
+			allowNull: true
+		});
+
+		editors.RoleSelect = editors.GenericModelSelect.extend({
+			modelType: openhmis.Role,
 			displayAttr: "name",
 			allowNull: true
 		});

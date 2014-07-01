@@ -13,12 +13,14 @@
  */
 define(
 	[
-		openhmis.url.backboneBase + 'js/lib/backbone',
-		openhmis.url.backboneBase + 'js/model/generic'
+		openhmis.url.backboneBase + 'js/model/generic',
+		openhmis.url.backboneBase + 'js/lib/i18n'
 	],
-	function(Backbone, openhmis) {
+	function(openhmis, __) {
 		openhmis.User = openhmis.GenericModel.extend({
 			meta: {
+				name: __("User"),
+				namePlural: __("users"),
 				restUrl: 'v1/user'
 			},
 
@@ -27,7 +29,7 @@ define(
 			},
 
 			toString: function() {
-				return this.get('name');
+				return this.get("display") || this.get("name");
 			}
 		});
 
