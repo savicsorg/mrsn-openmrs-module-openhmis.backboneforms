@@ -22,8 +22,6 @@ public abstract class BaseRestInstanceTypeResource<
 	@Override
 	public DelegatingResourceDescription getRepresentationDescription(Representation rep) {
 		DelegatingResourceDescription description = super.getRepresentationDescription(rep);
-		description.addProperty("description");
-
 		if (!(rep instanceof RefRepresentation)) {
 			description.addProperty("attributeTypes");
 		}
