@@ -25,23 +25,18 @@ public abstract class BaseRestInstanceAttributeTypeResource<
 	public DelegatingResourceDescription getRepresentationDescription(Representation rep) {
 		DelegatingResourceDescription description = super.getRepresentationDescription(rep);
 		description.addProperty("attributeOrder");
-
-		if (!(rep instanceof RefRepresentation)) {
-			description.addProperty("format");
-			description.addProperty("foreignKey");
-			description.addProperty("regExp");
-			description.addProperty("required");
-			description.addProperty("retired");
-		}
+		description.addProperty("format");
+		description.addProperty("foreignKey");
+		description.addProperty("regExp");
+		description.addProperty("required");
+		description.addProperty("retired");
 
 		return description;
 	}
 
 	@Override
 	public DelegatingResourceDescription getCreatableProperties() throws ResourceDoesNotSupportOperationException {
-		DelegatingResourceDescription description = new DelegatingResourceDescription();
-		description.addProperty("name");
-		description.addProperty("description");
+		DelegatingResourceDescription description = super.getCreatableProperties();
 
 		return description;
 	}
