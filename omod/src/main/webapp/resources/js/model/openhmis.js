@@ -45,6 +45,7 @@ define(
 				this.schema.foreignKey = { type: 'BasicNumber' };
 				this.schema.regExp = { type: 'Text' };
 				this.schema.required = { type: 'Checkbox' };
+                this.schema.attributeOrder = {type: 'Hidden'};
 			},
 
 			validate: function (attrs, options) {
@@ -60,7 +61,10 @@ define(
 		});
 
 		openhmis.CustomizableInstanceTypeBase = openhmis.GenericModel.extend({
-			attributeType: null,
+            meta: {},
+            schema: {},
+
+            attributeType: null,
 
 			initialize: function(attributes, options) {
 				this.schema.attributeTypes = {
