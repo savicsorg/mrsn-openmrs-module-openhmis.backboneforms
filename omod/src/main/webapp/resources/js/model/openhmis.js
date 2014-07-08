@@ -19,8 +19,8 @@ define(
 	],
 	function(openhmis, __) {
 		openhmis.AttributeTypeBase = openhmis.GenericModel.extend({
-			meta: [],
-			schema: [],
+			meta: {},
+			schema: {},
 
 			initialize: function (attributes, options) {
 				openhmis.GenericModel.prototype.initialize.call(this, attributes, options);
@@ -71,9 +71,9 @@ define(
 			},
 
 			parse: function(resp) {
-				if (resp.attributesTypes) {
-					var attributeTypes = resp.attributesTypes;
-					resp.attributesTypes = [];
+				if (resp.attributeTypes) {
+					var attributeTypes = resp.attributeTypes;
+					resp.attributeTypes = [];
 
 					for (var attrType in attributeTypes) {
 						var type = new this.attributeType(attributeTypes[attrType], { parse: true });
