@@ -19,8 +19,8 @@ define(
 	function(openhmis, __) {
 		openhmis.Location = openhmis.GenericModel.extend({
 			meta: {
-				name: __("Visit"),
-				namePlural: __("Visits"),
+				name: __("Location"),
+				namePlural: __("Locations"),
 				restUrl: 'v1/location'
 			},
 

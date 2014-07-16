@@ -27,6 +27,10 @@ input[type=number]::-webkit-outer-spin-button {
   margin: 0;
 }
 
+input[type='number'] {
+    -moz-appearance:textfield;
+}
+
 /* General form styles */
 /* Table styles */
 table.form td { padding-right: 20px; }

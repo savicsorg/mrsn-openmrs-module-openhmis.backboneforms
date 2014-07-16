@@ -11,10 +11,28 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.webservices.rest.resource;
+define(
+	[
+		openhmis.url.backboneBase + 'js/model/generic',
+		openhmis.url.backboneBase + 'js/lib/i18n'
+	],
+	function(openhmis, __) {
+		openhmis.Role = openhmis.GenericModel.extend({
+			meta: {
+				name: __("Role"),
+				namePlural: __("Roles"),
+				restUrl: 'v1/role'
+			},
 
-import org.openmrs.OpenmrsMetadata;
-import org.openmrs.module.openhmis.commons.api.entity.IMetadataDataService;
+			schema: {
+				name: 'Text'
+			},
 
-public interface IMetadataDataServiceResource<T extends OpenmrsMetadata> extends IObjectDataServiceResource<T, IMetadataDataService<T>> {
-}
+			toString: function() {
+				return this.get("display") || this.get("name");
+			}
+		});
+
+		return openhmis;
+	}
+);

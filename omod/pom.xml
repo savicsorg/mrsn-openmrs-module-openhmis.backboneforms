@@ -85,6 +85,11 @@
 			<groupId>org.openmrs.module</groupId>
 			<artifactId>openhmis.commons-api</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>openhmis.commons-omod</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
