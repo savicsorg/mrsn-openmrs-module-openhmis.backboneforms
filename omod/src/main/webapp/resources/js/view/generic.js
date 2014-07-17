@@ -132,10 +132,14 @@ define(
 						self.render();
 						$(self.titleEl).show();
 						self.modelForm = self.prepareModelForm(self.model);
-						$(self.formEl).prepend(self.modelForm.el);
-						$(self.formEl).show();
-						$(self.retireVoidPurgeEl).show();
-						$(self.formEl).find('input')[0].focus();
+
+                        if (self.modelForm) {
+                            $(self.formEl).prepend(self.modelForm.el);
+                        }
+
+                        $(self.formEl).show();
+                        $(self.retireVoidPurgeEl).show();
+                        $(self.formEl).find('input')[0].focus();
 					},
 					error: openhmis.error
 				});
