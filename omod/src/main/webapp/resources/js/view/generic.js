@@ -152,9 +152,15 @@ define(
 			 */
 			save: function(event) {
 				if (event) event.preventDefault();
-				var errors = this.modelForm.commit();
-				if (errors) return;
-				var view = this;
+
+                if (this.modelForm) {
+                    var errors = this.modelForm.commit();
+                    if (errors) {
+                        return;
+                    }
+                }
+
+                var view = this;
 				this.model.save(null, {
 					success: function(model, resp) {
 						if (model.collection === undefined) {
