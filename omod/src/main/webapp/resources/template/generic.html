@@ -96,31 +96,31 @@
 		} ?>
 		</td>
 	<? } ?>
-	
+
 	<? if (actions.indexOf('inlineEdit') !== -1) {
 		// do nothing, leave blank for form to be rendered
 	 } else { ?>
 		<? var cssClass; ?>
 		<? for (var field in fields) { ?>
-		<? cssClass = "field-" + fields[field];
-			if (model.isRetired()) cssClass += " retired";
-			if (model.schema[fields[field]] !== undefined
+		    <? cssClass = "field-" + fields[field];
+			    if (model.isRetired()) cssClass += " retired";
+			    if (model.schema[fields[field]] !== undefined
 					&& model.schema[fields[field]].type in {'Number':0, 'BasicNumber':0, 'Date':0, 'DateTime':0})
-				cssClass += " numeric"; ?>
-		<td class="<?= cssClass ?>">
-			<? if (model.schema[fields[field]] === undefined) {
-				/* leave cell empty */
-			} else if (model.schema[fields[field]].type === 'List' && model.schema[fields[field]].model !== undefined) {
-				print(GenericCollection.prototype.toString.call(
-					model.get([fields[field]]),
-					model.schema[fields[field]])
-				);
-			} else if (model.schema[fields[field]].format !== undefined) {
-				print(model.schema[fields[field]].format(model.get(fields[field])));
-			} else {
-				print(model.get(fields[field]));
-			} ?>
-		</td>
+				    cssClass += " numeric"; ?>
+		    <td class="<?= cssClass ?>">
+			    <? if (model.schema[fields[field]] === undefined) {
+				    /* leave cell empty */
+			    } else if (model.schema[fields[field]].type === 'List' && model.schema[fields[field]].model !== undefined) {
+				    print(GenericCollection.prototype.toString.call(
+					   model.get([fields[field]]),
+					   model.schema[fields[field]])
+				    );
+			    } else if (model.schema[fields[field]].format !== undefined) {
+				    print(model.schema[fields[field]].format(model.get(fields[field])));
+			    } else {
+				    print(model.get(fields[field]));
+			    } ?>
+		    </td>
 		<? } ?>
 	<? } ?>
 </script>
