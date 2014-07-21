@@ -132,10 +132,14 @@ define(
 						self.render();
 						$(self.titleEl).show();
 						self.modelForm = self.prepareModelForm(self.model);
-						$(self.formEl).prepend(self.modelForm.el);
-						$(self.formEl).show();
-						$(self.retireVoidPurgeEl).show();
-						$(self.formEl).find('input')[0].focus();
+
+                        if (self.modelForm) {
+                            $(self.formEl).prepend(self.modelForm.el);
+                        }
+
+                        $(self.formEl).show();
+                        $(self.retireVoidPurgeEl).show();
+                        $(self.formEl).find('input')[0].focus();
 					},
 					error: openhmis.error
 				});
@@ -148,9 +152,15 @@ define(
 			 */
 			save: function(event) {
 				if (event) event.preventDefault();
-				var errors = this.modelForm.commit();
-				if (errors) return;
-				var view = this;
+
+                if (this.modelForm) {
+                    var errors = this.modelForm.commit();
+                    if (errors) {
+                        return;
+                    }
+                }
+
+                var view = this;
 				this.model.save(null, {
 					success: function(model, resp) {
 						if (model.collection === undefined) {
