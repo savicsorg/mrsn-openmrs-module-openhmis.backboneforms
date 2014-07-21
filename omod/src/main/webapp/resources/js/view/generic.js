@@ -154,10 +154,14 @@ define(
 				if (event) {
 					event.preventDefault();
 				}
-				var errors = this.modelForm.commit();
-				if (errors) {
-					return;
-				}
+				
+                if (this.modelForm) {
+                    var errors = this.modelForm.commit();
+                    if (errors) {
+                        return;
+                    }
+                }
+                
 				var view = this;
 				this.model.save(null, {
 					success: function(model, resp) {
