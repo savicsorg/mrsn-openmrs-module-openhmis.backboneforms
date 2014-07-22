@@ -44,6 +44,7 @@
 
 <script id="generic-list" type="text/template">
 <b class="boxHeader"><?= options.listTitle !== undefined ? options.listTitle : __("Current %s", modelType.modelNamePlural()) ?></b>
+<div class="spinner spinner-align"></div>
 <div class="box">
 	<? if (listLength === 0) { ?>
 		<p class="empty"><?= __("There are currently no %s", modelType.modelNamePlural().toLowerCase()) ?></p>

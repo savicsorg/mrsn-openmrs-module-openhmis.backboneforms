@@ -23,8 +23,20 @@ define(
 		openhmis.BaseSearchView = Backbone.View.extend(
 		/** @lends BaseSearchView.prototype */
 		{
+            SpinnerHide: function () {
+                this.$('#department-name-search').removeClass('spinner-float-style');
+                this.$('.spinner').hide();
+            },
+
+            SpinnerShow: function () {
+                this.$('#department-name-search').addClass('spinner-float-style');
+                this.$('.spinner').show();
+            },
+
 			tagName: "div",
 			tmplFile: openhmis.url.backboneBase + "template/search.html",
+
+
 
 			/**
 			 * @class BaseSearchView
@@ -65,6 +77,7 @@ define(
 				if (event.which === 13) {
 					event.stopPropagation();
 				}
+                event.SpinnerShow();
 			},
 
 			/**
