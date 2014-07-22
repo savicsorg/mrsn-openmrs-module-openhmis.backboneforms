@@ -650,6 +650,7 @@ define(
 				this.trigger("fetch", options, this);
 
 				this.model.fetch(options);
+
 			},
 			
 			/**
@@ -698,6 +699,7 @@ define(
 					view.addOne(model, schema, lineNumber)
 					lineNumber++;
 				});
+
 				return this;
 			},
 			
@@ -1030,6 +1032,13 @@ define(
 				url: model.prototype.meta.restUrl,
 				model: model
 			});
+
+            collection.fetch({
+                success: function() {
+                    $(".spinner").hide();
+                }
+            });
+
 			var addEditView = options.addEditViewType
 				? new options.addEditViewType({ collection: collection })
 				: new openhmis.GenericAddEditView({ collection: collection });

@@ -94,6 +94,9 @@ define(
 			fetch: function(options) {
 				options = _.extend({}, this.getFetchOptions(), options);
 				this.trigger("fetch", options, this);
+                this.success(
+                  $('spinner').hide()
+                );
 			}
 		});
 		

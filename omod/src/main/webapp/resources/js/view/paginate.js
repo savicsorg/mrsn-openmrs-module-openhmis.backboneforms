@@ -130,6 +130,9 @@ define(
 			changePageSize: function(event) {
 				this.setPageSize($(event.target).val());
 				this.fetch();
+                this.success($(function(){
+                    $('.spinner').hide();
+                }));
 			},
 			
 			checkPage: function() {
@@ -153,7 +156,7 @@ define(
 				options = this.getFetchOptions(options);
 				this.trigger("fetch", options, this);
 			},
-			
+
 			render: function() {
 				this.$el.html(this.template({
 					list: this.model,
@@ -163,7 +166,7 @@ define(
 					__: i18n
 				}));
 				var self = this;
-				this.$(".first").not(".ui-state-disabled").click(function() { self.fetch({ page: "first" }) });
+				this.$(".first").not(".ui-state-disabled").click(function() { self.fetch({ page: "first" }); $('.spinner').show() });
 				this.$(".previous").not(".ui-state-disabled").click(function() { self.fetch({ page: "previous" }) });
 				this.$("span.pages span").not(".ui-state-disabled").click(function(event) { self.fetch({ page: parseInt($(event.target).text()) }) });
 				this.$(".next").not(".ui-state-disabled").click(function() { self.fetch({ page: "next" }) });
