@@ -65,16 +65,6 @@ define(
 				'click button.purge': 'purge'
 			},
 
-            SpinnerHide: function () {
-                this.$('#department-name-search').removeClass('spinner-float-style');
-                this.$('.spinner').hide();
-            },
-
-            SpinnerShow: function () {
-                this.$('#department-name-search').addClass('spinner-float-style');
-                this.$('.spinner').show();
-            },
-
 			/**
 			 * Prepare a Backbone form based on a model
 			 *
@@ -114,7 +104,6 @@ define(
 				$(this.formEl).prepend(this.modelForm.el);
 				$(this.formEl).show();
 				$(this.formEl).find('input')[0].focus();
-                $(this.SpinnerHide());
 			},
 
 			/**
@@ -684,8 +673,6 @@ define(
 				}
 				this.trigger("fetch", options, this);
 				this.model.fetch(options);
-                this.SpinnerHide();
-
 			},
 
 			/**
@@ -734,7 +721,6 @@ define(
 					view.addOne(model, schema, lineNumber)
 					lineNumber++;
 				});
-
 				return this;
 			},
 
@@ -1039,7 +1025,6 @@ define(
 			onSearch: function(options, sender) {
 				if (this.paginateView) this.paginateView.setPage(1);
 				this.fetch(options, sender);
-                this.SpinnerShow();
 			},
 
 			/**
