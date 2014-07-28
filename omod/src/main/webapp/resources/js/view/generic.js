@@ -977,10 +977,14 @@ define(
 			initialize: function(options) {
 				_.bindAll(this);
 				openhmis.GenericListView.prototype.initialize.call(this, options);
-				this.searchViewType = options.searchView;
-				this.searchView = new this.searchViewType({
-					modelType: this.model.model
-				});
+
+                var searchViewOptions = {
+                    modelType: this.model.model
+                };
+                searchViewOptions = _.extend(options, searchViewOptions);
+
+                this.searchViewType = options.searchView;
+				this.searchView = new this.searchViewType(searchViewOptions);
 				this.searchView.on("fetch", this.onSearch);
 				this.fetchable.push(this.searchView);
 			},
