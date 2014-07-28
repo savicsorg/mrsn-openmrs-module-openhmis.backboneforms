@@ -44,7 +44,6 @@
 
 <script id="generic-list" type="text/template">
 <b class="boxHeader"><?= options.listTitle !== undefined ? options.listTitle : __("Current %s", modelType.modelNamePlural()) ?></b>
-<div class="spinner spinner-align"></div>
 <div class="box">
 	<? if (listLength === 0) { ?>
 		<p class="empty"><?= __("There are currently no %s", modelType.modelNamePlural().toLowerCase()) ?></p>
@@ -56,6 +55,7 @@
 			<? for (var field in fields) { if (modelSchema[fields[field]] && modelSchema[fields[field]].hidden) continue; ?>
 				<? var fieldClassName = "field-" + fields[field]; ?>
 				<th class="<?= fieldClassName ?>">
+                    <div class="spinner spinner-align"></div>
 					<? if (modelSchema[fields[field]] !== undefined) {
 						print(modelSchema[fields[field]].title === undefined ? helpers.keyToTitle(fields[field]) : modelSchema[fields[field]].title);
 					}

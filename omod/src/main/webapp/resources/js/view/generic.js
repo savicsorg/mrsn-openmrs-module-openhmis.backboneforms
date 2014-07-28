@@ -568,7 +568,8 @@ define(
 			 *     used to determine styles for alternating rows.  Otherwise
 			 *     this is determined using jQuery and the DOM.
 			 */
-			addOne: function(model, schema, lineNumber) {
+			addOne: function(model) {
+                this.$('.spinner').show();
 				if (this.showRetired === false && model.isRetired()) {
 					return null;
 				}
@@ -579,43 +580,45 @@ define(
 					// continue adding this item
 					return null;
 				}
-				schema = schema ? _.extend({}, model.schema, schema) : _.extend({}, this.model.model.prototype.schema, this.schema || {});
-
-				// Determine class name for alternating row styling
-				var className = "evenRow";
-				if (lineNumber && !isNaN(lineNumber)) {
-					className = lineNumber % 2 === 0 ? "evenRow" : "oddRow";
-				} else {
-					var $rows = this.$('tbody.list tr');
-					if ($rows.length > 0) {
-						var lastRow = $rows[$rows.length - 1];
-						if ($(lastRow).hasClass("evenRow")) {
-							className = "oddRow";
-						}
-					}
-				}
-
-				var itemView = new this.itemView({
-					model: model,
-					fields: this.fields,
-					schema: schema,
-					className: className,
-					actions: this.options.itemActions
-				});
-				model.view = itemView;
-				this.$('tbody.list').append(itemView.render().el);
-				itemView.on('select focus', this.onItemSelected);
-				itemView.on('remove', this.onItemRemoved);
-				var view = this;
-				//TODO: Should de-anonymize this function
-				model.on("retire", function(item) {
-					if (!view.showRetired) {
-						itemView.remove();
-					}
-					view.onItemRemoved(item);
-				});
-				return itemView;
 			},
+
+            addElements: function(model, schema, lineNumber) {
+                schema = schema ? _.extend({}, model.schema, schema) : _.extend({}, this.model.model.prototype.schema, this.schema || {});
+
+                // Determine class name for alternating row styling
+                var className = "evenRow";
+                if (lineNumber && !isNaN(lineNumber)) {
+                    className = lineNumber % 2 === 0 ? "evenRow" : "oddRow";
+                } else {
+                    var $rows = this.$('tbody.list tr');
+                    if ($rows.length > 0) {
+                        var lastRow = $rows[$rows.length - 1];
+                        if ($(lastRow).hasClass("evenRow")) {
+                            className = "oddRow";
+                        }
+                    }
+                }
+                var itemView = new this.itemView({
+                    model: model,
+                    fields: this.fields,
+                    schema: schema,
+                    className: className,
+                    actions: this.options.itemActions
+                });
+                model.view =itemView;
+                this.$('tbody.list').append(itemView.render().el);
+                itemView.on('select focus', this.onItemSelected);
+                itemView.on('remove', this.onItemRemoved);
+                var view =this;
+
+                model.on("retire", function(item) {
+                  if (!view.showRetired) {
+                      itemView.remove();
+                  }
+                  view.onItemRemoved(item);
+                });
+                return itemView;
+            },
 
 			/**
 			 * Called when a ListItemView is removed.
@@ -717,8 +720,9 @@ define(
 				}
 				var view = this;
 				var lineNumber = 0;
+//                this.$('.spinner').hide();
 				this.model.each(function(model) {
-					view.addOne(model, schema, lineNumber)
+					view.addElements(model, schema, lineNumber)
 					lineNumber++;
 				});
 				return this;
@@ -803,8 +807,8 @@ define(
 				openhmis.GenericListView.prototype.initialize.call(this, options);
 			},
 
-			addOne: function(model, schema) {
-				var view = openhmis.GenericListView.prototype.addOne.call(this, model, schema);
+			addElements: function(model, schema) {
+				var view = openhmis.GenericListView.prototype.addElements.call(this, model, schema);
 				if (this.newItem && view.model.cid === this.newItem.cid) {
 					this.selectedItem = view;
 					view.on("change", this._addItemFromInputLine);
