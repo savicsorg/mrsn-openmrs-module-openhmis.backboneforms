@@ -27,7 +27,7 @@ define(
 		'link!/openmrs/scripts/jquery/dataTables/css/dataTables_jui.css'
 	],
 	function($, _, Backbone, __, openhmis) {
-		
+
 		/*======================================================================
 		 *
 		 * GenericAddEditView
@@ -40,7 +40,7 @@ define(
 			tmplSelector: '#add-edit-template',
 			titleSelector: 'b.title',
 			formSelector: 'div.form',
-			
+
 			/**
 			 * @class GenericAddEditView
 			 * @classdesc Generic view for performing add/edit/delete operations
@@ -54,7 +54,7 @@ define(
 				this.model = new this.collection.model();
 				this.template = this.getTemplate();
 			},
-			
+
 			events: {
 				'click a.addLink': 'beginAdd',
 				'click .cancel': 'cancel',
@@ -64,10 +64,10 @@ define(
 				'click button.unretireOrUnvoid': 'unretireOrUnvoid',
 				'click button.purge': 'purge'
 			},
-			
+
 			/**
 			 * Prepare a Backbone form based on a model
-			 * 
+			 *
 			 * @static
 			 * @param {Model} model A model with a defined backbone-forms schema
 			 * @param {map} options Options for the Backbone form
@@ -92,7 +92,7 @@ define(
 				modelForm.render();
 				return modelForm;
 			},
-			
+
 			/** Switch to Add mode, for adding a new model. */
 			beginAdd: function() {
 				this.model = new this.collection.model(null, { urlRoot: this.collection.url });
@@ -105,7 +105,7 @@ define(
 				$(this.formEl).show();
 				$(this.formEl).find('input')[0].focus();
 			},
-			
+
 			/**
 			 * Cancel the current view
 			 *
@@ -118,7 +118,7 @@ define(
 				$(this.formEl).hide();
 				$(this.retireVoidPurgeEl).hide();
 			},
-			
+
 			/**
 			 * Switch to edit mode, for editing a model
 			 *
@@ -144,23 +144,25 @@ define(
 					error: openhmis.error
 				});
 			},
-			
+
 			/**
 			 * Save the current model
 			 *
 			 * @param {event} event Optional.  Pass an event.
 			 */
 			save: function(event) {
-				if (event) event.preventDefault();
-
+				if (event) {
+					event.preventDefault();
+				}
+				
                 if (this.modelForm) {
                     var errors = this.modelForm.commit();
                     if (errors) {
                         return;
                     }
                 }
-
-                var view = this;
+                
+				var view = this;
 				this.model.save(null, {
 					success: function(model, resp) {
 						if (model.collection === undefined) {
@@ -172,7 +174,7 @@ define(
 					error: function(model, resp) { openhmis.error(resp); }
 				});
 			},
-			
+
 			/** Retire or void an existing model */
 			retireOrVoid: function() {
 				var reason = this.$('#reason').val();
@@ -185,7 +187,7 @@ define(
 					error: function(model, resp) { openhmis.error(resp); }
 				});
 			},
-			
+
 			/** Unretire or unvoid an existing model */
 			unretireOrUnvoid: function() {
 				if (confirm("Are you sure you want to unretire this object? It will then be restored to the system")) {
@@ -199,7 +201,7 @@ define(
 					});
 				}
 			},
-			
+
 			/** Purge an existing model */
 			purge: function() {
 				if (confirm(__("Are you sure you want to purge this object? It will be permanently removed from the system."))) {
@@ -210,7 +212,7 @@ define(
 					});
 				}
 			},
-			
+
 			/**
 			 * Render the view
 			 * @returns {View} The rendered view
@@ -224,8 +226,8 @@ define(
 				return this;
 			}
 		});
-		
-		
+
+
 		/*======================================================================
 		 *
 		 * GenericListItemView
@@ -236,7 +238,7 @@ define(
 		{
 			// Name of the HTML tag to use for the view's containing element
 			tagName: "tr",
-			
+
 			// The template file to use
 			tmplFile: openhmis.url.backboneBase + "template/generic.html",
 
@@ -263,8 +265,12 @@ define(
 			initialize: function(options) {
 				if (options !== undefined) {
 					this.fields = options.fields ? options.fields : _.keys(this.model.schema);
-					if (options.actions) this.actions = this.actions.concat(options.actions);
-					if (options.schema) this.schema = options.schema;
+					if (options.actions) {
+						this.actions = this.actions.concat(options.actions);
+					}
+					if (options.schema) {
+						this.schema = options.schema;
+					}
 				}
 				_.bindAll(this);
 				this.template = this.getTemplate();
@@ -273,23 +279,27 @@ define(
 				this.model.on("change", this.onModelChange);
 				this._enableActions();
 			},
-			
+
 			events: {
 				'click td': 'select',
 			},
-			
+
 			/**
 			 * Cause the item to be selected
 			 * @fires select
 			 */
 			select: function() {
 				// If this list item has a form, we'll use that for focus
-				if (this.form !== undefined) return;
-				if (this.$el.hasClass("row_selected")) return;
+				if (this.form !== undefined) {
+					return;
+				}
+				if (this.$el.hasClass("row_selected")) {
+					return;
+				}
 				this.trigger('select', this);
 				this.$el.addClass("row_selected");
 			},
-			
+
 			/**
 			 * Focus the item
 			 * @fires focus
@@ -298,7 +308,7 @@ define(
 				this.trigger("focus", this);
 				this.$el.addClass("row_selected");
 			},
-			
+
 			/**
 			 * Blur the item (cancel focus)
 			 * @param {event} event Optional. Because blur will commit form data
@@ -310,18 +320,19 @@ define(
 				this.$el.removeClass("row_selected");
 				this.commitForm(event);
 			},
-			
+
 			/**
 			 * Called when the view's model changes
-			 * 
+			 *
 			 * @param {Model} model The model that has changed
 			 * @fires change
 			 */
 			onModelChange: function(model) {
-				if (model.hasChanged())
+				if (model.hasChanged()) {
 					this.trigger("change", this);
+				}
 			},
-			
+
 			/**
 			 * Default way to display validation errors for the view, for
 			 * example in the case that it supports inline editing of fields.
@@ -339,7 +350,7 @@ define(
 					}
 				}
 			},
-			
+
 			/**
 			 * Commit the current form data, triggering validation.
 			 *
@@ -349,10 +360,12 @@ define(
 			 */
 			commitForm: function(event) {
 				var errors = this.form.commit();
-				if (errors && this.displayErrors) this.displayErrors(errors, event);
+				if (errors && this.displayErrors) {
+					this.displayErrors(errors, event);
+				}
 				return errors;
 			},
-			
+
 			/**
 			 * Called when the remove action has been chosen for the item
 			 *
@@ -362,14 +375,15 @@ define(
 				if (confirm(__("Are you sure you want to remove the selected item?"))) {
 					this._removeItem(event);
 					return true;
+				} else {
+					// Prevent this event from propagating
+					return false;
 				}
-				// Prevent this event from propagating
-				else return false;
 			},
-			
+
 			/**
 			 * Render the list item
-			 * 
+			 *
 			 * @returns {View} The rendered view
 			 */
 			render: function() {
@@ -386,7 +400,7 @@ define(
 				return this;
 			},
 
-			
+
 			/**
 			 * Remove this item
 			 *
@@ -398,7 +412,7 @@ define(
 				this.trigger('remove', this.model);
 				this.off();
 			},
-			
+
 			/**
 			 * Destroy the view's model
 			 *
@@ -407,7 +421,7 @@ define(
 			_removeModel: function() {
 				this.model.destroy();
 			},
-			
+
 			/**
 			 * Enable actions according to this.actions
 			 *
@@ -439,8 +453,8 @@ define(
 				this.delegateEvents();
 			}
 		});
-		
-		
+
+
 		/*======================================================================
 		 *
 		 * GenericListView
@@ -451,22 +465,22 @@ define(
 		{
 			// The template file to use
 			tmplFile: openhmis.url.backboneBase + 'template/generic.html',
-			
+
 			// The jQuery selector for the template
 			tmplSelector: '#generic-list',
-			
+
 			/** The default ListItemView to use to display each item */
 			itemView: openhmis.GenericListItemView,
-			
+
 			/**
 			 * A list of other FetchHelpers that may affect the fetch results
 			 * for this view.  A FetchHelper must implement the
 			 * <b>getFetchOptions<b> method which will return
-			 * 
+			 *
 			 * @type Array
 			 */
 			fetchable: null,
-			
+
 			/**
 			 * @class GenericListView
 			 * @classdesc Displays a GenericCollection in a tabular list
@@ -500,21 +514,27 @@ define(
 				// Load options
 				if (options !== undefined) {
 					this.itemView = options.itemView ? options.itemView : openhmis.GenericListItemView;
-					if (options.schema) this.schema = options.schema;
-					
+					if (options.schema) {
+						this.schema = options.schema;
+					}
+
 					// Why is this inside options??
 					this.template = this.getTemplate();
-					
+
 					this.options.listTitle = options.listTitle;
 
 					this.options.itemActions = options.itemActions || [];
 					var itemViewActions = this.itemView.prototype.actions;
-					if (itemViewActions) this.options.itemActions = this.options.itemActions.concat(itemViewActions);
+					if (itemViewActions) {
+						this.options.itemActions = this.options.itemActions.concat(itemViewActions);
+					}
 
 					this.options.includeFields = options.listFields;
 					this.options.excludeFields = options.listExcludeFields;
 					this.options.showPaging = options.showPaging !== undefined ? options.showPaging : true;
-					if (options.pageSize) this.paginateView.setPageSize(options.pageSize);
+					if (options.pageSize) {
+						this.paginateView.setPageSize(options.pageSize);
+					}
 					this.options.showRetiredOption = options.showRetiredOption !== undefined ? options.showRetiredOption : true;
 					this.options.hideIfEmpty = options.hideIfEmpty !== undefined ? options.hideIfEmpty : false;
 				}
@@ -526,11 +546,11 @@ define(
 				this.showRetired = false;
 				this._determineFields();
 			},
-			
+
 			events: {
 				'change #showRetired': '_toggleShowRetired'
 			},
-			
+
 			/**
 			 * Add another item to the view.
 			 *
@@ -549,7 +569,9 @@ define(
 			 *     this is determined using jQuery and the DOM.
 			 */
 			addOne: function(model, schema, lineNumber) {
-				if (this.showRetired === false && model.isRetired()) return null;
+				if (this.showRetired === false && model.isRetired()) {
+					return null;
+				}
 				if ((this.$el.html() === "" && this.options.hideIfEmpty === true)
 					|| this.$("p.empty").length === 1) {
 					this.render();
@@ -558,20 +580,21 @@ define(
 					return null;
 				}
 				schema = schema ? _.extend({}, model.schema, schema) : _.extend({}, this.model.model.prototype.schema, this.schema || {});
-				
+
 				// Determine class name for alternating row styling
 				var className = "evenRow";
-				if (lineNumber && !isNaN(lineNumber))
+				if (lineNumber && !isNaN(lineNumber)) {
 					className = lineNumber % 2 === 0 ? "evenRow" : "oddRow";
-				else {
+				} else {
 					var $rows = this.$('tbody.list tr');
 					if ($rows.length > 0) {
 						var lastRow = $rows[$rows.length - 1];
-						if ($(lastRow).hasClass("evenRow"))
+						if ($(lastRow).hasClass("evenRow")) {
 							className = "oddRow";
+						}
 					}
 				}
-				
+
 				var itemView = new this.itemView({
 					model: model,
 					fields: this.fields,
@@ -586,25 +609,27 @@ define(
 				var view = this;
 				//TODO: Should de-anonymize this function
 				model.on("retire", function(item) {
-					if (!view.showRetired)
+					if (!view.showRetired) {
 						itemView.remove();
-						view.onItemRemoved(item);
+					}
+					view.onItemRemoved(item);
 				});
 				return itemView;
 			},
-			
+
 			/**
 			 * Called when a ListItemView is removed.
-			 * 
+			 *
 			 * @param {GenericListItemView} item The view that has been removed
 			 */
 			onItemRemoved: function(item) {
-				if (this._visibleItemCount() === 0)
+				if (this._visibleItemCount() === 0) {
 					this.render();
-				else
+				} else {
 					this._colorRows();
+				}
 			},
-			
+
 			/**
 			 * Called when a ListItemView is selected.
 			 *
@@ -615,23 +640,23 @@ define(
 				this.selectedItem = view;
 				this.trigger("itemSelect", view);
 			},
-			
+
 			/** Called when the view loses form focus. */
 			blur: function() {
 				this._deselectAll();
 			},
-			
+
 			/** Called when the view gains form focus. */
 			focus: function() {
 				if (this.selectedItem) {
 					this.selectedItem.focus();
 				}
 			},
-			
+
 			/**
 			 * Use the GenericCollection to fetch an updated list of items from
 			 * the server.  Uses the list of fetchables.
-			 * 
+			 *
 			 * @param {map} options Options for the fetch operation.
 			 * @param {FetchHelper} sender Optional. The FetchHelper that
 			 *     called for this fetch.
@@ -639,19 +664,17 @@ define(
 			fetch: function(options, sender) {
 				options = options ? options : {};
 				for (var f in this.fetchable) {
-					if (this.fetchable[f] !== sender)
+					if (this.fetchable[f] !== sender) {
 						options = this.fetchable[f].getFetchOptions(options);
+					}
 				}
-
 				if(this.showRetired) {
 					options.queryString = openhmis.addQueryStringParameter(options.queryString, "includeAll=true");
 				}
-
 				this.trigger("fetch", options, this);
-
 				this.model.fetch(options);
 			},
-			
+
 			/**
 			 * Render the list view
 			 *
@@ -700,10 +723,10 @@ define(
 				});
 				return this;
 			},
-			
+
 			/**
 			 * Reassigns alternating styles to item views.
-			 * 
+			 *
 			 * @private
 			 */
 			_colorRows: function() {
@@ -715,7 +738,7 @@ define(
 					lineNumber++;
 				});
 			},
-			
+
 			/**
 			 * Determine the number of items in the collection that are
 			 * actually visible according to UI settings
@@ -723,28 +746,30 @@ define(
 			 * @private
 			 */
 			_visibleItemCount: function() {
-				if (this.showRetired)
+				if (this.showRetired) {
 					return this.model.length;
+				}
 				return this.model.filter(function(item) { return !item.isRetired() }).length;
 			},
-			
+
 			/**
 			 * Determine the fields that should be shown as columns in the table
 			 *
 			 * @private
 			 */
 			_determineFields: function() {
-				if (this.options.includeFields !== undefined)
+				if (this.options.includeFields !== undefined) {
 					this.fields = this.options.includeFields;
-				else
+				} else {
 					this.fields = _.keys(this.model.model.prototype.schema);
+				}
 				if (this.options.excludeFields !== undefined) {
 					var argv = _.clone(this.options.excludeFields);
 					argv.unshift(this.fields);
 					this.fields = _.without.apply(this, argv);
 				}
 			},
-			
+
 			/**
 			 * Remove selection style from all rows.
 			 *
@@ -756,9 +781,9 @@ define(
 
 			/**
 			 * Event handler for the "Show Retired" control.
-			 * 
+			 *
 			 * @private
-			 */			
+			 */
 			_toggleShowRetired: function(event) {
 				this.showRetired = event.target.checked;
 				this.fetch();
@@ -777,19 +802,19 @@ define(
 				options = _.extend(billOptions, options);
 				openhmis.GenericListView.prototype.initialize.call(this, options);
 			},
-			
+
 			addOne: function(model, schema) {
 				var view = openhmis.GenericListView.prototype.addOne.call(this, model, schema);
 				if (this.newItem && view.model.cid === this.newItem.cid) {
 					this.selectedItem = view;
 					view.on("change", this._addItemFromInputLine);
-				}
-				else
+				} else {
 					view.on("change remove", this.bill.setUnsaved);
+				}
 				view.on("focusNext", this.focusNextFormItem);
 				return view;
 			},
-			
+
 			onItemRemoved: function(item) {
 				delete item.view;
 				openhmis.GenericListView.prototype.onItemRemoved.call(this, item);
@@ -797,18 +822,19 @@ define(
 					this.setupNewItem();
 				}
 			},
-			
+
 			focusNextFormItem: function(itemView) {
 				var index = this.model.indexOf(itemView.model);
 				var next = (index >= 0) ? this.model.at(index + 1) : undefined;
-				if (next !== undefined)
+				if (next !== undefined) {
 					next.view.focus();
-				else if (itemView.model !== this.newItem)
+				} else if (itemView.model !== this.newItem) {
 					this.newItem.view.focus();
-				else
+				} else {
 					this.trigger("focusNext", this);
+				}
 			},
-			
+
 			/**
 			 * Set up an empty input item and line.
 			 */
@@ -817,36 +843,42 @@ define(
 				// Don't add the item to the collection, but give it a reference
 				this.newItem.collection = this.model;
 				// If the list is completely empty, we will rerender
-				if (this.$('p.empty').length > 0)
+				if (this.$('p.empty').length > 0) {
 					this.render();
-				else {
+				} else {
 					var view = this.addOne(this.newItem);
 					view.focus();
 				}
 			},
-			
+
 			render: function(extraContext) {
-				if (this.newItem) this.model.add(this.newItem, { silent: true });
+				if (this.newItem) {
+					this.model.add(this.newItem, { silent: true });
+				}
 				openhmis.GenericListView.prototype.render.call(this, extraContext);
-				if (this.newItem) this.model.remove(this.newItem, { silent: true });
+				if (this.newItem) {
+					this.model.remove(this.newItem, { silent: true });
+				}
 				return this;
 			},
-			
+
 			/**
 			 * Add the item from the input line to the main collection, and set
 			 * up a new input line.
 			 */
 			_addItemFromInputLine: function(inputLineView) {
 				// Prevent multiple change events causing duplicate views
-				if (this.model.getByCid(inputLineView.model.cid)) return;
+				if (this.model.getByCid(inputLineView.model.cid)) {
+					return;
+				}
 				inputLineView.off("change", this._addItemFromInputLine);
 				this.model.add(inputLineView.model, { silent: true });
 				this._deselectAll();
 				this.setupNewItem();
 			}
 		});
-		
-		
+
+
 		/*======================================================================
 		 *
 		 * NestedListItemView
@@ -857,10 +889,10 @@ define(
 		{
 			// Property name on model to access nested objects
 			modelChildren: "children",
-			
+
 			// Action for expanding to show nested items
 			actions: ["expand"],
-			
+
 			initialize: function(options) {
 				if (options) {
 					this.modelChildren = options.modelChildren || this.model.meta.children || this.modelChildren;
@@ -869,11 +901,11 @@ define(
 				this.expandRowTemplate = this.getTemplate("", "#expand-row-template");
 				openhmis.GenericListItemView.prototype.initialize.call(this, options);
 			},
-			
+
 			expandCollapse: function(event) {
 				var $el = $(event.target);
-				// Expand
 				if ($el.hasClass("collapsed")) {
+					// Expand
 					$el.removeClass("collapsed");
 					$el.addClass("expanded");
 					$el.attr("src", openhmis.url.backbone + "images/expanded.png");
@@ -881,9 +913,8 @@ define(
 						this._addNestedView();
 					var self = this;
 					this.$nestedRow.stop().hide().show(0, function() { self.childrenView.$el.stop().hide().slideDown(100); });
-				}
-				// Collapse
-				else {
+				} else {
+					// Collapse
 					$el.removeClass("expanded");
 					$el.addClass("collapsed");
 					$el.attr("src", openhmis.url.backbone + "images/collapsed.png");
@@ -894,7 +925,7 @@ define(
 				}
 				if (event.stopPropagation) event.stopPropagation();
 			},
-			
+
 			render: function() {
 				openhmis.GenericListItemView.prototype.render.call(this);
 				if (this.model.get(this.modelChildren).length > 0) {
@@ -902,7 +933,7 @@ define(
 				}
 				return this;
 			},
-			
+
 			_addNestedView: function() {
 				this.$nestedRow = $(this.expandRowTemplate({ colspan: this.fields.length }));
 				this.$nestedRow.addClass(this.$el.hasClass("evenRow") ? "evenRow" : "oddRow");
@@ -921,7 +952,7 @@ define(
 				});
 				this.$nestedRow.find(".children").append(this.childrenView.render().el);
 			},
-			
+
 			_enableActions: function() {
 				openhmis.GenericListItemView.prototype._enableActions.call(this);
 				if (this.model.get(this.modelChildren).length > 0) {
@@ -929,7 +960,7 @@ define(
 				}
 			}
 		});
-		
+
 		/**
 		 * <b>Not a real class!</b>  Interface/pseudoclass for documentation
 		 * purposes.
@@ -945,7 +976,7 @@ define(
 		 *     and {@link DepartmentAndNameSearchView} are examples of
 		 *     FetchHelpers.
 		 */
-		
+
 		/**
 		 * @function FetchHelper#getFetchOptions
 		 * @param {map} options The current fetch options.  Should not be
@@ -953,8 +984,8 @@ define(
 		 * @returns {map} options The fetch options that the FetchHelper wants
 		 *     to submit.
 		 */
-		
-		
+
+
 		/*======================================================================
 		 *
 		 * GenericSearchableListView
@@ -988,7 +1019,7 @@ define(
 				this.searchView.on("fetch", this.onSearch);
 				this.fetchable.push(this.searchView);
 			},
-			
+
 			/**
 			 * Called when the search view fires a fetch event
 			 *
@@ -999,7 +1030,7 @@ define(
 				if (this.paginateView) this.paginateView.setPage(1);
 				this.fetch(options, sender);
 			},
-			
+
 			/**
 			 * Render the view.  Overrides GenericListView.render()
 			 *
@@ -1017,7 +1048,7 @@ define(
 				return this;
 			}
 		});
-		
+
 		// Create new generic add/edit screen
 		openhmis.startAddEditScreen = function(model, options) {
 			if (!options.listElement) {
@@ -1050,7 +1081,7 @@ define(
 			listView.setElement(options.listElement);
 			listView.fetch();
 		}
-		
+
 		Backbone.Form.setTemplates({
 			trForm: '<b>{{fieldsets}}</b>',
 			blankFieldset: '<b class="fieldset">{{fields}}</b>',
@@ -1058,7 +1089,7 @@ define(
 		}, {
 			errClass: "error"
 		});
-		
+
 		return openhmis;
 	}
 );

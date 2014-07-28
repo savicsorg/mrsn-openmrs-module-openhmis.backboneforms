@@ -156,3 +156,12 @@ div.validation {
 	from {transform: rotate(0deg);}
 	to {transform: rotate(359deg);}
 }
+
+.spinner-align {
+    margin:0;
+    margin-left:200px
+}
+
+.spinner-float-style {
+    float:left
+}
