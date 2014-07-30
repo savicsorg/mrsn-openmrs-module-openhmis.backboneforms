@@ -165,3 +165,18 @@ div.validation {
 .spinner-float-style {
     float:left
 }
+.dark{
+    background-color: #484848;
+    width: 100%;
+}
+
+#loader {
+    background: none repeat scroll 0 0 #000;
+    /*display: none;*/
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 150;
+}

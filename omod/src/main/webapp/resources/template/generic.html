@@ -51,11 +51,11 @@
 	<table class="display" width="100%">
 		<thead>
 			<tr>
+                <div class="spinner spinner-align" id="loader" style="opacity: 0.5; height: 654px;"></div>
 			<? if (options.itemActions.length > 0) { ?><th class="item-actions end" style="width: <?= options.itemActions.length * 10 ?>px;"></td> <? } ?>
 			<? for (var field in fields) { if (modelSchema[fields[field]] && modelSchema[fields[field]].hidden) continue; ?>
 				<? var fieldClassName = "field-" + fields[field]; ?>
 				<th class="<?= fieldClassName ?>">
-                    <div class="spinner spinner-align"></div>
 					<? if (modelSchema[fields[field]] !== undefined) {
 						print(modelSchema[fields[field]].title === undefined ? helpers.keyToTitle(fields[field]) : modelSchema[fields[field]].title);
 					}

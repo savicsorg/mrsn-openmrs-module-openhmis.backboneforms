@@ -548,7 +548,8 @@ define(
 			},
 
 			events: {
-				'change #showRetired': '_toggleShowRetired'
+				'change #showRetired': '_toggleShowRetired',
+                'change #pageSize': 'loadElements'
 			},
 
 			/**
@@ -568,8 +569,18 @@ define(
 			 *     used to determine styles for alternating rows.  Otherwise
 			 *     this is determined using jQuery and the DOM.
 			 */
+
+            loadElements: function(event) {
+                this.pageSize = event.target.selected;
+                $('.spinner').hide();
+                $('.box').addClass('.dark');
+            },
+
+            applyStyle: function() {
+
+            },
+
 			addOne: function(model) {
-                this.$('.spinner').show();
 				if (this.showRetired === false && model.isRetired()) {
 					return null;
 				}
@@ -703,7 +714,8 @@ define(
 					modelSchema: schema,
 					showRetired: this.showRetired,
 					pagingEnabled: pagingEnabled,
-					options: this.options
+					options: this.options,
+                    pageSize: this.pageSize
 				}
 				if (extraContext !== undefined) {
 					if (extraContext.options) {
@@ -1019,7 +1031,6 @@ define(
 				this.searchView.on("fetch", this.onSearch);
 				this.fetchable.push(this.searchView);
 			},
-
 			/**
 			 * Called when the search view fires a fetch event
 			 *
