@@ -549,7 +549,7 @@ define(
 
 			events: {
 				'change #showRetired': '_toggleShowRetired',
-                'change #pageSize': 'loadElements'
+                'change #pageSize': '_loadElements'
 			},
 
 			/**
@@ -570,14 +570,9 @@ define(
 			 *     this is determined using jQuery and the DOM.
 			 */
 
-            loadElements: function(event) {
-                this.pageSize = event.target.selected;
-                $('.spinner').hide();
-                $('.box').addClass('.dark');
-            },
+            _loadElements: function() {
 
-            applyStyle: function() {
-
+                $('.spinner').show();
             },
 
 			addOne: function(model) {
@@ -732,7 +727,7 @@ define(
 				}
 				var view = this;
 				var lineNumber = 0;
-//                this.$('.spinner').hide();
+                this.$('.spinner').hide();
 				this.model.each(function(model) {
 					view.addElements(model, schema, lineNumber)
 					lineNumber++;

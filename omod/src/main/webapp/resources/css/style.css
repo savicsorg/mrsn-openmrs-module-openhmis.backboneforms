@@ -122,10 +122,12 @@ div.validation {
 }
 
 .spinner {
-	height:20px;
-	width:20px;
-	margin:0px auto;
-	position:relative;
+	height:60px;
+	width:60px;
+	/*margin: auto;*/
+    margin-right: auto;
+    margin-left: auto;
+	position: absolute;
 	-webkit-animation: rotation .6s infinite linear;
 	-moz-animation: rotation .6s infinite linear;
 	-o-animation: rotation .6s infinite linear;
@@ -165,18 +167,4 @@ div.validation {
 .spinner-float-style {
     float:left
 }
-.dark{
-    background-color: #484848;
-    width: 100%;
-}
 
-#loader {
-    background: none repeat scroll 0 0 #000;
-    /*display: none;*/
-    height: 100%;
-    left: 0;
-    position: absolute;
-    top: 0;
-    width: 100%;
-    z-index: 150;
-}
