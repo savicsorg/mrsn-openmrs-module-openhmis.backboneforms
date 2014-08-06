@@ -571,11 +571,27 @@ define(
 			 */
 
             _loadElements: function() {
-
+                $('.modalSpinner').show();
                 $('.spinner').show();
+                $('.overlay').show();
+                this.listEl = this.$('tbody.list');
+                $(this.listEl).hide();
+                this.tblEl = this.$('div.tSpace');
+                $(this.tblEl).show();
             },
 
-			addOne: function(model) {
+            _hideElements: function() {
+                $('.spinner').hide();
+                $('.modalSpinner').hide();
+                $('.overlay').hide();
+                this.listEl = this.$('tbody.list');
+                $(this.listEl).show();
+                this.tblEl = this.$('div.tSpace');
+                $(this.tblEl).hide();
+
+            },
+
+			addElements: function(model) {
 				if (this.showRetired === false && model.isRetired()) {
 					return null;
 				}
@@ -588,7 +604,7 @@ define(
 				}
 			},
 
-            addElements: function(model, schema, lineNumber) {
+            addOne: function(model, schema, lineNumber) {
                 schema = schema ? _.extend({}, model.schema, schema) : _.extend({}, this.model.model.prototype.schema, this.schema || {});
 
                 // Determine class name for alternating row styling
@@ -727,9 +743,9 @@ define(
 				}
 				var view = this;
 				var lineNumber = 0;
-                this.$('.spinner').hide();
+                this._hideElements();
 				this.model.each(function(model) {
-					view.addElements(model, schema, lineNumber)
+					view.addOne(model, schema, lineNumber)
 					lineNumber++;
 				});
 				return this;
@@ -814,8 +830,8 @@ define(
 				openhmis.GenericListView.prototype.initialize.call(this, options);
 			},
 
-			addElements: function(model, schema) {
-				var view = openhmis.GenericListView.prototype.addElements.call(this, model, schema);
+			addOne: function(model, schema) {
+				var view = openhmis.GenericListView.prototype.addOne.call(this, model, schema);
 				if (this.newItem && view.model.cid === this.newItem.cid) {
 					this.selectedItem = view;
 					view.on("change", this._addItemFromInputLine);
@@ -1075,12 +1091,6 @@ define(
 				url: model.prototype.meta.restUrl,
 				model: model
 			});
-
-            collection.fetch({
-                success: function() {
-                    $(".spinner").hide();
-                }
-            });
 
 			var addEditView = options.addEditViewType
 				? new options.addEditViewType({ collection: collection })
