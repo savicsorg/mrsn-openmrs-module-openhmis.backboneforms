@@ -552,7 +552,7 @@ define(
 
 			events: {
 				'change #showRetired': '_toggleShowRetired',
-                'change #pageSize': '_loadElements'
+                'change #pageSize': '_loadSpinnerElements'
 			},
 
 			/**
@@ -721,7 +721,7 @@ define(
 				}
 				var view = this;
 				var lineNumber = 0;
-				this._hideElements();
+				this._hideSpinnerElements();
 				this.model.each(function(model) {
 					view.addOne(model, schema, lineNumber)
 					lineNumber++;
@@ -797,7 +797,7 @@ define(
 			/**
 			* Show all the elements that handle the spinner
 			*/
-			_loadElements: function() {
+			_loadSpinnerElements: function() {
 				$('.modalSpinner').show();
 				$('.spinner').show();
 				$('.overlay').show();
@@ -810,7 +810,7 @@ define(
 			/**
 			 * Hides all the elements that handle the spinner
 			 */
-			_hideElements: function() {
+			_hideSpinnerElements: function() {
 				$('.spinner').hide();
 				$('.modalSpinner').hide();
 				$('.overlay').hide();
@@ -1052,6 +1052,7 @@ define(
 				this.searchView.on("fetch", this.onSearch);
 				this.fetchable.push(this.searchView);
 			},
+
 			/**
 			 * Called when the search view fires a fetch event
 			 *
@@ -1113,7 +1114,7 @@ define(
 			listView.on("itemSelect", function(view) { addEditView.edit(view.model) });
 			listView.setElement(options.listElement);
 			listView.fetch();
-		}
+		};
 
 		Backbone.Form.setTemplates({
 			trForm: '<b>{{fieldsets}}</b>',
