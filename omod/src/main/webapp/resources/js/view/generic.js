@@ -133,13 +133,13 @@ define(
 						$(self.titleEl).show();
 						self.modelForm = self.prepareModelForm(self.model);
 
-                        if (self.modelForm) {
-                            $(self.formEl).prepend(self.modelForm.el);
-                        }
+						if (self.modelForm) {
+							$(self.formEl).prepend(self.modelForm.el);
+						}
 
-                        $(self.formEl).show();
-                        $(self.retireVoidPurgeEl).show();
-                        $(self.formEl).find('input')[0].focus();
+						$(self.formEl).show();
+						$(self.retireVoidPurgeEl).show();
+						$(self.formEl).find('input')[0].focus();
 					},
 					error: openhmis.error
 				});
@@ -155,13 +155,13 @@ define(
 					event.preventDefault();
 				}
 				
-                if (this.modelForm) {
-                    var errors = this.modelForm.commit();
-                    if (errors) {
-                        return;
-                    }
-                }
-                
+				if (this.modelForm) {
+					var errors = this.modelForm.commit();
+					if (errors) {
+						return;
+					}
+				}
+
 				var view = this;
 				this.model.save(null, {
 					success: function(model, resp) {
@@ -537,6 +537,9 @@ define(
 					}
 					this.options.showRetiredOption = options.showRetiredOption !== undefined ? options.showRetiredOption : true;
 					this.options.hideIfEmpty = options.hideIfEmpty !== undefined ? options.hideIfEmpty : false;
+
+					this.options.spinnerEnabled = options.spinnerEnabled !== undefined ? options.spinnerEnabled : true;
+					this.options.loadingText = options.loadingText !== undefined ? options.loadingText : true;
 				}
 
 				this.model.on("reset", this.render);
@@ -569,29 +572,7 @@ define(
 			 *     used to determine styles for alternating rows.  Otherwise
 			 *     this is determined using jQuery and the DOM.
 			 */
-
-            _loadElements: function() {
-                $('.modalSpinner').show();
-                $('.spinner').show();
-                $('.overlay').show();
-                this.listEl = this.$('tbody.list');
-                $(this.listEl).hide();
-                this.tblEl = this.$('div.tSpace');
-                $(this.tblEl).show();
-            },
-
-            _hideElements: function() {
-                $('.spinner').hide();
-                $('.modalSpinner').hide();
-                $('.overlay').hide();
-                this.listEl = this.$('tbody.list');
-                $(this.listEl).show();
-                this.tblEl = this.$('div.tSpace');
-                $(this.tblEl).hide();
-
-            },
-
-			addElements: function(model) {
+			addOne: function(model, schema, lineNumber) {
 				if (this.showRetired === false && model.isRetired()) {
 					return null;
 				}
@@ -602,45 +583,42 @@ define(
 					// continue adding this item
 					return null;
 				}
+				schema = schema ? _.extend({}, model.schema, schema) : _.extend({}, this.model.model.prototype.schema, this.schema || {});
+
+				// Determine class name for alternating row styling
+				var className = "evenRow";
+				if (lineNumber && !isNaN(lineNumber)) {
+					className = lineNumber % 2 === 0 ? "evenRow" : "oddRow";
+				} else {
+					var $rows = this.$('tbody.list tr');
+					if ($rows.length > 0) {
+					var lastRow = $rows[$rows.length - 1];
+					if ($(lastRow).hasClass("evenRow")) {
+							 className = "oddRow";
+						}
+					}
+				}
+				var itemView = new this.itemView({
+					model: model,
+					fields: this.fields,
+					schema: schema,
+					className: className,
+					actions: this.options.itemActions
+				});
+				model.view =itemView;
+				this.$('tbody.list').append(itemView.render().el);
+				itemView.on('select focus', this.onItemSelected);
+				itemView.on('remove', this.onItemRemoved);
+				var view =this;
+
+				model.on("retire", function(item) {
+					if (!view.showRetired) {
+						itemView.remove();
+					}
+					view.onItemRemoved(item);
+				});
+				return itemView;
 			},
-
-            addOne: function(model, schema, lineNumber) {
-                schema = schema ? _.extend({}, model.schema, schema) : _.extend({}, this.model.model.prototype.schema, this.schema || {});
-
-                // Determine class name for alternating row styling
-                var className = "evenRow";
-                if (lineNumber && !isNaN(lineNumber)) {
-                    className = lineNumber % 2 === 0 ? "evenRow" : "oddRow";
-                } else {
-                    var $rows = this.$('tbody.list tr');
-                    if ($rows.length > 0) {
-                        var lastRow = $rows[$rows.length - 1];
-                        if ($(lastRow).hasClass("evenRow")) {
-                            className = "oddRow";
-                        }
-                    }
-                }
-                var itemView = new this.itemView({
-                    model: model,
-                    fields: this.fields,
-                    schema: schema,
-                    className: className,
-                    actions: this.options.itemActions
-                });
-                model.view =itemView;
-                this.$('tbody.list').append(itemView.render().el);
-                itemView.on('select focus', this.onItemSelected);
-                itemView.on('remove', this.onItemRemoved);
-                var view =this;
-
-                model.on("retire", function(item) {
-                  if (!view.showRetired) {
-                      itemView.remove();
-                  }
-                  view.onItemRemoved(item);
-                });
-                return itemView;
-            },
 
 			/**
 			 * Called when a ListItemView is removed.
@@ -743,7 +721,7 @@ define(
 				}
 				var view = this;
 				var lineNumber = 0;
-                this._hideElements();
+				this._hideElements();
 				this.model.each(function(model) {
 					view.addOne(model, schema, lineNumber)
 					lineNumber++;
@@ -814,7 +792,35 @@ define(
 			_toggleShowRetired: function(event) {
 				this.showRetired = event.target.checked;
 				this.fetch();
+			},
+
+			/**
+			* Show all the elements that handle the spinner
+			*/
+			_loadElements: function() {
+				$('.modalSpinner').show();
+				$('.spinner').show();
+				$('.overlay').show();
+				this.listEl = this.$('tbody.list');
+				$(this.listEl).hide();
+				this.tblEl = this.$('div.tSpace');
+				$(this.tblEl).show();
+			},
+
+			/**
+			 * Hides all the elements that handle the spinner
+			 */
+			_hideElements: function() {
+				$('.spinner').hide();
+				$('.modalSpinner').hide();
+				$('.overlay').hide();
+				this.listEl = this.$('tbody.list');
+				$(this.listEl).show();
+				this.tblEl = this.$('div.tSpace');
+				$(this.tblEl).hide();
+
 			}
+
 		});
 
 
@@ -1078,14 +1084,14 @@ define(
 		// Create new generic add/edit screen
 		openhmis.startAddEditScreen = function(model, options) {
 			if (!options.listElement) {
-                $("#content").append('<div id="existing-form"></div>');
-                options.listElement = $("#existing-form");
-            }
+				$("#content").append('<div id="existing-form"></div>');
+				options.listElement = $("#existing-form");
+			}
 
-            if (!options.addEditElement) {
-                $("#content").append('<div id="add-edit-form"></div>');
-                options.addEditElement = $("#add-edit-form");
-            }
+			if (!options.addEditElement) {
+				$("#content").append('<div id="add-edit-form"></div>');
+				options.addEditElement = $("#add-edit-form");
+			}
 
 			var collection = new openhmis.GenericCollection([], {
 				url: model.prototype.meta.restUrl,
