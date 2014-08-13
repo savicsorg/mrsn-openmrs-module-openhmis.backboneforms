@@ -552,7 +552,7 @@ define(
 
 			events: {
 				'change #showRetired': '_toggleShowRetired',
-                'change #pageSize': '_loadSpinnerElements'
+				'change #pageSize': '_loadSpinnerElements'
 			},
 
 			/**
@@ -704,7 +704,7 @@ define(
 					showRetired: this.showRetired,
 					pagingEnabled: pagingEnabled,
 					options: this.options,
-                    pageSize: this.pageSize
+					pageSize: this.pageSize
 				}
 				if (extraContext !== undefined) {
 					if (extraContext.options) {

@@ -168,7 +168,7 @@ define(
 				this.$("span.pages span").not(".ui-state-disabled").click(function(event) { self.fetch({ page: parseInt($(event.target).text()) }) });
 				this.$(".next").not(".ui-state-disabled").click(function() { self.fetch({ page: "next" }) });
 				this.$(".last").not(".ui-state-disabled").click(function() { self.fetch({ page: "last" }) });
-                return this;
+				return this;
 			},
 			
 			getRenderedPageSizeEl: function(el) {
