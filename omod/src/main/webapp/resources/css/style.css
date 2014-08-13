@@ -127,7 +127,6 @@ div.validation {
 	width:45px;
 	margin:0px auto;
 	position: relative;
-	top: 5%;
 	-webkit-animation: rotation .6s infinite linear;
 	-moz-animation: rotation .6s infinite linear;
 	-o-animation: rotation .6s infinite linear;
@@ -175,7 +174,7 @@ div.validation {
 }
 
 .tSpace {
-	height: 100px;
+	height: auto;
 	width: 100%;
 	background-color: #E2DDDD;
 }
@@ -185,7 +184,9 @@ div.validation {
 	align-self: center;
 	margin: auto;
 	width: 400px;
-	height: 100px;
+	height: auto;
+	padding-top: 10px;
+	padding-bottom: 10px;
 	background-color: transparent;
 	border-radius: 5px;
 	z-index: 11;
@@ -193,9 +194,7 @@ div.validation {
 
 .loadingText {
 	position: relative;
-	margin:0px auto;
 	text-align: center;
-	font-family: verdana, arial, helvetica, sans-serif;
 	font-style: inherit;
-	font-size: 14pt;
+	padding-bottom: 5px;
 }

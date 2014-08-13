@@ -74,7 +74,9 @@
 			<div class="overlay">
 				<div class="modalSpinner">
 					<div class="spinner"></div>
-					<div class="loadingText"><?= options.listTitle !== undefined ? options.listTitle : __("Loading %s", modelType.modelNamePlural()) ?></div>
+					<? if (options.loadingText) { ?>
+					<div class="loadingText"><?=__("Loading %s", modelType.modelNamePlural()) ?></div>
+					<? } ?>
 				</div>
 			</div>
 		</div>
