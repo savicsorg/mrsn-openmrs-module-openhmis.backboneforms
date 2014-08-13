@@ -133,13 +133,13 @@ define(
 						$(self.titleEl).show();
 						self.modelForm = self.prepareModelForm(self.model);
 
-                        if (self.modelForm) {
-                            $(self.formEl).prepend(self.modelForm.el);
-                        }
+						if (self.modelForm) {
+							$(self.formEl).prepend(self.modelForm.el);
+						}
 
-                        $(self.formEl).show();
-                        $(self.retireVoidPurgeEl).show();
-                        $(self.formEl).find('input')[0].focus();
+						$(self.formEl).show();
+						$(self.retireVoidPurgeEl).show();
+						$(self.formEl).find('input')[0].focus();
 					},
 					error: openhmis.error
 				});
@@ -155,13 +155,13 @@ define(
 					event.preventDefault();
 				}
 				
-                if (this.modelForm) {
-                    var errors = this.modelForm.commit();
-                    if (errors) {
-                        return;
-                    }
-                }
-                
+				if (this.modelForm) {
+					var errors = this.modelForm.commit();
+					if (errors) {
+						return;
+					}
+				}
+
 				var view = this;
 				this.model.save(null, {
 					success: function(model, resp) {
@@ -537,6 +537,9 @@ define(
 					}
 					this.options.showRetiredOption = options.showRetiredOption !== undefined ? options.showRetiredOption : true;
 					this.options.hideIfEmpty = options.hideIfEmpty !== undefined ? options.hideIfEmpty : false;
+
+					this.options.spinnerEnabled = options.spinnerEnabled !== undefined ? options.spinnerEnabled : true;
+					this.options.loadingText = options.loadingText !== undefined ? options.loadingText : true;
 				}
 
 				this.model.on("reset", this.render);
@@ -548,7 +551,8 @@ define(
 			},
 
 			events: {
-				'change #showRetired': '_toggleShowRetired'
+				'change #showRetired': '_toggleShowRetired',
+                'change #pageSize': '_loadSpinnerElements'
 			},
 
 			/**
@@ -588,13 +592,12 @@ define(
 				} else {
 					var $rows = this.$('tbody.list tr');
 					if ($rows.length > 0) {
-						var lastRow = $rows[$rows.length - 1];
-						if ($(lastRow).hasClass("evenRow")) {
-							className = "oddRow";
+					var lastRow = $rows[$rows.length - 1];
+					if ($(lastRow).hasClass("evenRow")) {
+							 className = "oddRow";
 						}
 					}
 				}
-
 				var itemView = new this.itemView({
 					model: model,
 					fields: this.fields,
@@ -602,12 +605,12 @@ define(
 					className: className,
 					actions: this.options.itemActions
 				});
-				model.view = itemView;
+				model.view =itemView;
 				this.$('tbody.list').append(itemView.render().el);
 				itemView.on('select focus', this.onItemSelected);
 				itemView.on('remove', this.onItemRemoved);
-				var view = this;
-				//TODO: Should de-anonymize this function
+				var view =this;
+
 				model.on("retire", function(item) {
 					if (!view.showRetired) {
 						itemView.remove();
@@ -700,7 +703,8 @@ define(
 					modelSchema: schema,
 					showRetired: this.showRetired,
 					pagingEnabled: pagingEnabled,
-					options: this.options
+					options: this.options,
+                    pageSize: this.pageSize
 				}
 				if (extraContext !== undefined) {
 					if (extraContext.options) {
@@ -717,6 +721,7 @@ define(
 				}
 				var view = this;
 				var lineNumber = 0;
+				this._hideSpinnerElements();
 				this.model.each(function(model) {
 					view.addOne(model, schema, lineNumber)
 					lineNumber++;
@@ -787,7 +792,35 @@ define(
 			_toggleShowRetired: function(event) {
 				this.showRetired = event.target.checked;
 				this.fetch();
+			},
+
+			/**
+			* Show all the elements that handle the spinner
+			*/
+			_loadSpinnerElements: function() {
+				$('.modalSpinner').show();
+				$('.spinner').show();
+				$('.overlay').show();
+				this.listEl = this.$('tbody.list');
+				$(this.listEl).hide();
+				this.tblEl = this.$('div.tSpace');
+				$(this.tblEl).show();
+			},
+
+			/**
+			 * Hides all the elements that handle the spinner
+			 */
+			_hideSpinnerElements: function() {
+				$('.spinner').hide();
+				$('.modalSpinner').hide();
+				$('.overlay').hide();
+				this.listEl = this.$('tbody.list');
+				$(this.listEl).show();
+				this.tblEl = this.$('div.tSpace');
+				$(this.tblEl).hide();
+
 			}
+
 		});
 
 
@@ -1008,10 +1041,14 @@ define(
 			initialize: function(options) {
 				_.bindAll(this);
 				openhmis.GenericListView.prototype.initialize.call(this, options);
-				this.searchViewType = options.searchView;
-				this.searchView = new this.searchViewType({
-					modelType: this.model.model
-				});
+
+                var searchViewOptions = {
+                    modelType: this.model.model
+                };
+                searchViewOptions = _.extend(options, searchViewOptions);
+
+                this.searchViewType = options.searchView;
+				this.searchView = new this.searchViewType(searchViewOptions);
 				this.searchView.on("fetch", this.onSearch);
 				this.fetchable.push(this.searchView);
 			},
@@ -1048,25 +1085,19 @@ define(
 		// Create new generic add/edit screen
 		openhmis.startAddEditScreen = function(model, options) {
 			if (!options.listElement) {
-                $("#content").append('<div id="existing-form"></div>');
-                options.listElement = $("#existing-form");
-            }
+				$("#content").append('<div id="existing-form"></div>');
+				options.listElement = $("#existing-form");
+			}
 
-            if (!options.addEditElement) {
-                $("#content").append('<div id="add-edit-form"></div>');
-                options.addEditElement = $("#add-edit-form");
-            }
+			if (!options.addEditElement) {
+				$("#content").append('<div id="add-edit-form"></div>');
+				options.addEditElement = $("#add-edit-form");
+			}
 
 			var collection = new openhmis.GenericCollection([], {
 				url: model.prototype.meta.restUrl,
 				model: model
 			});
-
-            collection.fetch({
-                success: function() {
-                    $(".spinner").hide();
-                }
-            });
 
 			var addEditView = options.addEditViewType
 				? new options.addEditViewType({ collection: collection })
@@ -1083,7 +1114,7 @@ define(
 			listView.on("itemSelect", function(view) { addEditView.edit(view.model) });
 			listView.setElement(options.listElement);
 			listView.fetch();
-		}
+		};
 
 		Backbone.Form.setTemplates({
 			trForm: '<b>{{fieldsets}}</b>',
