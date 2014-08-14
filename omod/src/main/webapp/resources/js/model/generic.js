@@ -297,7 +297,6 @@ define(
 				options = options ? options : {};
 				if (query)
 					options.queryString = openhmis.addQueryStringParameter(options.queryString, query);
-                if(success) $('.spinner').hide();
 				return this.fetch(options);
 			},
 
