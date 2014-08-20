@@ -69,6 +69,18 @@
 		<tfoot></tfoot>
 	</table>
 	<? } ?>
+	<? if (options.spinnerEnabled) { ?>
+		<div class="tSpace">
+			<div class="overlay">
+				<div class="modalSpinner">
+					<div class="spinner"></div>
+					<? if (options.loadingText) { ?>
+					<div class="loadingText"><?=__("Loading %s", modelType.modelNamePlural()) ?></div>
+					<? } ?>
+				</div>
+			</div>
+		</div>
+	<? } ?>
 	<? if (pagingEnabled) { ?>
 		<div class="paging-container ui-helper-clearfix"></div>
 	<? } ?>

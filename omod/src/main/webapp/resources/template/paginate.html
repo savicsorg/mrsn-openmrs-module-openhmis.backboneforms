@@ -28,7 +28,7 @@
 <script id="pageSize" type="text/template">
 	<?= __("Show") ?> <select id="pageSize">
 		<? for (var s in pageSizes) { ?>
-			<option value="<?= pageSizes[s] ?>"<?= pageSize === pageSizes[s] ? ' selected="selected"' : '' ?>>
+			<option id="pageSize" value="<?= pageSizes[s] ?>"<?= pageSize === pageSizes[s] ? ' selected="selected"' : '' ?>>
 				<?= pageSizes[s] ?>
 			</option>
 		<? } ?>
