@@ -82,14 +82,17 @@ define(
 					if (schema[key].hidden === true) continue;
 					formFields.push(key);
 				}
-				var formOptions = {
+
+                var formOptions = {
 					model: model,
 					fields: formFields,
 					classNames: { errClass: "error" }
 				};
 				formOptions = _.extend(options, formOptions);
-				var modelForm = new Backbone.Form(options)
+
+                var modelForm = new Backbone.Form(formOptions);
 				modelForm.render();
+
 				return modelForm;
 			},
 
@@ -1080,7 +1083,7 @@ define(
 			listView.on("itemSelect", function(view) { addEditView.edit(view.model) });
 			listView.setElement(options.listElement);
 			listView.fetch();
-		}
+		};
 
 		Backbone.Form.setTemplates({
 			trForm: '<b>{{fieldsets}}</b>',

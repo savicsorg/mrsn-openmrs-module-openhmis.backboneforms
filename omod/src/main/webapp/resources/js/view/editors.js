@@ -227,13 +227,17 @@ define(
 
 			initialize: function(options) {
 				_.bindAll(this, "onSelect");
+
 				editors.Select.prototype.initialize.call(this, options);
 				this.text = new editors.Text();
-				var self = this;
-				this.text.on("focus", function(event) { self.trigger("focus", self); });
+
+                this.minLength = options.schema.minLength ? options.schema.minLength : 2;
+
+                var self = this;
+                this.text.on("focus", function(event) { self.trigger("focus", self); });
 				this.text.on("blur", function(event) { self.trigger("blur", self); });
-				this.minLength = options.schema.minLength ? options.schema.minLength : 2;
-				this.selectedItem = null;
+
+                this.selectedItem = null;
 			},
 
 			onSelect: function(event, ui) {
@@ -265,14 +269,15 @@ define(
 
 			blur: function() {
 				if (this.hasFocus) {
-					this.$text.blur();
+					this.text.blur();
 				}
 			},
 
 			renderOptions: function(options) {
 				var source;
-				var isBbCollection = false
-				if (options instanceof Backbone.Collection) {
+				var isBbCollection = false;
+
+                if (options instanceof Backbone.Collection) {
 					isBbCollection = true;
 					source = options.map(function(item) {
 						return { label: item.toString(), value: item }
