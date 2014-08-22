@@ -153,7 +153,7 @@ define(
 			 *
 			 * @param {event} event Optional.  Pass an event.
 			 */
-			save: function(event) {
+			save: function(event, options) {
 				if (event) {
 					event.preventDefault();
 				}
@@ -164,6 +164,14 @@ define(
 						return;
 					}
 				}
+
+                // Allow callers to execute code after commit but before save
+                if (options && options.postCommit) {
+                    var continueSave = options.postCommit();
+                    if (continueSave === false) {
+                        return;
+                    }
+                }
 
 				var view = this;
 				this.model.save(null, {

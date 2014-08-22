@@ -64,13 +64,15 @@ define(
             meta: {},
             schema: {},
 
-            attributeType: null,
+            attributeTypeClass: null,
 
 			initialize: function(attributes, options) {
+                openhmis.GenericModel.prototype.initialize.call(this, attributes, options);
+
 				this.schema.attributeTypes = {
 					type: 'List',
 					itemType: 'NestedModel',
-					model: this.attributeType
+					model: this.attributeTypeClass
 				};
 			},
 
@@ -80,7 +82,7 @@ define(
 					resp.attributeTypes = [];
 
 					for (var attrType in attributeTypes) {
-						var type = new this.attributeType(attributeTypes[attrType], { parse: true });
+						var type = new this.attributeTypeClass(attributeTypes[attrType], { parse: true });
 						if (attributeTypes[attrType].order !== undefined) {
 							resp.attributeTypes[attributeTypes[attrType].order] = type;
 						} else {
@@ -91,5 +93,31 @@ define(
 				return resp;
 			}
 		});
+
+        openhmis.InstanceAttributeBase = openhmis.GenericModel.extend({
+            schema: {},
+
+            attributeClass: null,
+
+            initialize: function(attributes, options) {
+                openhmis.GenericModel.prototype.initialize.call(this, attributes, options);
+
+                this.schema.attributeType = {
+                    type: "NestedModel",
+                    objRef: true
+                };
+                this.schema.value = {
+                    type: "Text"
+                };
+            },
+
+            parse: function(resp) {
+                if (resp.attributeType) {
+                    resp.attributeType = new openhmis.attributeClass(resp.attributeType, { parse: true });
+                }
+
+                return resp;
+            }
+        });
 	}
 );

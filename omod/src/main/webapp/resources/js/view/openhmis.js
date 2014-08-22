@@ -67,5 +67,78 @@ define(
                 openhmis.GenericAddEditView.prototype.save.call(this);
             }
         });
+
+        openhmis.renderAttributesFragment = function(element, queryString) {
+            // Load attribute form HTML fragment from server
+            element.load(
+                openhmis.url.getPage("backboneBase") + "attributeFragment.form" + (queryString ? "?" + queryString : ""),
+                function(content) {
+                    if (element.find('#openmrs_dwr_error').length > 0 && content.indexOf("ContextAuthenticationException") !== -1) {
+                        element.html("");
+                        openhmis.error({ responseText: '{"error":{"detail":"ContextAuthenticationException"}}' });
+                    }
+                }
+            )
+        };
+
+        openhmis.loadAttributes = function(view, attributesEl, attributeClass, errorDisplayFn) {
+            var attributeForm = attributesEl.serializeArray();
+            var attributes = [];
+            var errors = [];
+
+            for (var i in attributeForm) {
+                try {
+                    var meta = $.parseJSON(attributesEl.find('#' + attributeForm[i].name + '-meta').text());
+                } catch (e) {}
+
+                if (meta && meta.required === true && !attributeForm[i].value) {
+                    errors.push({
+                        selector: "#" + attributeForm[i].name,
+                        message: "This is a required field.",
+                        selectParent: true
+                    });
+                    break;
+                }
+
+                attributes.push(new attributeClass({
+                    attributeType: attributeForm[i].name,
+                    value: attributeForm[i].value
+                }));
+            }
+
+            if (errors.length > 0) {
+                if (!errorDisplayFn) {
+                    errorDisplayFn = openhmis.displayErrors;
+                }
+
+                for (var e in errors) {
+                    errorDisplayFn(view, errors);
+                }
+
+                return false;
+            } else {
+                return attributes;
+            }
+        };
+
+        openhmis.displayErrors = function(view, errors) {
+            for(var i in errors) {
+                var err = errors[i];
+                var $errorControl = view.$(err.selector);
+                var message = err.message;
+
+                // Display the error information for the specified control
+                var $errorEl = $errorControl;
+                if (err.selectParent) {
+                    $errorEl = $errorControl.parent();
+                }
+
+                if ($errorEl.length > 0) {
+                    openhmis.validationMessage($errorEl, message);
+
+                    $errorControl.focus();
+                }
+            }
+        };
     }
 );
