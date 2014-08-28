@@ -841,9 +841,7 @@ define(
 				$(this.listEl).show();
 				this.tblEl = this.$('div.tSpace');
 				$(this.tblEl).hide();
-
 			}
-
 		});
 
 
@@ -854,9 +852,10 @@ define(
 		 */
 		openhmis.GenericListEntryView = openhmis.GenericListView.extend({
 			initialize: function(options) {
-				var billOptions = { showRetiredOption: false, showPaging: false }
-				options = _.extend(billOptions, options);
-				openhmis.GenericListView.prototype.initialize.call(this, options);
+				var viewOptions = { showRetiredOption: false, showPaging: false };
+				options = _.extend(viewOptions, options);
+
+                openhmis.GenericListView.prototype.initialize.call(this, options);
 			},
 
 			addOne: function(model, schema) {
@@ -867,13 +866,17 @@ define(
 				} else {
 					view.on("change remove", this.model.setUnsaved);
 				}
-				view.on("focusNext", this.focusNextFormItem);
-				return view;
+
+                view.on("focusNext", this.focusNextFormItem);
+
+                return view;
 			},
 
 			onItemRemoved: function(item) {
 				delete item.view;
+
 				openhmis.GenericListView.prototype.onItemRemoved.call(this, item);
+
 				if (item === this.newItem && !item.view) {
 					this.setupNewItem();
 				}
@@ -896,9 +899,11 @@ define(
 			 */
 			setupNewItem: function() {
 				this.newItem = new this.model.model();
+
 				// Don't add the item to the collection, but give it a reference
 				this.newItem.collection = this.model;
-				// If the list is completely empty, we will rerender
+
+				// If the list is completely empty, we will re-render
 				if (this.$('p.empty').length > 0) {
 					this.render();
 				} else {
@@ -911,11 +916,14 @@ define(
 				if (this.newItem) {
 					this.model.add(this.newItem, { silent: true });
 				}
+
 				openhmis.GenericListView.prototype.render.call(this, extraContext);
-				if (this.newItem) {
+
+                if (this.newItem) {
 					this.model.remove(this.newItem, { silent: true });
 				}
-				return this;
+
+                return this;
 			},
 
 			/**
@@ -923,14 +931,20 @@ define(
 			 * up a new input line.
 			 */
 			_addItemFromInputLine: function(inputLineView) {
-				// Prevent multiple change events causing duplicate views
-				if (this.model.getByCid(inputLineView.model.cid)) {
-					return;
-				}
-				inputLineView.off("change", this._addItemFromInputLine);
-				this.model.add(inputLineView.model, { silent: true });
-				this._deselectAll();
-				this.setupNewItem();
+                // Handle adding an item from the input line
+                if (inputLineView !== undefined) {
+                    // Prevent multiple change events causing duplicate views
+                    if (this.model.getByCid(inputLineView.model.cid)) {
+                        return;
+                    }
+
+                    inputLineView.off("change", this._addItemFromInputLine);
+                    this.model.add(inputLineView.model, { silent: true });
+
+                    this._deselectAll();
+                }
+
+                this.setupNewItem();
 			}
 		});
 
