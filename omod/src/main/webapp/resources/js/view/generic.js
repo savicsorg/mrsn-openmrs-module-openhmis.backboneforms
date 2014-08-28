@@ -173,6 +173,9 @@ define(
                     }
                 }
 
+                var success = options.success;
+                var error = options.error;
+
 				var view = this;
 				this.model.save(null, {
 					success: function(model, resp) {
@@ -181,8 +184,17 @@ define(
 						}
 						model.trigger("sync");
 						view.cancel();
+
+                        if (success) {
+                            success(model, resp);
+                        }
 					},
-					error: function(model, resp) { openhmis.error(resp); }
+					error: function(model, resp) {
+                        openhmis.error(resp);
+                        if (error) {
+                            error(model, resp);
+                        }
+                    }
 				});
 			},
 
@@ -853,7 +865,7 @@ define(
 					this.selectedItem = view;
 					view.on("change", this._addItemFromInputLine);
 				} else {
-					view.on("change remove", this.bill.setUnsaved);
+					view.on("change remove", this.model.setUnsaved);
 				}
 				view.on("focusNext", this.focusNextFormItem);
 				return view;
