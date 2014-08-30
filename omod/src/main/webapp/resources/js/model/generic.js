@@ -254,23 +254,28 @@ define(
 			 */
 			initialize: function(models, options) {
 				if (options) {
-					if (options.baseUrl) this.baseUrl = options.baseUrl;
-				}
-				this.url = options && options.url ? this.baseUrl + options.url : this.baseUrl;
-				if (this.model) {
-					if (this.model.prototype.urlRoot !== undefined)
-						this.url = this.model.prototype.urlRoot;
-					else if (this.model.prototype.meta && this.model.prototype.meta.restUrl)
-						this.url = this.baseUrl + this.model.prototype.meta.restUrl;
+                    this.baseUrl = options.baseUrl ? options.baseUrl : this.baseUrl;
+                    this.url = options.url ? this.baseUrl + options.url : this.baseUrl;
+                    this.limit = options.limit ? options.limit : undefined;
+                }
+
+                if (this.model) {
+					if (this.model.prototype.urlRoot !== undefined) {
+                        this.url = this.model.prototype.urlRoot;
+                    } else if (this.model.prototype.meta && this.model.prototype.meta.restUrl) {
+                        this.url = this.baseUrl + this.model.prototype.meta.restUrl;
+                    }
 				}
 			},
 
 			fetch: function(options) {
 				options = options ? options : {};
-				var success = options.success;
+
+                var success = options.success;
 				var error = options.error;
 				var silent = options.silent;
-				options.success = function(collection, resp) {
+
+                options.success = function(collection, resp) {
 					// totalLength tracks the total number of objects available
 					// on the server, even if they are not all fetched
 					if (resp.length)
@@ -280,18 +285,29 @@ define(
 					if (resp.links && collection.page === undefined) collection.page = 1;
 					if (silent === undefined) collection.trigger("reset", collection, options);
 					if (success) success(collection, resp);
-				}
+				};
+
 				options.error = function(model, data) {
 					openhmis.error(data);
 					if (error !== undefined)
 						error(model, data);
-				}
-				if (this.model.prototype.meta && this.model.prototype.meta.modelType) {
+				};
+
+                if (this.model.prototype.meta && this.model.prototype.meta.modelType) {
 					options.queryString = openhmis.addQueryStringParameter(options.queryString,
 							"t=" + this.model.prototype.meta.modelType);
 				}
-				if (options.queryString)
-					options.url = this.url + "?" + options.queryString;
+
+                if (options.limit) {
+                    options.queryString = openhmis.addQueryStringParameter(options.queryString, "limit=" + options.limit);
+                } else if (this.limit) {
+                    options.queryString = openhmis.addQueryStringParameter(options.queryString, "limit=" + this.limit);
+                }
+
+                if (options.queryString) {
+                    options.url = this.url + "?" + options.queryString;
+                }
+
 				options.silent = true; // So that events aren't triggered too soon
 				Backbone.Collection.prototype.fetch.call(this, options)
 			},

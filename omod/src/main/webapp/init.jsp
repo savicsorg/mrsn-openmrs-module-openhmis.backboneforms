@@ -15,6 +15,7 @@
 (function() {
 	window.openhmis = {};
 	openhmis.url = {};
+	openhmis.rest = {};
 	var openmrsUrlRoot = "${contextPath}/";
 	openhmis.url.openmrs = openmrsUrlRoot;
 	openhmis.url.rest = "${restUrl}";
@@ -22,4 +23,5 @@
 	openhmis.url.page = openmrsUrlRoot + "module/openhmis/";
 	openhmis.url.backboneBase = "backboneforms/";
 	openhmis.url.backbone = openhmis.url.resources + openhmis.url.backboneBase;
+	openhmis.rest.maxResults = ${maxResults};
 })();

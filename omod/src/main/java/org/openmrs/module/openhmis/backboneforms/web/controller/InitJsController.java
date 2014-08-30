@@ -13,6 +13,8 @@
  */
 package org.openmrs.module.openhmis.backboneforms.web.controller;
 
+import org.apache.commons.lang.StringUtils;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.openhmis.backboneforms.web.BackboneWebConstants;
 import org.openmrs.module.webservices.rest.web.RestConstants;
 import org.springframework.stereotype.Controller;
@@ -27,6 +29,19 @@ import javax.servlet.http.HttpServletRequest;
 public class InitJsController {
 	@RequestMapping(method = RequestMethod.GET)
 	public void initJs(ModelMap model, HttpServletRequest request) {
+		// Load the max REST result global property
+		Integer maxResults = RestConstants.MAX_RESULTS_ABSOLUTE;
+		String propertyValue = Context.getAdministrationService().getGlobalProperty(
+				RestConstants.MAX_RESULTS_ABSOLUTE_GLOBAL_PROPERTY_NAME);
+		if (!StringUtils.isEmpty(propertyValue)) {
+			try {
+				maxResults = Integer.parseInt(propertyValue);
+			} catch (Exception ex) {
+				maxResults = RestConstants.MAX_RESULTS_ABSOLUTE;
+			}
+		}
+
+		model.addAttribute("maxResults", maxResults);
 		model.addAttribute("contextPath", request.getContextPath());
 		model.addAttribute("restUrl", RestConstants.URI_PREFIX);
 	}
