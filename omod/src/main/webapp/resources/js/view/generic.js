@@ -173,6 +173,7 @@ define(
                     }
                 }
 
+                options = options ? options : {};
                 var success = options.success;
                 var error = options.error;
 
