@@ -214,7 +214,24 @@ define(
 				if (this.options.options !== undefined) {
 					this.setOptions(this.options.options);
 				} else {
-					this.setOptions(this.schema.options);
+                    if (this.schema.options instanceof Backbone.Collection) {
+                        if (this.schema.options.length > 0) {
+                            // Collection has already been loaded so just render it
+                            this.renderOptions(this.schema.options);
+                        } else {
+                            // Load the collection manually so that we can set the limit
+                            var self = this;
+                            this.schema.options.fetch({
+                                success: function () {
+                                    // Render the options once complete
+                                    self.renderOptions(self.schema.options);
+                                },
+                                limit: openhmis.rest.maxResults
+                            });
+                        }
+                    } else {
+                        this.setOptions(this.schema.options);
+                    }
 				}
 
 				return this;
