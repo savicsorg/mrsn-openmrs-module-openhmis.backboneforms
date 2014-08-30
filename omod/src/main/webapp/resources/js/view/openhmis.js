@@ -46,6 +46,8 @@ define(
                 var items = this.modelForm.fields['attributeTypes'].editor.items;
                 for (var id in items) {
                     var getValue = items[id].getValue;
+                    //TODO: This method is recursive (getValue.call(this)) but I am not convinced that it should or needs
+                    //  to be. Review this and see if it can be made more efficient.
                     var newGetValue = function () {
                         var order = $(this.el).attr("id");
                         order = parseInt(order.substring(order.lastIndexOf('-') + 1));
@@ -59,7 +61,8 @@ define(
                         }
 
                         return value;
-                    }
+                    };
+
                     items[id].getValue = newGetValue;
                 }
 

@@ -195,38 +195,41 @@ define(
 						// This gets added to representations but cannot be set
 						if (attr === 'resourceVersion') continue;
 
-						if (this.schema[attr] !== undefined) {
-							if (this.schema[attr].readOnly === undefined
-								|| this.schema[attr].readOnly === false)
-									attributes[attr] = this.attributes[attr];
-							if (this.schema[attr].objRef === true) {
-								if (attributes[attr] instanceof openhmis.GenericCollection)
-									attributes[attr] = attributes[attr].toJSON({ objRef: true })
-								else if (attributes[attr] instanceof Array) {
-									var model = this.schema[attr].model || Backbone.Model;
-									attributes[attr] = new openhmis.GenericCollection(
-										attributes[attr],
-										{ model: model })
-									.toJSON({ objRef: true });
-								}
-								else if (attributes[attr] && attributes[attr].id !== undefined)
-									attributes[attr] = attributes[attr].id;
-								else
-									attributes[attr] = this.attributes[attr];
+                        var attrSchema = this.schema[attr];
+
+						if (attrSchema !== undefined) {
+							if (attrSchema.readOnly === undefined || attrSchema.readOnly === false) {
+                                attributes[attr] = this.attributes[attr];
+                            }
+
+							if (attrSchema.objRef === true || attrSchema.subResource === true) {
+                                var options = attrSchema.objRef ? { objRef: true} : { subResource: true};
+
+								if (attributes[attr] instanceof openhmis.GenericCollection) {
+                                    attributes[attr] = attributes[attr].toJSON(options);
+                                } else if (attributes[attr] instanceof Array) {
+									var model = attrSchema.model || Backbone.Model;
+									var collection =  new openhmis.GenericCollection(attributes[attr], { model: model });
+                                    attributes[attr] = collection.toJSON(options);
+								} else if (attributes[attr] && attributes[attr].id !== undefined) {
+                                    attributes[attr] = attributes[attr].id;
+                                } else {
+                                    attributes[attr] = this.attributes[attr];
+                                }
 							}
-						}
-						else if (attr === "retired" || attr === "voided" && this.attributes[attr]) {
+						} else if (attr === "retired" || attr === "voided" && this.attributes[attr]) {
 							attributes[attr] = this.attributes[attr];
 						}
 					}
 				}
-				if (options
-						&& (options.objRef === true || options.subResource === true)
-						&& this.attributes[this.idAttribute])
-					attributes[this.idAttribute] = this.attributes[this.idAttribute];
-				else
-					// This is never createable for the base resource
-					delete attributes[this.idAttribute];
+
+				if (options && (options.objRef === true || options.subResource === true) && this.attributes[this.idAttribute]) {
+                    attributes[this.idAttribute] = this.attributes[this.idAttribute];
+                } else {
+                    // This is never createable for the base resource
+                    delete attributes[this.idAttribute];
+                }
+
 				return attributes;
 			},
 

@@ -72,7 +72,8 @@ define(
 				this.schema.attributeTypes = {
 					type: 'List',
 					itemType: 'NestedModel',
-					model: this.attributeTypeClass
+					model: this.attributeTypeClass,
+                    subResource: true
 				};
 			},
 
