@@ -908,8 +908,7 @@ define(
 				if (this.$('p.empty').length > 0) {
 					this.render();
 				} else {
-					var view = this.addOne(this.newItem);
-					view.focus();
+					this.addOne(this.newItem);
 				}
 			},
 
@@ -941,8 +940,6 @@ define(
 
                     inputLineView.off("change", this._addItemFromInputLine);
                     this.model.add(inputLineView.model, { silent: true });
-
-                    this._deselectAll();
                 }
 
                 this.setupNewItem();
