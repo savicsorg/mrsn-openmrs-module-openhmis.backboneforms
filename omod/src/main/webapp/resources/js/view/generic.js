@@ -142,7 +142,10 @@ define(
 
 						$(self.formEl).show();
 						$(self.retireVoidPurgeEl).show();
-						$(self.formEl).find('input')[0].focus();
+                        var input = $(self.formEl).find('input');
+                        if (input && input.length > 0) {
+                            input[0].focus();
+                        }
 					},
 					error: openhmis.error
 				});
