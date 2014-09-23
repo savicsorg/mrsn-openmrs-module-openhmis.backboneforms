@@ -1,3 +1,16 @@
+<!--
+  ~ The contents of this file are subject to the OpenMRS Public License
+  ~ Version 2.0 (the "License"); you may not use this file except in
+  ~ compliance with the License. You may obtain a copy of the License at
+  ~ http://license.openmrs.org
+  ~
+  ~ Software distributed under the License is distributed on an "AS IS"
+  ~ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+  ~ License for the specific language governing rights and limitations
+  ~ under the License.
+  ~
+  ~ Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+  -->
 <script id="patient-details-template" type="text/template">
 	<b class="boxHeader"><?= __("Patient Details") ?></b>
 	<div class="box">
@@ -9,13 +22,12 @@
 					<? if (!readOnly) { ?>
 						<td><a class="editBillPatient" href="#"><?= __("Change Patient") ?></a></td>
 					<? } ?>
-					<? if (visit && visit.get("startDatetime")) { ?>
+					<? if (visit && visit.get("display")) { ?>
 						<th class="visit"><?= __("Active Visit") ?>: </th>
-						<td><span class="visit">Started <?= dateFormat(new Date(visit.get("startDatetime")), true) ?> <button id="endVisit"><?= __("End Visit") ?></button><img class="spinner" src="<?= openhmis.url.openmrs ?>images/loading.gif" style="visibility: hidden;"/></span><span class="removeMsg" style="display: none"><?= __("Visit ended") ?></span></td>
+						<td><span class="visit"><?= visit.get("display") ?> <button id="endVisit"><?= __("End Visit") ?></button><img class="spinner" src="<?= openhmis.url.openmrs ?>images/loading.gif" style="visibility: hidden;"/></span><span class="removeMsg" style="display: none"><?= __("Visit ended") ?></span></td>
 					<? } ?>
 				</tr>
 			</tbody>
 		</table>
 	</div>
-	<p></p>
 </script>

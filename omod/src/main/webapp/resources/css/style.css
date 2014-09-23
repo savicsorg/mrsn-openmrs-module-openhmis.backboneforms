@@ -1,4 +1,9 @@
+/* import spinner css*/
+@import "jquery.stepper.css";
+
+
 /* General styles */
+button::-moz-focus-inner { border: 0; }
 h2 span.heading_annotation {
 	font-size: 10pt;
 	font-weight: normal;
@@ -9,6 +14,21 @@ ul.floating { list-style: none; margin: 0; padding: 0; }
 ul.floating li {
 	display: block;
 	float: left;
+}
+
+div.box, div.combineBoxes { margin-bottom: 1em; }
+.combineBoxes div.box { margin-bottom: 0; }
+
+/* disable spinner on numeric fields */
+/* this is done because the spinner does not automatically appear in every browser. Thus it's done via js*/
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+    -moz-appearance:textfield;
 }
 
 /* General form styles */
@@ -41,6 +61,12 @@ div.bbf-help, div.bbf-error {
 .bbf-form.inline li.bbf-field div.bbf-editor { display: inline-block; top: auto; margin-left: auto; }
 
 /* Generic Add/Edit */
+div.add-edit-half {
+	width: 48%;
+	margin-right: 2%;
+	float: left;
+}
+.field-name input, .field-description input { width: 20em; }
 input.reason { width: 25em; }
 .selectable { cursor: pointer; }
 
@@ -65,7 +91,7 @@ span.label-hint { position: relative; }
 .label-hint label { position: absolute; bottom: 0px; left: 3px; font-style: italic; color: #999; cursor: text; z-index: 0; }
 
 /* Generic data table styles */
-table.display { width: 100%; border-spacing: 0; margin-bottom: 100px; }
+table.display { width: 100%; border-spacing: 0; margin-bottom: 100px; background-color: #fff; }
 table.display tr.even.row_selected td, table.display tr.odd.row_selected td,
 table.display tr.row_selected
 { background-color: #f0e68c !important; }
@@ -92,4 +118,83 @@ div.validation {
 	color: #fff;
 	padding: 2px 4px;
 	z-index: 10;
+	white-space: nowrap;
+}
+
+/**Loading Spinner**/
+.spinner {
+	height:45px;
+	width:45px;
+	margin:0px auto;
+	position: relative;
+	-webkit-animation: rotation .6s infinite linear;
+	-moz-animation: rotation .6s infinite linear;
+	-o-animation: rotation .6s infinite linear;
+	animation: rotation .6s infinite linear;
+	border-left:6px solid rgba(0,174,239,.15);
+	border-right:6px solid rgba(0,174,239,.15);
+	border-bottom:6px solid rgba(0,174,239,.15);
+	border-top:6px solid rgba(0,174,239,.8);
+	border-radius:100%;
+}
+
+.spinner-10 {
+	height:10px;
+	width:10px;
+}
+
+@-webkit-keyframes rotation {
+	from {-webkit-transform: rotate(0deg);}
+	to {-webkit-transform: rotate(359deg);}
+}
+
+@-moz-keyframes rotation {
+	from {-moz-transform: rotate(0deg);}
+	to {-moz-transform: rotate(359deg);}
+}
+
+@-o-keyframes rotation {
+	from {-o-transform: rotate(0deg);}
+	to {-o-transform: rotate(359deg);}
+}
+
+@keyframes rotation {
+	from {transform: rotate(0deg);}
+	to {transform: rotate(359deg);}
+}
+
+.spinner-align {
+	margin-top: auto;
+	margin-bottom: auto;
+	position: relative;
+}
+
+.spinner-float-style {
+	float:left
+}
+
+.tSpace {
+	height: auto;
+	width: 100%;
+	background-color: #E2DDDD;
+}
+
+.modalSpinner {
+	align-content: center;
+	align-self: center;
+	margin: auto;
+	width: 400px;
+	height: auto;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	background-color: transparent;
+	border-radius: 5px;
+	z-index: 11;
+}
+
+.loadingText {
+	position: relative;
+	text-align: center;
+	font-style: inherit;
+	padding-bottom: 5px;
 }

@@ -1,6 +1,6 @@
 /*
  * The contents of this file are subject to the OpenMRS Public License
- * Version 1.1 (the "License"); you may not use this file except in
+ * Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://license.openmrs.org
  *
@@ -11,12 +11,9 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.webservices.rest.resource;
+package org.openmrs.module.openhmis.backboneforms.api.model;
 
-import org.openmrs.OpenmrsData;
-import org.openmrs.module.openhmis.commons.api.entity.IEntityDataService;
-
-public interface IEntityDataServiceResource<T extends OpenmrsData> {
-
-	public Class<? extends IEntityDataService<T>> getServiceClass();
+public class BackboneFormsOptions {
+	private String restUrl;
+	private String openmrsUrl;
 }

@@ -1,3 +1,16 @@
+/*
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 2.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 define(
 	[
 		openhmis.url.backboneBase + 'js/lib/jquery',
@@ -140,7 +153,7 @@ define(
 				options = this.getFetchOptions(options);
 				this.trigger("fetch", options, this);
 			},
-			
+
 			render: function() {
 				this.$el.html(this.template({
 					list: this.model,
@@ -150,7 +163,7 @@ define(
 					__: i18n
 				}));
 				var self = this;
-				this.$(".first").not(".ui-state-disabled").click(function() { self.fetch({ page: "first" }) });
+				this.$(".first").not(".ui-state-disabled").click(function() { self.fetch({ page: "first" }); $('.spinner').show() });
 				this.$(".previous").not(".ui-state-disabled").click(function() { self.fetch({ page: "previous" }) });
 				this.$("span.pages span").not(".ui-state-disabled").click(function(event) { self.fetch({ page: parseInt($(event.target).text()) }) });
 				this.$(".next").not(".ui-state-disabled").click(function() { self.fetch({ page: "next" }) });

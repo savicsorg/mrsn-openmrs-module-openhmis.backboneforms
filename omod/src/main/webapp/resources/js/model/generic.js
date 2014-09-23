@@ -1,3 +1,16 @@
+/*
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 2.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 define(
 	[
 		openhmis.url.backboneBase + 'js/lib/underscore',
@@ -9,10 +22,10 @@ define(
 		 * GenericModel
 		 *
 		 * Generic JS model class for interacting with OpenMRS REST resources.
-		 * 
+		 *
 		 */
 		openhmis.GenericModel = Backbone.Model.extend({
-			
+
 			/**
 			 * @constructor
 			 * @param {map} attributes Model attributes
@@ -29,7 +42,7 @@ define(
 					this.on("change", this.setUnsaved);
 				}
 			},
-			
+
 		    url: function() {
 				var url;
 				try {
@@ -42,15 +55,15 @@ define(
 					else
 						throw e;
 				}
-				return url;
+				return url + (this.meta && this.meta.modelType ? "?t=" + this.meta.modelType : "");
 			},
-			
+
 			setUnsaved: function() {
 				if (this.trackUnsaved === undefined)
 					throw("trackUnsaved option should be enabed to use this funtion.");
 				this.unsaved = true;
 			},
-			
+
 			/**
 			 * @returns {boolean} whether the model has changed since the last
 			 *     time it was saved (if option trackUnsaved was specified)
@@ -58,7 +71,7 @@ define(
 			isUnsaved: function() {
 				return this.unsaved;
 			},
-			
+
 			/**
 			 * Override Backbone model save() to support isUnsaved()
 			 */
@@ -77,7 +90,7 @@ define(
 				}
 				return Backbone.Model.prototype.save.call(this, key, value, options);
 			},
-			
+
 			/**
 			 * OpenMRS-specific delete functions
 			 */
@@ -85,11 +98,11 @@ define(
 				options = options ? _.clone(options) : {};
 				if (options.reason !== undefined)
 					options.url = this.url() + "?reason=" + encodeURIComponent(options.reason);
-				
+
 				if (this.isNew()) {
 					return false;
 				}
-				
+
 				var model = this;
 				var success = options.success;
 				options.success = function(resp) {
@@ -98,12 +111,12 @@ define(
 					if (success)
 						success(model, resp);
 				};
-				
+
 				options.error = Backbone.wrapError(options.error, model, options);
 				var xhr = (this.sync || Backbone.sync).call(this, 'delete', this, options);
 				return xhr;
 			},
-			
+
 			unretire: function(options) {
 				// Temporarily remove id to get base URL
 				var savedId = this.id;
@@ -124,17 +137,31 @@ define(
 				}
 				proxy.save([], options);
 			},
-			
+
 			purge: function(options) {
 				options = options ? options : {};
 				options.url = this.url() + "?purge=true";
 				Backbone.Model.prototype.destroy.call(this, options);
 			},
-		
+
 			isRetired: function() {
 				return this.get('retired') || this.get('voided');
 			},
-			
+
+			modelName: function() {
+				if (!this.meta || !this.meta.name)
+					return "Unnamed Model";
+				return this.meta.name;
+			},
+
+			modelNamePlural: function() {
+				if (!this.meta || !this.meta.namePlural) {
+					return openhmis.pluralize(this.modelName());
+				}
+
+				return this.meta.namePlural;
+			},
+
 			_setRetired: function(retired) {
 				retired = retired !== undefined ? retired : true;
 				switch (this.getDataType()) {
@@ -145,7 +172,7 @@ define(
 						this.set("retired", retired);
 				}
 			},
-		
+
 			getDataType: function () {
 				if (this.meta && this.meta.openmrsType)
 					return this.meta.openmrsType;
@@ -155,7 +182,7 @@ define(
 					return "data";
 				return "unknown";
 			},
-			
+
 			toJSON: function(options) {
 				var attributes;
 				if (options && options.objRef === true && this.id !== undefined)
@@ -167,43 +194,58 @@ define(
 					for (var attr in this.attributes) {
 						// This gets added to representations but cannot be set
 						if (attr === 'resourceVersion') continue;
-						
-						if (this.schema[attr] !== undefined) {
-							if (this.schema[attr].readOnly === undefined
-								|| this.schema[attr].readOnly === false)
-									attributes[attr] = this.attributes[attr];
-							if (this.schema[attr].objRef === true) {
-								if (attributes[attr] instanceof openhmis.GenericCollection)
-									attributes[attr] = attributes[attr].toJSON({ objRef: true })
-								else if (attributes[attr] instanceof Array)
-									attributes[attr] = new openhmis.GenericCollection(attributes[attr]).toJSON({ objRef: true });
-								else if (attributes[attr].id !== undefined)
-									attributes[attr] = attributes[attr].id;
+
+                        var attrSchema = this.schema[attr];
+
+						if (attrSchema !== undefined) {
+							if (attrSchema.readOnly === undefined || attrSchema.readOnly === false) {
+                                attributes[attr] = this.attributes[attr];
+                            }
+
+							if (attrSchema.objRef === true || attrSchema.subResource === true) {
+                                var options = attrSchema.objRef ? { objRef: true} : { subResource: true};
+
+								if (attributes[attr] instanceof openhmis.GenericCollection) {
+                                    attributes[attr] = attributes[attr].toJSON(options);
+                                } else if (attributes[attr] instanceof Array) {
+									var model = attrSchema.model || Backbone.Model;
+									var collection =  new openhmis.GenericCollection(attributes[attr], { model: model });
+                                    attributes[attr] = collection.toJSON(options);
+								} else if (attributes[attr] && attributes[attr].id !== undefined) {
+                                    attributes[attr] = attributes[attr].id;
+                                } else {
+                                    attributes[attr] = this.attributes[attr];
+                                }
 							}
-						}
-						else if (attr === "retired" || attr === "voided" && this.attributes[attr]) {
+						} else if (attr === "retired" || attr === "voided" && this.attributes[attr]) {
 							attributes[attr] = this.attributes[attr];
 						}
 					}
 				}
-				// This is never createable in the REST interface
-				delete attributes[this.idAttribute];
+
+				if (options && (options.objRef === true || options.subResource === true) && this.attributes[this.idAttribute]) {
+                    attributes[this.idAttribute] = this.attributes[this.idAttribute];
+                } else {
+                    // This is never createable for the base resource
+                    delete attributes[this.idAttribute];
+                }
+
 				return attributes;
 			},
-			
-			toString: function() {
+
+            toString: function() {
 				var str = this.get("display");
 					return str ? str : Backbone.Model.prototype.toString.call(this);
 			}
 		});
-		
+
 		/**
 		 * GenericCollection
 		 *
 		 */
 		openhmis.GenericCollection = Backbone.Collection.extend({
 			baseUrl: openhmis.url.rest,
-			
+
 			/**
 			 * @constructor
 			 * @param {array} models Models with which to initialize the
@@ -212,23 +254,28 @@ define(
 			 */
 			initialize: function(models, options) {
 				if (options) {
-					if (options.baseUrl) this.baseUrl = options.baseUrl;
-				}
-				this.url = options && options.url ? this.baseUrl + options.url : this.baseUrl;
-				if (this.model) {
-					if (this.model.prototype.urlRoot !== undefined)
-						this.url = this.model.prototype.urlRoot;
-					else if (this.model.prototype.meta && this.model.prototype.meta.restUrl)
-						this.url = this.baseUrl + this.model.prototype.meta.restUrl;
+                    this.baseUrl = options.baseUrl ? options.baseUrl : this.baseUrl;
+                    this.url = options.url ? this.baseUrl + options.url : this.baseUrl;
+                    this.limit = options.limit ? options.limit : undefined;
+                }
+
+                if (this.model) {
+					if (this.model.prototype.urlRoot !== undefined) {
+                        this.url = this.model.prototype.urlRoot;
+                    } else if (this.model.prototype.meta && this.model.prototype.meta.restUrl) {
+                        this.url = this.baseUrl + this.model.prototype.meta.restUrl;
+                    }
 				}
 			},
-			
+
 			fetch: function(options) {
 				options = options ? options : {};
-				var success = options.success;
+
+                var success = options.success;
 				var error = options.error;
 				var silent = options.silent;
-				options.success = function(collection, resp) {
+
+                options.success = function(collection, resp) {
 					// totalLength tracks the total number of objects available
 					// on the server, even if they are not all fetched
 					if (resp.length)
@@ -238,38 +285,54 @@ define(
 					if (resp.links && collection.page === undefined) collection.page = 1;
 					if (silent === undefined) collection.trigger("reset", collection, options);
 					if (success) success(collection, resp);
-				}
+				};
+
 				options.error = function(model, data) {
 					openhmis.error(data);
 					if (error !== undefined)
 						error(model, data);
+				};
+
+                if (this.model.prototype.meta && this.model.prototype.meta.modelType) {
+					options.queryString = openhmis.addQueryStringParameter(options.queryString,
+							"t=" + this.model.prototype.meta.modelType);
 				}
-				if (options.queryString) options.url = this.url + "?" + options.queryString;
+
+                if (options.limit) {
+                    options.queryString = openhmis.addQueryStringParameter(options.queryString, "limit=" + options.limit);
+                } else if (this.limit) {
+                    options.queryString = openhmis.addQueryStringParameter(options.queryString, "limit=" + this.limit);
+                }
+
+                if (options.queryString) {
+                    options.url = this.url + "?" + options.queryString;
+                }
+
 				options.silent = true; // So that events aren't triggered too soon
 				Backbone.Collection.prototype.fetch.call(this, options)
 			},
-			
+
 			search: function(query, options) {
 				options = options ? options : {};
 				if (query)
 					options.queryString = openhmis.addQueryStringParameter(options.queryString, query);
 				return this.fetch(options);
 			},
-			
+
 			add: function(models, options) {
 				this.totalLength++;
 				return Backbone.Collection.prototype.add.call(this, models, options);
 			},
-			
+
 			remove: function(models, options) {
 				if (this.totalLength > 0) this.totalLength--;
 				return Backbone.Collection.prototype.remove.call(this, models, options);
 			},
-			
+
 			parse: function(response) {
 				return response.results;
 			},
-			
+
 			toString: function(schema) {
 				var collection = this;
 				if (schema !== undefined) {
@@ -282,7 +345,7 @@ define(
 				return str;
 			}
 		});
-		
+
 		return openhmis;
 	}
 );

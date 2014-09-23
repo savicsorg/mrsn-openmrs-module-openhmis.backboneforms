@@ -1,6 +1,6 @@
 /**
  * Bootstrap Modal wrapper for use with Backbone.
- * 
+ *
  * Takes care of instantiation, manages multiple modals,
  * adds several options and removes the element from the DOM when closed
  *
@@ -17,8 +17,8 @@ define(
     openhmis.url.backboneBase + 'js/lib/jquery',
     openhmis.url.backboneBase + 'js/lib/underscore',
     openhmis.url.backboneBase + 'js/lib/backbone',
-    //'js!/openmrs/scripts/jquery-ui/js/jquery-ui.custom.min.js!order'
-    'js!' + openhmis.url.backboneBase + 'js/lib/jquery-ui.custom.min.js!order'
+    'js!' + openhmis.url.backboneBase + 'js/lib/jquery-ui.custom.min.js!order',
+    'js!' + openhmis.url.backboneBase + 'js/lib/jquery.stepper.js'
   ],
   function($, _, Backbone) {
 
@@ -28,7 +28,7 @@ define(
       interpolate: /\{\{(.+?)\}\}/g,
       evaluate: /<%([\s\S]+?)%>/g
     }
-  
+
     var template = _.template('\
       <% if (title) { %>\
         <div class="modal-header">\
@@ -48,47 +48,47 @@ define(
         <a href="#" class="btn ok btn-primary">{{okText}}</a>\
       </div>\
     ');
-  
+
     //Reset to users' template settings
     _.templateSettings = _interpolateBackup;
-    
-  
+
+
     var Modal = Backbone.View.extend({
-  
+
       className: 'modal',
-  
+
       events: {
         'click .close': function(event) {
           event.preventDefault();
-  
+
           this.trigger('cancel');
         },
         'click .cancel': function(event) {
           event.preventDefault();
-  
+
           this.trigger('cancel');
         },
         'click .ok': function(event) {
           event.preventDefault();
-  
+
           this.trigger('ok');
           this.close();
         },
         'submit form': function(event) {
           event.preventDefault();
-          
+
           this.trigger('ok');
           this.close();
         },
         'keypress': function(event) {
-          if (event.charCode === 13) {
+          if (event.keyCode === 13) {
             event.preventDefault();
             this.trigger('ok');
             this.close();
           }
         }
       },
-  
+
       /**
        * Creates an instance of a Bootstrap Modal
        *
@@ -114,35 +114,37 @@ define(
           animate: false,
           template: template
         }, options);
+        if (this.options.disableEnter)
+        	delete this.events.keypress;
       },
-  
+
       /**
        * Creates the DOM element
-       * 
+       *
        * @api private
        */
       render: function() {
         var $el = this.$el,
             options = this.options,
             content = options.content;
-  
+
         //Create the modal container
         $el.html(options.template(options));
-  
+
         var $content = this.$content = $el.find('.modal-body')
-  
+
         //Insert the main content if it's a view
         if (content.$el) {
           $el.find('.modal-body').html(content.render().$el);
         }
-  
+
         if (options.animate) $el.addClass('fade');
-  
+
         this.isRendered = true;
-  
+
         return this;
       },
-  
+
       /**
        * Renders and shows the modal
        *
@@ -150,76 +152,73 @@ define(
        */
       open: function(cb) {
         if (!this.isRendered) this.render();
-  
+
         var self = this,
             $el = this.$el;
-  
+
         //Create it
         $el.dialog({
           modal: true,
-          width: 400
+          width: this.options.width || 'auto'
         });
-  
-        //Focus OK button
-        $el.find('input')[0].focus();
-  
+
         //Adjust the modal and backdrop z-index; for dealing with multiple modals
         var numModals = Modal.count,
             $backdrop = $('.modal-backdrop:eq('+numModals+')'),
             backdropIndex = $backdrop.css('z-index'),
             elIndex = $backdrop.css('z-index');
-  
+
         $backdrop.css('z-index', backdropIndex + numModals);
         this.$el.css('z-index', elIndex + numModals);
-  
+
         if (this.options.allowCancel) {
           $backdrop.one('click', function() {
             self.trigger('cancel');
           });
-          
+
           $(document).one('keyup.dismiss.modal', function (e) {
             e.which == 27 && self.trigger('cancel');
           });
         }
-  
+
         this.on('cancel', function() {
           self.close();
         });
-  
+
         Modal.count++;
-  
+
         //Run callback on OK if provided
         if (cb) {
           self.on('ok', cb);
         }
-        
+
         return this;
       },
-  
+
       /**
        * Closes the modal
        */
       close: function() {
         var self = this,
             $el = this.$el;
-  
+
         //Check if the modal should stay open
         if (this._preventClose) {
           this._preventClose = false;
           return;
         }
-  
+
         $el.dialog('close');
-  
+
         $el.one('hidden', function() {
           self.remove();
-  
+
           self.trigger('hidden');
         });
-  
+
         Modal.count--;
       },
-  
+
       /**
        * Stop the modal from closing.
        * Can be called from within a 'close' or 'ok' event listener.
@@ -229,12 +228,12 @@ define(
       }
     }, {
       //STATICS
-  
+
       //The number of modals on display
       count: 0
     });
-  
+
     Backbone.BootstrapModal = Modal;
-  
+
   }
 );
