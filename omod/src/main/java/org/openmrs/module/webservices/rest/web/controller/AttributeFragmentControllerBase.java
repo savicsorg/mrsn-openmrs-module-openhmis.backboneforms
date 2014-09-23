@@ -30,12 +30,12 @@ import javax.servlet.http.HttpServletRequest;
 
 @Controller
 public abstract class AttributeFragmentControllerBase {
-	public static final String REQUEST_MAPPING_PATH = "/module/openhmis/backboneforms/attributeFragment";
+	public static final String REQUEST_MAPPING_PATH_BASE = "/module/openhmis/backboneforms/attributeFragment";
 
 	protected abstract List<? extends IInstanceAttributeType<?>> getAttributeTypes(HttpServletRequest request);
 
 	@RequestMapping(method = RequestMethod.GET)
-	public void render(HttpServletRequest request, ModelMap model) {
+	public String render(HttpServletRequest request, ModelMap model) {
 		List<? extends IInstanceAttributeType<?>> attributeTypes = getAttributeTypes(request);
 
 		ConceptService conceptService = Context.getConceptService();
@@ -48,5 +48,7 @@ public abstract class AttributeFragmentControllerBase {
 
 		model.addAttribute("attributeTypes", attributeTypes);
 		model.addAttribute("conceptMap", conceptMap);
+
+		return REQUEST_MAPPING_PATH_BASE;
 	}
 }
