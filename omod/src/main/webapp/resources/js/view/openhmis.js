@@ -71,14 +71,32 @@ define(
             }
         });
 
-        openhmis.renderAttributesFragment = function(element, queryString) {
+        openhmis.renderAttributesFragment = function(element, attributeType, queryString) {
             // Load attribute form HTML fragment from server
             element.load(
-                openhmis.url.getPage("backboneBase") + "attributeFragment.form" + (queryString ? "?" + queryString : ""),
+                openhmis.url.getPage("backboneBase") + "attributeFragment" + attributeType + ".form" + (queryString ? "?" + queryString : ""),
                 function(content) {
                     if (element.find('#openmrs_dwr_error').length > 0 && content.indexOf("ContextAuthenticationException") !== -1) {
                         element.html("");
                         openhmis.error({ responseText: '{"error":{"detail":"ContextAuthenticationException"}}' });
+                    }
+                }
+            )
+        };
+
+        openhmis.renderPatientSearchFragment = function(element, queryString, options) {
+            var success = options.success;
+
+            element.load(
+                    openhmis.url.getPage("backboneBase") + "patientSearchFragment.form" + (queryString ? "?" + queryString : ""),
+                function(content) {
+                    if (element.find('#openmrs_dwr_error').length > 0 && content.indexOf("ContextAuthenticationException") !== -1) {
+                        element.html("");
+                        openhmis.error({ responseText: '{"error":{"detail":"ContextAuthenticationException"}}' });
+                    } else {
+                        if (success) {
+                            success(content);
+                        }
                     }
                 }
             )
