@@ -117,6 +117,7 @@ define(
 			cancel: function() {
 				this.trigger('cancel');
 				$(this.addLinkEl).show();
+				$('.addLink').show();
 				$(this.titleEl).hide();
 				$(this.formEl).hide();
 				$(this.retireVoidPurgeEl).hide();
@@ -133,6 +134,7 @@ define(
 				this.model.fetch({
 					success: function(model, resp) {
 						self.render();
+						$('.addLink').hide();
 						$(self.titleEl).show();
 						self.modelForm = self.prepareModelForm(self.model);
 
