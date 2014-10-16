@@ -237,8 +237,8 @@ define(
 					var view = this;
 					this.model.purge({
 						success: function(model) {
-							view.trigger('destroyItem');
 							view.cancel(); 
+							view.trigger('destroyItem', view);
 						},
 						error: function(model, resp) { openhmis.error(resp); }
 					});
