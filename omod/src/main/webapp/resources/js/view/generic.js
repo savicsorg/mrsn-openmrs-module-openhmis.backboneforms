@@ -238,7 +238,7 @@ define(
 					this.model.purge({
 						success: function(model) {
 							view.cancel(); 
-							view.trigger('destroyItem', view);
+							model.trigger('destroyItem');
 						},
 						error: function(model, resp) { openhmis.error(resp); }
 					});
@@ -348,11 +348,10 @@ define(
 			 *     method is used as an event handler.
 			 */
 			blur: function(event) {
-				//this.trigger("blur", this);
 				this.$el.removeClass("row_selected");
 				this.commitForm(event);
 			},
-
+			
 			/**
 			 * Called when the view's model changes
 			 *
