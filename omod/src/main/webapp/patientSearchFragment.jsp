@@ -12,14 +12,90 @@
   ~
   ~ Copyright (C) OpenHMIS.  All Rights Reserved.
   --%>
+<%--
+	This is pretty much a direct copy of the openmrs findPatient.jsp portlet. The doSelectionHandler method cannot be
+	overriden when this fragment is loaded from javascript.
+ --%>
 <div id="patient-view">
 	<div id="patient-details" style="display: none;">
 	</div>
 	<div id="find-patient" style="display: none;">
-		<openmrs:portlet id="findPatient" url="findPatient" parameters="size=full|hideAddNewPatient=true|showIncludeVoided=false" />
-		<!-- Make sure that the global "doSelectionHandler" is hijacked -->
-		<script type="text/javascript">window.doSelectionHandler = function(index, data) {
-			curl([openhmis.url.backboneBase + 'js/openhmis'], function(openhmis) { openhmis.doSelectionHandler(index,data); });
-		};</script>
+		<openmrs:require privilege="View Patients" otherwise="/login.htm" redirect="/index.htm" />
+		<style>
+			#openmrsSearchTable_wrapper{
+				/* Removes the empty space between the widget and the Create New Patient section if the table is short */
+				/* Over ride the value set by datatables */
+				min-height: 0px; height: auto !important;
+			}
+		</style>
+		<openmrs:htmlInclude file="/dwr/interface/DWRPatientService.js"/>
+		<openmrs:htmlInclude file="/scripts/jquery/dataTables/css/dataTables_jui.css"/>
+		<openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js"/>
+		<openmrs:htmlInclude file="/scripts/jquery-ui/js/openmrsSearch.js" />
+
+		<openmrs:globalProperty key="patient.listingAttributeTypes" var="attributesToList"/>
+
+		<script type="text/javascript">
+			var lastSearch;
+			$j(document).ready(function() {
+				new OpenmrsSearch("findPatients", false, doPatientSearch, doSelectionHandler,
+						[	{fieldName:"identifier", header:omsgs.identifier},
+							{fieldName:"givenName", header:omsgs.givenName},
+							{fieldName:"middleName", header:omsgs.middleName},
+							{fieldName:"familyName", header:omsgs.familyName},
+							{fieldName:"age", header:omsgs.age},
+							{fieldName:"gender", header:omsgs.gender},
+							{fieldName:"birthdateString", header:omsgs.birthdate}
+						],
+						{
+							searchLabel: '<openmrs:message code="Patient.searchBox" javaScriptEscape="true"/>',
+							searchPlaceholder:'<openmrs:message code="Patient.searchBox.placeholder" javaScriptEscape="true"/>',
+							attributes: [
+								<c:forEach var="attribute" items="${fn:split(attributesToList, ',')}" varStatus="varStatus">
+									<c:if test="${fn:trim(attribute) != ''}">
+										<c:set var="attributeName" value="${fn:trim(attribute)}" />
+										<c:choose>
+											<c:when test="${varStatus.index == 0}">
+												{name:"${attributeName}", header:"<openmrs:message code="PersonAttributeType.${fn:replace(attributeName, ' ', '')}" text="${attributeName}"/>"}
+											</c:when>
+											<c:otherwise>
+												,{name:"${attributeName}", header:"<openmrs:message code="PersonAttributeType.${fn:replace(attributeName, ' ', '')}" text="${attributeName}"/>"}
+											</c:otherwise>
+										</c:choose>
+									</c:if>
+								</c:forEach>
+							]
+							<c:if test="${not empty param.phrase}">
+								, searchPhrase: '<openmrs:message text="${ param.phrase }" javaScriptEscape="true"/>'
+							</c:if>
+						});
+
+				//set the focus to the first input box on the page(in this case the text box for the search widget)
+				var inputs = document.getElementsByTagName("input");
+				if(inputs[0]) {
+					inputs[0].focus();
+				}
+			});
+
+			function doSelectionHandler(index, data) {
+				curl([openhmis.url.backboneBase + 'js/openhmis'], function(openhmis) {
+					openhmis.doSelectionHandler(index,data);
+				});
+			}
+
+			//searchHandler for the Search widget
+			function doPatientSearch(text, resultHandler, getMatchCount, opts) {
+				lastSearch = text;
+				DWRPatientService.findCountAndPatients(text, opts.start, opts.length, getMatchCount, resultHandler);
+			}
+
+		</script>
+
+		<div>
+			<b class="boxHeader"><openmrs:message code="Patient.find"/></b>
+			<div class="box">
+				<div class="searchWidgetContainer" id="findPatients"></div>
+			</div>
+		</div>
 	</div>
 </div>

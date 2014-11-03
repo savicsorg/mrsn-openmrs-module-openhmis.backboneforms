@@ -86,7 +86,7 @@ define(
         };
 
         openhmis.renderPatientSearchFragment = function(element, queryString, options) {
-            var success = options.success;
+            var success = options ? options.success : undefined;
 
             element.load(
                     openhmis.url.getPage("backboneBase") + "patientSearchFragment.form" + (queryString ? "?" + queryString : ""),
