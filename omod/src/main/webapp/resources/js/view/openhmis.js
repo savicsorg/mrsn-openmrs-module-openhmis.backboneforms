@@ -75,6 +75,7 @@ define(
             // Load attribute form HTML fragment from server
             element.load(
                 openhmis.url.getPage("backboneBase") + "attributeFragment" + attributeType + ".form" + (queryString ? "?" + queryString : ""),
+                    (queryString ? "?" + queryString : ""),
                 function(content) {
                     if (element.find('#openmrs_dwr_error').length > 0 && content.indexOf("ContextAuthenticationException") !== -1) {
                         element.html("");
