@@ -97,8 +97,10 @@ define(
 			},
 			
 			editPatient: function() {
-				this.detailsEl.hide();
-				this.findEl.show();
+				this.model = undefined;
+                this.detailsEl.hide();
+
+                this.findEl.show();
 				this.$('#inputNode').focus();
 				this.trigger('editing');
 			},
