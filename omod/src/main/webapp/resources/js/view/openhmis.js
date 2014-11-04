@@ -74,12 +74,30 @@ define(
         openhmis.renderAttributesFragment = function(element, attributeType, queryString) {
             // Load attribute form HTML fragment from server
             element.load(
-                openhmis.url.getPage("backboneBase") + "attributeFragment" + attributeType + ".form" +
+                openhmis.url.getPage("backboneBase") + "attributeFragment" + attributeType + ".form" + (queryString ? "?" + queryString : ""),
                     (queryString ? "?" + queryString : ""),
                 function(content) {
                     if (element.find('#openmrs_dwr_error').length > 0 && content.indexOf("ContextAuthenticationException") !== -1) {
                         element.html("");
                         openhmis.error({ responseText: '{"error":{"detail":"ContextAuthenticationException"}}' });
+                    }
+                }
+            )
+        };
+
+        openhmis.renderPatientSearchFragment = function(element, queryString, options) {
+            var success = options ? options.success : undefined;
+
+            element.load(
+                    openhmis.url.getPage("backboneBase") + "patientSearchFragment.form" + (queryString ? "?" + queryString : ""),
+                function(content) {
+                    if (element.find('#openmrs_dwr_error').length > 0 && content.indexOf("ContextAuthenticationException") !== -1) {
+                        element.html("");
+                        openhmis.error({ responseText: '{"error":{"detail":"ContextAuthenticationException"}}' });
+                    } else {
+                        if (success) {
+                            success(content);
+                        }
                     }
                 }
             )
