@@ -18,7 +18,7 @@ define(
     openhmis.url.backboneBase + 'js/lib/underscore',
     openhmis.url.backboneBase + 'js/lib/backbone',
     'js!' + openhmis.url.backboneBase + 'js/lib/jquery-ui.custom.min.js!order',
-    'js!' + openhmis.url.backboneBase + 'js/lib/jquery.stepper.js'
+//    'js!' + openhmis.url.backboneBase + 'js/lib/jquery.stepper.js'
   ],
   function($, _, Backbone) {
 
