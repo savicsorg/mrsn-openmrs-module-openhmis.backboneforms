@@ -50,7 +50,7 @@ define(openhmis.url.backboneBase + "js/openhmis",
 						alert(__("You do not have the required privileges to adjust a bill.\n\nPlease contact your supervisor about adjusting a bill."));
 					}
 				}
-				else if (o.message.indexOf("no rounding item ID") !== -1) {
+				else if (o.message && o.message.indexOf("no rounding item ID") !== -1) {
 					alert(__(o.message + "\n\nPlease specify a rounding item or disable rounding."));
 				}
 				else {
@@ -103,6 +103,10 @@ define(openhmis.url.backboneBase + "js/openhmis",
 		};
 
 		openhmis.dateFormat = function (date, includeTime) {
+			if (typeof date === "string") {
+				date = new Date(date);
+			}
+
 			var padZero = openhmis.padZero;
 			var day = date.getDate();
 			var month = date.getMonth() + 1;
@@ -131,6 +135,14 @@ define(openhmis.url.backboneBase + "js/openhmis",
 			}
 
 			return date ? date.toLocaleString() : "";
+		};
+
+		openhmis.timeFormatLocale = function(date) {
+			if (typeof date === "string") {
+				date = new Date(date);
+			}
+
+			return date ? date.toLocaleTimeString() : "";
 		};
 
 		openhmis.iso8601Date = function (d) {
