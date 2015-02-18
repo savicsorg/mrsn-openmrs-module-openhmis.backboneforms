@@ -311,7 +311,18 @@ define(
             events: {
                 'click [data-action="remove"]': function (event) {
                     event.preventDefault();
-                    this.list.removeItem(this);
+	                var name = this.key;
+	                name = (name.substring(0, name.length - 1));
+	                if (name == 'price') {
+		                if (confirm("Are you sure you want to remove this " + name + "? (" + this.list.value + ")")) {
+			                this.list.removeItem(this);
+		                }
+	                } else if (name == 'code') {
+		                if (confirm("Are you sure you want to remove this " + name + "? (" + this.list.model + ")")) {
+			                this.list.removeItem(this);
+		                }
+	                }
+
                 },
                 'keydown input[type=text]': function (event) {
                     if (event.keyCode != 13) return;
