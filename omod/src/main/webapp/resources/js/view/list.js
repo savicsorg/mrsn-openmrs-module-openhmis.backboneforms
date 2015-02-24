@@ -196,10 +196,11 @@ define(
             /**
              * Remove an item from the list
              * @param {List.Item} item
+             * @param message
              */
-            removeItem: function (item) {
+            removeItem: function (item, message) {
                 //Confirm delete
-                var confirmMsg = this.schema.confirmDelete;
+                var confirmMsg = message;
                 if (confirmMsg && !confirm(confirmMsg)) {
                     return;
                 }
@@ -311,18 +312,8 @@ define(
             events: {
                 'click [data-action="remove"]': function (event) {
                     event.preventDefault();
-	                var name = this.key;
-	                name = (name.substring(0, name.length - 1));
-	                if (name == 'price') {
-		                if (confirm("Are you sure you want to remove this " + name + "? (" + this.list.value + ")")) {
-			                this.list.removeItem(this);
-		                }
-	                } else if (name == 'code') {
-		                if (confirm("Are you sure you want to remove this " + name + "? (" + this.list.model + ")")) {
-			                this.list.removeItem(this);
-		                }
-	                }
-
+                    var message= this.value.meta.confirmDelete;
+                    this.list.removeItem(this, message);
                 },
                 'keydown input[type=text]': function (event) {
                     if (event.keyCode != 13) return;
