@@ -22,7 +22,7 @@ define(
 			meta: {},
 			schema: {},
 
-			initialize: function (attributes, options) {
+			initialize: function(attributes, options) {
 				openhmis.GenericModel.prototype.initialize.call(this, attributes, options);
 
 				// All instance attribute types are metadata
@@ -45,20 +45,28 @@ define(
 				this.schema.foreignKey = { type: 'BasicNumber' };
 				this.schema.regExp = { type: 'Text' };
 				this.schema.required = { type: 'Checkbox' };
-                this.schema.attributeOrder = {type: 'Hidden'};
+                this.schema.attributeOrder = {type: 'BasicNumber'};
 			},
 
-			validate: function (attrs, options) {
+			validate: function(attrs, options) {
 				if (!attrs.name) {
 					return { name: __("A name is required") }
 				}
 				return null;
 			},
 
-			toString: function () {
+			toString: function() {
 				return this.get('name');
 			}
 		});
+
+        openhmis.InstanceAttributeTypeBase = openhmis.AttributeTypeBase.extend({
+            initialize: function (attributes, options) {
+                openhmis.AttributeTypeBase.prototype.initialize.call(this, attributes, options);
+
+                this.schema.attributeOrder = {type: 'Hidden'};
+            }
+        });
 
         openhmis.AttributeBase = openhmis.GenericModel.extend({
             schema: {},
@@ -91,6 +99,10 @@ define(
                 }
 
                 return resp;
+            },
+
+            toString: function() {
+                return this.get('attributeType').name + ': ' + this.get('value');
             }
         });
 
