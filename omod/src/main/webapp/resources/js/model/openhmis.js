@@ -151,15 +151,12 @@ define(
                 openhmis.GenericModel.prototype.initialize.call(this, attributes, options);
 
                 this.schema.attributes = {
-                    type: 'List',
-                    itemType: 'NestedModel',
-                    model: this.attributeClass,
-                    subResource: true
-                }
+                    hidden: true
+                };
             },
 
             parse: function(resp) {
-                if (resp.attributes) {
+                if (resp && resp.attributes) {
                     var attributes = resp.attributes;
                     resp.attributes = [];
 
