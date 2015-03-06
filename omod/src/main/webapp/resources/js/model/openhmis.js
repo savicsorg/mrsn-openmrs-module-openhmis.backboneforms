@@ -22,7 +22,7 @@ define(
 			meta: {},
 			schema: {},
 
-			initialize: function (attributes, options) {
+			initialize: function(attributes, options) {
 				openhmis.GenericModel.prototype.initialize.call(this, attributes, options);
 
 				// All instance attribute types are metadata
@@ -45,20 +45,66 @@ define(
 				this.schema.foreignKey = { type: 'BasicNumber' };
 				this.schema.regExp = { type: 'Text' };
 				this.schema.required = { type: 'Checkbox' };
-                this.schema.attributeOrder = {type: 'Hidden'};
+                this.schema.attributeOrder = {type: 'BasicNumber'};
 			},
 
-			validate: function (attrs, options) {
+			validate: function(attrs, options) {
 				if (!attrs.name) {
 					return { name: __("A name is required") }
 				}
 				return null;
 			},
 
-			toString: function () {
+			toString: function() {
 				return this.get('name');
 			}
 		});
+
+        openhmis.InstanceAttributeTypeBase = openhmis.AttributeTypeBase.extend({
+            initialize: function (attributes, options) {
+                openhmis.AttributeTypeBase.prototype.initialize.call(this, attributes, options);
+
+                this.schema.attributeOrder = {type: 'Hidden'};
+            }
+        });
+
+        openhmis.AttributeBase = openhmis.GenericModel.extend({
+            schema: {},
+
+            attributeTypeClass: null,
+            attributeTypeEditor: null,
+
+            initialize: function(attributes, options) {
+                openhmis.GenericModel.prototype.initialize.call(this, attributes, options);
+
+                var temp = new this.attributeTypeClass();
+
+                this.schema.attributeType = {
+                    type: this.attributeTypeEditor,
+                    title: temp.meta.name,
+                    options: new openhmis.GenericCollection(null, {
+                        model: this.attributeTypeClass,
+                        url: temp.meta.restUrl
+                    }),
+                    objRef: true
+                };
+                this.schema.value = {
+                    type: "Text"
+                };
+            },
+
+            parse: function(resp) {
+                if (resp.attributeType) {
+                    resp.attributeType = new this.attributeTypeClass(resp.attributeType, { parse: true });
+                }
+
+                return resp;
+            },
+
+            toString: function() {
+                return this.get('attributeType').name + ': ' + this.get('value');
+            }
+        });
 
 		openhmis.CustomizableInstanceTypeBase = openhmis.GenericModel.extend({
             meta: {},
@@ -95,7 +141,8 @@ define(
 			}
 		});
 
-        openhmis.InstanceAttributeBase = openhmis.GenericModel.extend({
+        openhmis.CustomizableBase = openhmis.GenericModel.extend({
+            meta: {},
             schema: {},
 
             attributeClass: null,
@@ -103,18 +150,24 @@ define(
             initialize: function(attributes, options) {
                 openhmis.GenericModel.prototype.initialize.call(this, attributes, options);
 
-                this.schema.attributeType = {
-                    type: "NestedModel",
-                    objRef: true
-                };
-                this.schema.value = {
-                    type: "Text"
+                this.schema.attributes = {
+                    hidden: true
                 };
             },
 
             parse: function(resp) {
-                if (resp.attributeType) {
-                    resp.attributeType = new openhmis.attributeClass(resp.attributeType, { parse: true });
+                if (resp && resp.attributes) {
+                    var attributes = resp.attributes;
+                    resp.attributes = [];
+
+                    for (var attribute in attributes) {
+                        var instance = new this.attributeClass(attributes[attribute], { parse: true });
+                        if (attributes[attribute].order !== undefined) {
+                            resp.attributes[attributes[attribute].order] = instance;
+                        } else {
+                            resp.attributes.push(instance);
+                        }
+                    }
                 }
 
                 return resp;

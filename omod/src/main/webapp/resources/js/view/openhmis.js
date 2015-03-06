@@ -71,7 +71,9 @@ define(
             }
         });
 
-        openhmis.renderAttributesFragment = function(element, attributeType, queryString) {
+        openhmis.renderAttributesFragment = function(element, attributeType, queryString, options) {
+            var success = options ? options.success : undefined;
+
             // Load attribute form HTML fragment from server
             element.load(
                 openhmis.url.getPage("backboneBase") + "attributeFragment" + attributeType + ".form" + (queryString ? "?" + queryString : ""),
@@ -80,6 +82,10 @@ define(
                     if (element.find('#openmrs_dwr_error').length > 0 && content.indexOf("ContextAuthenticationException") !== -1) {
                         element.html("");
                         openhmis.error({ responseText: '{"error":{"detail":"ContextAuthenticationException"}}' });
+                    } else {
+                        if (success) {
+                            success();
+                        }
                     }
                 }
             )
@@ -101,6 +107,15 @@ define(
                     }
                 }
             )
+        };
+
+        openhmis.displayAttributes = function(attributesEl, attributes) {
+            for (var i in attributes) {
+                var el = attributesEl.find("#" + attributes[i].get('attributeType').id);
+                if (el.length) {
+                    el.val(attributes[i].get('value'))
+                }
+            }
         };
 
         openhmis.loadAttributes = function(view, attributesEl, attributeClass, errorDisplayFn) {

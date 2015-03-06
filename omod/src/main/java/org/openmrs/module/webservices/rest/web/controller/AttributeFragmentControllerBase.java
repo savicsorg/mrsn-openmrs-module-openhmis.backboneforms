@@ -20,6 +20,7 @@ import java.util.Map;
 import org.openmrs.Concept;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.openhmis.commons.api.entity.model.IAttributeType;
 import org.openmrs.module.openhmis.commons.api.entity.model.IInstanceAttributeType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -32,15 +33,15 @@ import javax.servlet.http.HttpServletRequest;
 public abstract class AttributeFragmentControllerBase {
 	public static final String REQUEST_MAPPING_PATH_BASE = "/module/openhmis/backboneforms/attributeFragment";
 
-	protected abstract List<? extends IInstanceAttributeType<?>> getAttributeTypes(HttpServletRequest request);
+	protected abstract List<? extends IAttributeType> getAttributeTypes(HttpServletRequest request);
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String render(HttpServletRequest request, ModelMap model) {
-		List<? extends IInstanceAttributeType<?>> attributeTypes = getAttributeTypes(request);
+		List<? extends IAttributeType> attributeTypes = getAttributeTypes(request);
 
 		ConceptService conceptService = Context.getConceptService();
 		Map<Integer, Concept> conceptMap = new HashMap<Integer, Concept>();
-		for (IInstanceAttributeType<?> type : attributeTypes) {
+		for (IAttributeType type : attributeTypes) {
 			if (type.getFormat().equals("org.openmrs.Concept") && type.getForeignKey() != null) {
 				conceptMap.put(type.getForeignKey(), conceptService.getConcept(type.getForeignKey()));
 			}
