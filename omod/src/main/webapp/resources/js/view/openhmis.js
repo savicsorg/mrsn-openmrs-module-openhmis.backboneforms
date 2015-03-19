@@ -119,6 +119,10 @@ define(
         };
 
         openhmis.loadAttributes = function(view, attributesEl, attributeClass, errorDisplayFn) {
+            if (attributesEl == null || attributeClass == null) {
+                return;
+            }
+
             var attributeForm = attributesEl.serializeArray();
             var attributes = [];
             var errors = [];
