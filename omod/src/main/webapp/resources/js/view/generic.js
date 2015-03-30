@@ -1156,6 +1156,21 @@ define(
 			listView.on("itemSelect", function(view) { addEditView.edit(view.model) });
 			listView.setElement(options.listElement);
 			listView.fetch();
+
+			// Look for a 'uuid' url parameter
+			var uuid = openhmis.getQueryStringParameter("uuid");
+			if (uuid && uuid !== "") {
+				// Create the model and set the id
+				var modelInstance = new model();
+				modelInstance.id = uuid;
+
+				modelInstance.fetch({
+					success: function(model) {
+						// Display the model (this will load the model)
+						addEditView.edit(model);
+					}
+				});
+			}
 		};
 
 		Backbone.Form.setTemplates({
