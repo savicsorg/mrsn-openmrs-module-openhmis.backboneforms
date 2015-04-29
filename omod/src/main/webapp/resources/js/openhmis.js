@@ -26,10 +26,10 @@ define(openhmis.url.backboneBase + "js/openhmis",
 			evaluate:  /<\?(.+?)\?>/g,
 			interpolate: /<\?=(.+?)\?>/g
 		};
-		
+
 		var openhmis = window.openhmis || {};
 		openhmis.templates = {};
-		
+
 		openhmis.url.getPage = function (moduleBaseName) {
 			return openhmis.url.page + openhmis.url[moduleBaseName];
 		};
@@ -103,6 +103,10 @@ define(openhmis.url.backboneBase + "js/openhmis",
 		};
 
 		openhmis.dateFormat = function (date, includeTime) {
+			if(date == null) {
+				return null;
+			}
+
 			if (typeof date === "string") {
 				date = new Date(date);
 			}
@@ -119,6 +123,23 @@ define(openhmis.url.backboneBase + "js/openhmis",
 					+ ":" + padZero(date.getMinutes());
 			}
 			return strDate;
+		};
+
+		openhmis.dateFormatWithSeconds = function (date) {
+			if (typeof date === "string") {
+				date = new Date(date);
+			}
+
+			var padZero = openhmis.padZero;
+			var day = date.getDate();
+			var month = date.getMonth() + 1;
+			var year = date.getFullYear();
+			day = padZero(day);
+			month = padZero(month);
+			var hours = padZero(date.getHours());
+			var minutes = padZero(date.getMinutes());
+			var seconds= padZero(date.getSeconds());
+			return day + '-' + month + '-' + year + " " + hours + ":" + minutes + ":" + seconds;
 		};
 
 		openhmis.dateFormatLocale = function (date) {
@@ -254,10 +275,10 @@ define(openhmis.url.backboneBase + "js/openhmis",
 				str = str.charAt(0).toLowerCase() + str.substring(1);
 			return str;
 		};
-		
+
 		// Use uuid for id
 		Backbone.Model.prototype.idAttribute = 'uuid';
-		
+
 		/**
 		 * Template helper function
 		 *
@@ -295,7 +316,7 @@ define(openhmis.url.backboneBase + "js/openhmis",
 
 			return augmentedTemplate;
 		};
-		
+
 		return openhmis;
 	}
 );
