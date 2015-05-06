@@ -19,7 +19,7 @@ define(
 	],
 	function(openhmis, __) {
 		openhmis.AttributeTypeBase = openhmis.GenericModel.extend({
-			meta: {},
+			meta: {confirmDelete: 'Are you sure you want to delete this Attribute Type?'},
 			schema: {},
 
 			initialize: function(attributes, options) {
@@ -37,7 +37,12 @@ define(
 				}
 
 				// Add default schema fields
-				this.schema.name = { type: 'Text' };
+				this.schema.name = {
+					type: 'Text',
+					validators: [
+						{ type: 'required', message: 'Name is required' }
+					]
+				};
 				this.schema.format = {
 					type: 'Select',
 					options: new openhmis.FieldFormatCollection()
@@ -46,13 +51,6 @@ define(
 				this.schema.regExp = { type: 'Text' };
 				this.schema.required = { type: 'Checkbox' };
                 this.schema.attributeOrder = {type: 'BasicNumber'};
-			},
-
-			validate: function(attrs, options) {
-				if (!attrs.name) {
-					return { name: __("A name is required") }
-				}
-				return null;
 			},
 
 			toString: function() {
