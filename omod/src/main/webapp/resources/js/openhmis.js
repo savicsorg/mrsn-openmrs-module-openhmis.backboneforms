@@ -103,6 +103,10 @@ define(openhmis.url.backboneBase + "js/openhmis",
 		};
 
 		openhmis.dateFormat = function (date, includeTime) {
+			if(date == null) {
+				return null;
+			}
+
 			if (typeof date === "string") {
 				date = new Date(date);
 			}
