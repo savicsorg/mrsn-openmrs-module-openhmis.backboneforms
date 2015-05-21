@@ -246,7 +246,8 @@ define(openhmis.url.backboneBase + "js/openhmis",
 		};
 
 		openhmis.round = function (val, nearest, mode) {
-			nearest = nearest ? nearest : 1;
+			var isNumeric = openhmis.isNumeric(nearest);
+			nearest = isNumeric ? nearest : 1;
 			if (nearest === 0) return val;
 			var factor = 1 / nearest;
 			switch (mode) {
