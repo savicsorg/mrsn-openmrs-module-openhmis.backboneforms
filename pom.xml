@@ -3,7 +3,7 @@
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>openhmis.backboneforms</artifactId>
-	<version>2.3.4-SNAPSHOT</version>
+	<version>2.3.4</version>
 	<packaging>pom</packaging>
 	<name>OpenHMIS Backbone Forms Module</name>
 	<description>Use Backbone-based forms with OpenMRS</description>
@@ -32,7 +32,7 @@
 		<connection>scm:git:git@github.com:OpenHMIS/openmrs-module-openhmis.backboneforms.git</connection>
 		<developerConnection>scm:git:git@github.com:OpenHMIS/openmrs-module-openhmis.backboneforms.git</developerConnection>
 		<url>scm:git:git@github.com:OpenHMIS/openmrs-module-openhmis.backboneforms.git</url>
-	  <tag>v2.3.3</tag>
+	  <tag>v2.3.4</tag>
   </scm>
 
 	<modules>
