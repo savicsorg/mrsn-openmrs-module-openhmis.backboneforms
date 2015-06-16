@@ -23,5 +23,4 @@ public class BackboneWebConstants extends WebConstants {
 	public static final String BACKBONE_CURL_JS = MODULE_RESOURCE_ROOT + "js/curl.js";
 
 	public static final String INIT_JS_URI = MODULE_ROOT + "init.js";
-	public static final String MESSAGEPROPERTIES_JS_URI = MODULE_ROOT + "messageProperties.js";
 }
