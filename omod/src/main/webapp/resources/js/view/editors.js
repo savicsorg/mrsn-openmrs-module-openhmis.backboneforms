@@ -452,3 +452,72 @@ define(
 		return editors;
 	}
 );
+
+/**
+ * Re-orders the locations collection models collection in such a way as to get all chidren next to their parents and supports depth
+ */
+function reorderLocationsToSupportAllDepthChildrenNextToTheirParents(locationModels) {
+	if(locationModels !== null && locationModels !== undefined && locationModels.length > 0) {
+		var rootLocations = new Backbone.Collection();
+		var reOrderedLocations = new Backbone.Collection();
+		
+		for(i = 0; i < locationModels.length; i++) {//look through all locations and pick out the root locations
+			var location = locationModels[i];
+			
+			if(location !== null && location !== undefined) {
+				location.fetch({async:false, success: function(fetchedloc) {//loads the location model with all its properties
+					if(fetchedloc !== (null || undefined) && fetchedloc.get("parentLocation") !== (null || undefined)) {//true means fecthedLoc is a root location
+						rootLocations.add(location);
+					}
+				}});
+			}
+		}
+		
+		if(rootLocations !== (null || undefined) && rootLocations.length > 0) {
+			for(i = 0; i < rootLocations.length; i++) {//for each root location, walk through the location tree
+				var rootLoc = rootLocations[i];
+				
+				if(rootLoc !== (null || undefined)) {
+					walkThroughTheLocationTree(rootLoc, reOrderedLocations);
+				}
+			}
+		}
+		
+	}
+	return locationModels;
+}
+
+/**
+ * Moves through the rootLocation properties and picks out its inherent locatios/children and arranges them next to it
+ */
+function walkThroughTheLocationTree(rootLoc, reOrderedLocations) {
+	addLocationToReorderedLocations(recreateRightModelObject(rootLoc.get("name"), rootLoc.get("display"), rootLoc.get("uuid"), rootLoc.get("link")[0].uri, 0), reOrderedLocations);//add the root location first before it's inherent children
+	
+	//TODO this where the recursion/ while looping should occur for each location
+	
+}
+
+/**
+ * Adds a non existing location model into the re-ordered models collection
+ */
+function addLocationToReorderedLocations(location, reOrderedLocations) {
+	if(location !== (null || undefined) && reOrderedLocations !== (null || undefined) && !reOrderedLocations.contains(location)) {
+		reOrderedLocations.add(location);
+	}
+}
+
+/**
+ * Recreates a valid location model and adds a new depth property onto it
+ */
+function recreateRightModelObject(name, display, uuid, link, depth) {
+	var location = new openhmis.Location();
+	
+	location.id = uuid;
+	location.set("name", name);
+	location.set("uuid", uuid);
+	location.set("display", display);
+	location.set("links", [{"uri":link}]);
+	location.set("depth", depth);
+	
+	return model;
+}
