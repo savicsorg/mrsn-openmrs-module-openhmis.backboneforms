@@ -368,7 +368,13 @@ define(
 		editors.LocationSelect = editors.GenericModelSelect.extend({
 			modelType: openhmis.Location,
 			displayAttr: "name",
-			allowNull: true
+			allowNull: true,
+			
+			// Overriding renderOptions function to support hierarchical locations display
+            renderOptions: function(options) {
+            	options.models = reorderLocationsToSupportAllDepthChildrenNextToTheirParents(options.models);
+            	editors.GenericModelSelect.prototype.renderOptions.call(this, options);
+            }
 		});
 
 		editors.UserSelect = editors.GenericModelSelect.extend({
@@ -466,23 +472,28 @@ function reorderLocationsToSupportAllDepthChildrenNextToTheirParents(locationMod
 			
 			if(location !== null && location !== undefined) {
 				location.fetch({async:false, success: function(fetchedloc) {//loads the location model with all its properties
-					if(fetchedloc !== (null || undefined) && fetchedloc.get("parentLocation") !== (null || undefined)) {//true means fecthedLoc is a root location
+					if(fetchedloc !== null && fetchedloc !== undefined && fetchedloc.get("parentLocation") !== (null || undefined)) {//true means fecthedLoc is a root location
 						rootLocations.add(location);
 					}
 				}});
 			}
 		}
 		
-		if(rootLocations !== (null || undefined) && rootLocations.length > 0) {
+		if(rootLocations !== null && rootLocations !== undefined && rootLocations.length > 0) {
 			for(i = 0; i < rootLocations.length; i++) {//for each root location, walk through the location tree
 				var rootLoc = rootLocations[i];
 				
-				if(rootLoc !== (null || undefined)) {
+				if(rootLoc !== null && rootLoc !== undefined) {
+					addLocationToReorderedLocations(recreateRightModelObject(rootLoc.get("display"), rootLoc.get("uuid"), rootLoc.get("links")[0].uri), reOrderedLocations);//add the root location first before it's inherent children
+					
 					walkThroughTheLocationTree(rootLoc, reOrderedLocations);
 				}
 			}
 		}
 		
+		if(reOrderedLocations.length === locationModels.length) {
+			return reOrderedLocations;
+		}
 	}
 	return locationModels;
 }
@@ -490,18 +501,31 @@ function reorderLocationsToSupportAllDepthChildrenNextToTheirParents(locationMod
 /**
  * Moves through the rootLocation properties and picks out its inherent locatios/children and arranges them next to it
  */
-function walkThroughTheLocationTree(rootLoc, reOrderedLocations) {
-	addLocationToReorderedLocations(recreateRightModelObject(rootLoc.get("name"), rootLoc.get("display"), rootLoc.get("uuid"), rootLoc.get("link")[0].uri, 0), reOrderedLocations);//add the root location first before it's inherent children
-	
+function walkThroughTheLocationTree(location, reOrderedLocations) {
 	//TODO this where the recursion/ while looping should occur for each location
-	
+	location.fetch({
+		success: function(fetchedLoc) {
+			if(fetchedLoc !== undefined && fetchedLoc !== null) {
+				var children = fetchedLoc.childLocations;
+				
+				if(children !== null && children !== undefined && children.length > 0) {
+					children.forEach(function(child) {
+						var childModel = recreateRightModelObject("&nbsp;&nbsp;" + child.get("display"), child.get("uuid"), child.get("links")[0].uri, reOrderedLocations);
+							
+						addLocationToReorderedLocations(childModel);//add the child location
+						walkThroughTheLocationTree(childModel, reOrderedLocations);
+					});
+				}
+			}
+		}
+	});
 }
 
 /**
  * Adds a non existing location model into the re-ordered models collection
  */
 function addLocationToReorderedLocations(location, reOrderedLocations) {
-	if(location !== (null || undefined) && reOrderedLocations !== (null || undefined) && !reOrderedLocations.contains(location)) {
+	if(location !== null && location !== undefined && reOrderedLocations !== null && reOrderedLocations !== undefined && !reOrderedLocations.contains(location)) {
 		reOrderedLocations.add(location);
 	}
 }
@@ -509,15 +533,13 @@ function addLocationToReorderedLocations(location, reOrderedLocations) {
 /**
  * Recreates a valid location model and adds a new depth property onto it
  */
-function recreateRightModelObject(name, display, uuid, link, depth) {
+function recreateRightModelObject(display, uuid, link) {
 	var location = new openhmis.Location();
 	
 	location.id = uuid;
-	location.set("name", name);
 	location.set("uuid", uuid);
 	location.set("display", display);
 	location.set("links", [{"uri":link}]);
-	location.set("depth", depth);
 	
 	return model;
 }
