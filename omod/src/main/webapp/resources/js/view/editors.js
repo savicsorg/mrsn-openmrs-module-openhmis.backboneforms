@@ -374,7 +374,92 @@ define(
             renderOptions: function(options) {
             	options.models = reorderLocationsToSupportAllDepthChildrenNextToTheirParents(options.models);
             	editors.GenericModelSelect.prototype.renderOptions.call(this, options);
-            }
+            },
+		
+		   /**
+			* Re-orders the locations collection models collection in such a way as to get all chidren next to their parents and supports depth
+			*/
+			reorderLocationsToSupportAllDepthChildrenNextToTheirParents: function(locationModels) {
+				if(locationModels !== null && locationModels !== undefined && locationModels.length > 0) {
+					var rootLocations = new Backbone.Collection();
+					var reOrderedLocations = new Backbone.Collection();
+					
+					for(i = 0; i < locationModels.length; i++) {//look through all locations and pick out the root locations
+						var location = locationModels[i];
+						
+						if(location !== null && location !== undefined) {
+							location.fetch({async:false, success: function(fetchedloc) {//loads the location model with all its properties
+								if(fetchedloc !== null && fetchedloc !== undefined && fetchedloc.get("parentLocation") !== (null || undefined)) {//true means fecthedLoc is a root location
+									rootLocations.add(location);
+								}
+							}});
+						}
+					}
+					
+					if(rootLocations !== null && rootLocations !== undefined && rootLocations.length > 0) {
+						for(i = 0; i < rootLocations.length; i++) {//for each root location, walk through the location tree
+							var rootLoc = rootLocations[i];
+							
+							if(rootLoc !== null && rootLoc !== undefined) {
+								addLocationToReorderedLocations(recreateRightModelObject(rootLoc.get("display"), rootLoc.get("uuid"), rootLoc.get("links")[0].uri), reOrderedLocations);//add the root location first before it's inherent children
+								
+								walkThroughTheLocationTree(rootLoc, reOrderedLocations);
+							}
+						}
+					}
+					
+					if(reOrderedLocations.length === locationModels.length) {
+						return reOrderedLocations;
+					}
+				}
+				return locationModels;
+			},
+			
+		   /**
+		    * Moves through the rootLocation properties and picks out its inherent locatios/children and arranges them next to it
+			*/
+			walkThroughTheLocationTree: function(location, reOrderedLocations) {
+				//TODO this where the recursion/ while looping should occur for each location
+				location.fetch({
+					success: function(fetchedLoc) {
+						if(fetchedLoc !== undefined && fetchedLoc !== null) {
+							var children = fetchedLoc.childLocations;
+							
+							if(children !== null && children !== undefined && children.length > 0) {
+								children.forEach(function(child) {
+									var childModel = recreateRightModelObject("&nbsp;&nbsp;" + child.get("display"), child.get("uuid"), child.get("links")[0].uri, reOrderedLocations);
+										
+									addLocationToReorderedLocations(childModel);//add the child location
+									walkThroughTheLocationTree(childModel, reOrderedLocations);
+								});
+							}
+						}
+					}
+				});
+			},
+			
+		   /**
+		    * Adds a non existing location model into the re-ordered models collection
+			*/
+			addLocationToReorderedLocations: function(location, reOrderedLocations) {
+				if(location !== null && location !== undefined && reOrderedLocations !== null && reOrderedLocations !== undefined && !reOrderedLocations.contains(location)) {
+					reOrderedLocations.add(location);
+				}
+			},
+			
+		   /**
+		    * Recreates a valid location model and adds a new depth property onto it
+		    */
+			recreateRightModelObject: function(display, uuid, link) {
+				var location = new openhmis.Location();
+				
+				location.id = uuid;
+				location.set("uuid", uuid);
+				location.set("display", display);
+				location.set("links", [{"uri":link}]);
+				
+				return model;
+			}
 		});
 
 		editors.UserSelect = editors.GenericModelSelect.extend({
@@ -458,88 +543,3 @@ define(
 		return editors;
 	}
 );
-
-/**
- * Re-orders the locations collection models collection in such a way as to get all chidren next to their parents and supports depth
- */
-function reorderLocationsToSupportAllDepthChildrenNextToTheirParents(locationModels) {
-	if(locationModels !== null && locationModels !== undefined && locationModels.length > 0) {
-		var rootLocations = new Backbone.Collection();
-		var reOrderedLocations = new Backbone.Collection();
-		
-		for(i = 0; i < locationModels.length; i++) {//look through all locations and pick out the root locations
-			var location = locationModels[i];
-			
-			if(location !== null && location !== undefined) {
-				location.fetch({async:false, success: function(fetchedloc) {//loads the location model with all its properties
-					if(fetchedloc !== null && fetchedloc !== undefined && fetchedloc.get("parentLocation") !== (null || undefined)) {//true means fecthedLoc is a root location
-						rootLocations.add(location);
-					}
-				}});
-			}
-		}
-		
-		if(rootLocations !== null && rootLocations !== undefined && rootLocations.length > 0) {
-			for(i = 0; i < rootLocations.length; i++) {//for each root location, walk through the location tree
-				var rootLoc = rootLocations[i];
-				
-				if(rootLoc !== null && rootLoc !== undefined) {
-					addLocationToReorderedLocations(recreateRightModelObject(rootLoc.get("display"), rootLoc.get("uuid"), rootLoc.get("links")[0].uri), reOrderedLocations);//add the root location first before it's inherent children
-					
-					walkThroughTheLocationTree(rootLoc, reOrderedLocations);
-				}
-			}
-		}
-		
-		if(reOrderedLocations.length === locationModels.length) {
-			return reOrderedLocations;
-		}
-	}
-	return locationModels;
-}
-
-/**
- * Moves through the rootLocation properties and picks out its inherent locatios/children and arranges them next to it
- */
-function walkThroughTheLocationTree(location, reOrderedLocations) {
-	//TODO this where the recursion/ while looping should occur for each location
-	location.fetch({
-		success: function(fetchedLoc) {
-			if(fetchedLoc !== undefined && fetchedLoc !== null) {
-				var children = fetchedLoc.childLocations;
-				
-				if(children !== null && children !== undefined && children.length > 0) {
-					children.forEach(function(child) {
-						var childModel = recreateRightModelObject("&nbsp;&nbsp;" + child.get("display"), child.get("uuid"), child.get("links")[0].uri, reOrderedLocations);
-							
-						addLocationToReorderedLocations(childModel);//add the child location
-						walkThroughTheLocationTree(childModel, reOrderedLocations);
-					});
-				}
-			}
-		}
-	});
-}
-
-/**
- * Adds a non existing location model into the re-ordered models collection
- */
-function addLocationToReorderedLocations(location, reOrderedLocations) {
-	if(location !== null && location !== undefined && reOrderedLocations !== null && reOrderedLocations !== undefined && !reOrderedLocations.contains(location)) {
-		reOrderedLocations.add(location);
-	}
-}
-
-/**
- * Recreates a valid location model and adds a new depth property onto it
- */
-function recreateRightModelObject(display, uuid, link) {
-	var location = new openhmis.Location();
-	
-	location.id = uuid;
-	location.set("uuid", uuid);
-	location.set("display", display);
-	location.set("links", [{"uri":link}]);
-	
-	return model;
-}
