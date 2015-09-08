@@ -39,19 +39,19 @@ define(openhmis.url.backboneBase + "js/openhmis",
 			var handleErrorResp = function (resp) {
 				var o = (typeof resp === "string") ? $.parseJSON(resp).error : resp;
 				if (o.detail.indexOf("ContextAuthenticationException") !== -1) {
-					alert(__("Your session has timed out.  You will be redirected to the login page."));
+					alert(__(openhmis.getMessage('${project.parent.artifactId}.session.expire.alert')));
 					window.location.reload();
 				}
 				else if (o.detail.indexOf("AccessControlException") !== -1) {
 					if (o.detail.indexOf("refund") !== -1) {
-						alert(__("The total of the bill is negative and you do not have the required privileges to process a refund.\n\nPlease contact your supervisor about processing refunds."));
+						alert(__(openhmis.getMessage('${project.parent.artifactId}.required.refund.privileges.alert')));
 					}
 					else if (o.detail.indexOf("adjust") !== -1) {
-						alert(__("You do not have the required privileges to adjust a bill.\n\nPlease contact your supervisor about adjusting a bill."));
+						alert(__(openhmis.getMessage('${project.parent.artifactId}.required.bill.adjust.privileges.alert')));
 					}
 				}
 				else if (o.message && o.message.indexOf("no rounding item ID") !== -1) {
-					alert(__(o.message + "\n\nPlease specify a rounding item or disable rounding."));
+					alert(__(o.message + openhmis.getMessage('${project.parent.artifactId}.required.rounding.item.alert')));
 				}
 				else {
 					var firstLfPos = o.detail.indexOf('\n');

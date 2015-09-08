@@ -20,8 +20,8 @@ define(
 	function(openhmis, __) {
 		openhmis.Visit = openhmis.GenericModel.extend({
 			meta: {
-				name: __("Visit"),
-				namePlural: __("Visits"),
+				name: __(openhmis.getMessage('${project.parent.artifactId}.visits.name')),
+				namePlural: __(openhmis.getMessage('${project.parent.artifactId}.visits.namePlura')),
 				restUrl: "v1/visit"
 			},
 			schema: {

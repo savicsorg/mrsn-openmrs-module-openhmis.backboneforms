@@ -61,13 +61,13 @@ define(
 							if (this.page - 1 >= 1)
 								this.page--;
 							else
-								throw "Already at the first page.";
+								throw openhmis.getMessage('${project.parent.artifactId}.pagination.first.page.message');
 							break;
 						case "next":
 							if (this.page + 1 <= Math.floor(this.model.totalLength / this.options.pageSize) + 1)
 								this.page++;
 							else
-								throw "Already at the last page.";
+								throw openhmis.getMessage('${project.parent.artifactId}.pagination.last.page.message');
 							break;
 						case "last":
 							this.page = this.getMaxPageNum();
@@ -78,9 +78,9 @@ define(
 				}
 				else {
 					if (pageNum < 1)
-						throw "Can't go before first page.";
+						throw openhmis.getMessage('${project.parent.artifactId}.pagination.first.page.error');
 					else if (pageNum > this.getMaxPageNum())
-						throw "Can't go beyond the last page.";
+						throw openhmis.getMessage('${project.parent.artifactId}.pagination.last.page.error');
 					else
 						this.page = pageNum;
 				}

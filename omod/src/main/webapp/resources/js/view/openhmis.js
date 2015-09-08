@@ -135,7 +135,7 @@ define(
                 if (meta && meta.required === true && !attributeForm[i].value) {
                     errors.push({
                         selector: "#" + attributeForm[i].name,
-                        message: "This is a required field.",
+                        message: openhmis.getMessage('${project.parent.artifactId}.required.field.prompt'),
                         selectParent: true
                     });
                     break;

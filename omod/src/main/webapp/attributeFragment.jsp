@@ -1,4 +1,5 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
+<%@ include file="localHeader.jsp"%>
 <c:if test="${!empty attributeTypes}">
 	<fieldset>
 		<ul>

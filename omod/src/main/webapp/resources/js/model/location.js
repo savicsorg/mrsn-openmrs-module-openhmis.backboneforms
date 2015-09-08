@@ -19,8 +19,8 @@ define(
 	function(openhmis, __) {
 		openhmis.Location = openhmis.GenericModel.extend({
 			meta: {
-				name: __("Location"),
-				namePlural: __("Locations"),
+				name: __(openhmis.getMessage('${project.parent.artifactId}.location.name')),
+				namePlural: __(openhmis.getMessage('${project.parent.artifactId}.location.namePlural')),
 				restUrl: 'v1/location'
 			},
 

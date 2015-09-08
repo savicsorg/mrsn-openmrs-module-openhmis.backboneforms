@@ -19,8 +19,8 @@ define(
 	function(openhmis, __) {
 		openhmis.Role = openhmis.GenericModel.extend({
 			meta: {
-				name: __("Role"),
-				namePlural: __("Roles"),
+				name: __(openhmis.getMessage('${project.parent.artifactId}.role.name')),
+				namePlural: __(openhmis.getMessage('${project.parent.artifactId}.role.namePlural')),
 				restUrl: 'v1/role'
 			},
 
