@@ -369,20 +369,17 @@ define(
 			modelType: openhmis.Location,
 			displayAttr: "name",
 			allowNull: true,
-			reOrderedLocations: new Backbone.Collection(),
-			
+
 			// Overriding renderOptions function to support hierarchical locations display
             renderOptions: function(options) {
-            	options.models = this.reorderLocationsToSupportAllDepthChildrenNextToTheirParents(options.models);//TODO not assigning
+            	options.models = this.reorderLocationsToSupportAllDepthChildrenNextToTheirParents(options.models, this, new Backbone.Collection());//TODO not assigning
             	editors.GenericModelSelect.prototype.renderOptions.call(this, options);
             },
 		
 		   /**
 			* Re-orders the locations collection models collection in such a way as to get all chidren next to their parents and supports depth
 			*/
-			reorderLocationsToSupportAllDepthChildrenNextToTheirParents: function(locationModels) {
-				var cur = this;
-				
+			reorderLocationsToSupportAllDepthChildrenNextToTheirParents: function(locationModels, cur, reOrderedLocations) {
 				if(locationModels !== null && locationModels !== undefined && locationModels.length > 0) {
 					var rootLocations = new Backbone.Collection();
 					
@@ -405,14 +402,14 @@ define(
 							if(rootLoc !== null && rootLoc !== undefined) {
 								var locationModel = cur.recreateRightModelObject(rootLoc.get("display"), rootLoc.get("uuid"), rootLoc.get("links")[0].uri);
 								
-								cur.addLocationToReorderedLocations(locationModel);//add the root location first before it's inherent children
-								cur.walkThroughTheLocationTree(rootLoc);
+								reOrderedLocations.add(locationModel);
+								cur.walkThroughTheLocationTree(rootLoc, cur, undefined, reOrderedLocations, undefined);
 							}
 						}
 					}
 					
-					if(this.reOrderedLocations.models.length === locationModels.length) {
-						return this.reOrderedLocations.models;
+					if(reOrderedLocations.models.length === locationModels.length) {
+						return reOrderedLocations.models;
 					} else {
 						return locationModels;
 					}
@@ -424,35 +421,54 @@ define(
 		   /**
 		    * Moves through the rootLocation properties and picks out its inherent locatios/children and arranges them next to it
 			*/
-			walkThroughTheLocationTree: function(location) {
-				var cur = this;
-				//TODO this where the recursion/ while looping should occur for each location
-				location.fetch({async:false,
+			walkThroughTheLocationTree: function(location, cur, selfInokingInstance, reOrderedLocations, parents) {
+				var url = location.get("links")[0].uri;
+				
+				$.ajax({async:false, url: url,//using location.fetch overwrites the last location in reOrderedLocations
 					success: function(fetchedLoc) {
 						if(fetchedLoc !== undefined && fetchedLoc !== null) {
-							var children = fetchedLoc.get("childLocations");
+							var children = fetchedLoc.childLocations;
+							var papa = (fetchedLoc.parentLocation !== undefined && fetchedLoc.parentLocation !== null) ? fetchedLoc.parentLocation.display : location.get("display");
 							
 							if(children !== null && children !== undefined && children.length > 0) {
 								children.forEach(function(child) {
-									var childModel = cur.recreateRightModelObject("&nbsp;&nbsp;" + child.display, child.uuid, child.links[0].uri);
-										
-									cur.addLocationToReorderedLocations(childModel);//add the child location
-									cur.walkThroughTheChildLocationTree(childModel);//TODO fix issues
+									var indentation = "";
+									var gottenChild;
+									
+									$.ajax({async:false, url: child.links[0].uri,success: function(fetchedLoc) {
+										gottenChild = fetchedLoc;//loading the child location offers to this scope all properties of a child
+									}});
+									papa = gottenChild.parentLocation.display;
+									parents = parents === undefined ? [papa] : parents;
+									if(papa !== undefined) {
+										for(t = 0; t < parents.length; t++) {
+											if($.inArray(papa, parents) === -1) {
+												parents.push(papa);//add parent location if it doesn't exist
+											}
+											if(parents[parents.length-1] !== papa) {
+												parents.pop();//remove last location in-case the current parent location is not itself, ensures that parent is actually not a grand
+											}
+										}
+									}
+									for(t = 0; t < parents.length; t++) {
+										indentation += "&nbsp;&nbsp;";
+									}
+									
+									var childModel = cur.recreateRightModelObject(indentation + child.display, child.uuid, child.links[0].uri);
+									
+									reOrderedLocations.add(childModel);
+									if(selfInokingInstance !== undefined) {
+										selfInokingInstance(childModel, cur, selfInokingInstance, reOrderedLocations, parents);
+									} else {
+										cur.__proto__.walkThroughTheLocationTree(childModel, cur, cur.__proto__.walkThroughTheLocationTree, reOrderedLocations, parents);//TODO fix issues
+									}
 								});
+							} else {
+								parents = undefined;
 							}
 						}
 					}
 				});
-			},
-			
-		   /**
-		    * Adds a non existing location model into the re-ordered models collection
-			*/
-			addLocationToReorderedLocations: function(location) {
-				if(location !== null && location !== undefined && this.reOrderedLocations !== null && this.reOrderedLocations !== undefined && !this.reOrderedLocations.contains(location)) {
-					this.reOrderedLocations.add(location);
-					console.log("ADDED Location: " + location.get("display"));
-				}
 			},
 			
 		   /**
