@@ -6,8 +6,8 @@ define(
     function(Backbone, openhmis) {
     	openhmis.Drug = openhmis.GenericModel.extend({
     		meta: {
-    			name: openhmis.getMessage('${project.parent.artifactId}.drug.name'),
-                namePlural: openhmis.getMessage('${project.parent.artifactId}.drug.namePlural'),
+    			name: openhmis.getMessage('openhmis.backboneforms.drug.name'),
+                namePlural: openhmis.getMessage('openhmis.backboneforms.drug.namePlural'),
                 restUrl: 'v1/drug'
     		},
     		schema: {

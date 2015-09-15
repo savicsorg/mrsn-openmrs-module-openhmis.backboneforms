@@ -19,7 +19,7 @@ define(
 	],
 	function(openhmis, __) {
 		openhmis.AttributeTypeBase = openhmis.GenericModel.extend({
-			meta: {confirmDelete: openhmis.getMessage('${project.parent.artifactId}.attribute.type.delete')},
+			meta: {confirmDelete: openhmis.getMessage('openhmis.backboneforms.attribute.type.delete')},
 			schema: {},
 
 			initialize: function(attributes, options) {
@@ -30,17 +30,17 @@ define(
 
 				// Add default names if not defined
 				if (this.meta === undefined || this.meta.name === undefined) {
-					this.meta.name = openhmis.getMessage('${project.parent.artifactId}.attribute.type.name');
+					this.meta.name = openhmis.getMessage('openhmis.backboneforms.attribute.type.name');
 				}
 				if (this.meta === undefined || this.meta.namePlural === undefined) {
-					this.meta.namePlural = openhmis.getMessage('${project.parent.artifactId}.attribute.type.namePlural');
+					this.meta.namePlural = openhmis.getMessage('openhmis.backboneforms.attribute.type.namePlural');
 				}
 
 				// Add default schema fields
 				this.schema.name = {
 					type: 'Text',
 					validators: [
-						{ type: 'required', message: openhmis.getMessage('${project.parent.artifactId}.required.field.name') }
+						{ type: 'required', message: openhmis.getMessage('openhmis.backboneforms.required.field.name') }
 					]
 				};
 				this.schema.format = {

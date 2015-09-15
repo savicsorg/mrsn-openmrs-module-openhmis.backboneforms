@@ -135,7 +135,7 @@ define(
                 if (meta && meta.required === true && !attributeForm[i].value) {
                     errors.push({
                         selector: "#" + attributeForm[i].name,
-                        message: openhmis.getMessage('${project.parent.artifactId}.required.field.prompt'),
+                        message: openhmis.getMessage('openhmis.backboneforms.required.field.prompt'),
                         selectParent: true
                     });
                     break;

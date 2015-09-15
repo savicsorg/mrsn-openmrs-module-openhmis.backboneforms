@@ -78,7 +78,7 @@ define(
 			},
 			
 			endVisit: function() {
-				if (confirm(__(openhmis.getMessage('${project.parent.artifactId}.patient.visit.end.prompt')))) {
+				if (confirm(__(openhmis.getMessage('openhmis.backboneforms.patient.visit.end.prompt')))) {
 					var $endVisit = this.$("#endVisit");
 					var $spinner = this.$(".spinner");
 					var self = this;
