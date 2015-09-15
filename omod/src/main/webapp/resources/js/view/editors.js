@@ -398,12 +398,12 @@ define(
 						}
 					}
 					
-					if(rootLocations !== null && rootLocations !== undefined && rootLocations.length > 0) {
+					if(rootLocations.length > 0) {
 						for(i = 0; i < rootLocations.models.length; i++) {//for each root location, walk through the location tree
 							var rootLoc = rootLocations.models[i];
 							
 							if(rootLoc !== null && rootLoc !== undefined) {
-								var locationModel = cur.recreateRightModelObject(rootLoc.get("display"), rootLoc.get("uuid"), rootLoc.get("links")[0].uri);
+								var locationModel = cur.createLocationModel(rootLoc.get("display"), rootLoc.get("uuid"), rootLoc.get("links")[0].uri);
 								
 								reorderedLocations.add(locationModel);
 								cur.loadChildLocations(rootLoc, cur, undefined, reorderedLocations, undefined);
@@ -457,7 +457,7 @@ define(
 										indentation += "&nbsp;&nbsp;";
 									}
 									
-									var childModel = cur.recreateRightModelObject(indentation + child.display, child.uuid, child.links[0].uri);
+									var childModel = cur.createLocationModel(indentation + child.display, child.uuid, child.links[0].uri);
 									
 									reorderedLocations.add(childModel);
 									if(selfInvokingInstance !== undefined) {
@@ -466,8 +466,6 @@ define(
 										cur.__proto__.loadChildLocations(childModel, cur, cur.__proto__.loadChildLocations, reorderedLocations, parents);
 									}
 								});
-							} else {
-								parents = undefined;
 							}
 						}
 					}
@@ -477,7 +475,7 @@ define(
 		   /**
 		    * Recreates a valid location model whose display supports child location indentations
 		    */
-			recreateRightModelObject: function(display, uuid, link) {
+			createLocationModel: function(display, uuid, link) {
 				var locationModel = new openhmis.Location();
 				
 				locationModel.id = uuid;
