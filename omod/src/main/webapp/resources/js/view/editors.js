@@ -406,7 +406,7 @@ define(
 								var locationModel = cur.createLocationModel(rootLoc.get("display"), rootLoc.get("uuid"), rootLoc.get("links")[0].uri);
 								
 								reorderedLocations.add(locationModel);
-								cur.loadChildLocations(rootLoc, cur, undefined, reorderedLocations, undefined);
+								cur.loadChildLocations(rootLoc, cur, undefined, reorderedLocations, 0);
 							}
 						}
 					}
@@ -424,36 +424,18 @@ define(
 		   /**
 		    * Moves through the rootLocation and their children's properties and picks out their inherent locations/children and arranges them next to them
 			*/
-			loadChildLocations: function(location, cur, selfInvokingInstance, reorderedLocations, parents) {
+			loadChildLocations: function(location, cur, selfInvokingInstance, reorderedLocations, depth) {
 				var url = location.get("links")[0].uri;
 				
 				$.ajax({async:false, url: url,//using location.fetch overwrites the last location in reorderedLocations
 					success: function(fetchedLocation) {
 						if(fetchedLocation !== undefined && fetchedLocation !== null) {
 							var children = fetchedLocation.childLocations;
-							var parent = (fetchedLocation.parentLocation !== undefined && fetchedLocation.parentLocation !== null) ? fetchedLocation.parentLocation.display : location.get("display");
 							
 							if(children !== null && children !== undefined && children.length > 0) {
 								children.forEach(function(child) {
 									var indentation = "";
-									var gottenChild;
-									
-									$.ajax({async:false, url: child.links[0].uri,success: function(fetchedLocation) {
-										gottenChild = fetchedLocation;//loading the child location offers to this scope all properties of a child
-									}});
-									parent = gottenChild.parentLocation.display;
-									parents = parents === undefined ? [parent] : parents;
-									if(parent !== undefined) {
-										for(t = 0; t < parents.length; t++) {
-											if($.inArray(parent, parents) === -1) {
-												parents.push(parent);//add parent location if it doesn't exist
-											}
-											if(parents[parents.length-1] !== parent) {
-												parents.pop();//remove last location in-case the current parent location is not itself, ensures that parent is actually not a grand
-											}
-										}
-									}
-									for(t = 0; t < parents.length; t++) {
+									for(t = 0; t <= depth; t++) {
 										indentation += "&nbsp;&nbsp;";
 									}
 									
@@ -461,9 +443,9 @@ define(
 									
 									reorderedLocations.add(childModel);
 									if(selfInvokingInstance !== undefined) {
-										selfInvokingInstance(childModel, cur, selfInvokingInstance, reorderedLocations, parents);
+										selfInvokingInstance(childModel, cur, selfInvokingInstance, reorderedLocations, depth + 1);
 									} else {
-										cur.__proto__.loadChildLocations(childModel, cur, cur.__proto__.loadChildLocations, reorderedLocations, parents);
+										cur.__proto__.loadChildLocations(childModel, cur, cur.__proto__.loadChildLocations, reorderedLocations, depth + 1);
 									}
 								});
 							}
