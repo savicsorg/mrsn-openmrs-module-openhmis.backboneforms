@@ -372,7 +372,7 @@ define(
 
 			// Overriding renderOptions function to support hierarchical locations display
             renderOptions: function(options) {
-            	options.models = this.reorderLocations(options.models);//TODO not assigning
+            	options.models = this.reorderLocations(options.models);
             	editors.GenericModelSelect.prototype.renderOptions.call(this, options);
             },
 		
@@ -463,7 +463,7 @@ define(
 									if(selfInvokingInstance !== undefined) {
 										selfInvokingInstance(childModel, cur, selfInvokingInstance, reorderedLocations, parents);
 									} else {
-										cur.__proto__.loadChildLocations(childModel, cur, cur.__proto__.loadChildLocations, reorderedLocations, parents);//TODO fix issues
+										cur.__proto__.loadChildLocations(childModel, cur, cur.__proto__.loadChildLocations, reorderedLocations, parents);
 									}
 								});
 							} else {
