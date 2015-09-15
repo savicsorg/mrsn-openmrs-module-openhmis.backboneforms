@@ -377,21 +377,28 @@ define(
             },
 		
 		   /**
-			* Re-orders the locations models collection in such a way as to get all children next to their parents while supporting all depth indentation
+			* Re-orders the locations models collection in such a way as to get all children 
+			* next to their parents while supporting all depth indentation
 			*/
 			reorderLocations: function(locationModels) {
 				var cur = this;
 				var reorderedLocations = new Backbone.Collection();
 				
-				if(locationModels !== null && locationModels !== undefined && locationModels.length > 0) {
+				if(locationModels !== null && locationModels !== undefined 
+						&& locationModels.length > 0) {
 					var rootLocations = new Backbone.Collection();
 					
-					for(i = 0; i < locationModels.length; i++) {//look through all locations and pick out the root locations
+					//look through all locations and pick out the root locations
+					for(i = 0; i < locationModels.length; i++) {
 						var location = locationModels[i];
 						
 						if(location !== null && location !== undefined) {
-							location.fetch({async:false, success: function(fetchedLocation) {//loads the location model with all its properties
-								if(fetchedLocation !== null && fetchedLocation !== undefined && (fetchedLocation.get("parentLocation") === null || fetchedLocation.get("parentLocation") === undefined)) {//true means fecthedLoc is a root location
+							//loads the location model with all its properties
+							location.fetch({async:false, success: function(fetchedLocation) {
+								//true means fecthedLoc is a root location
+								if(fetchedLocation !== null && fetchedLocation !== undefined && 
+										(fetchedLocation.get("parentLocation") === null || 
+												fetchedLocation.get("parentLocation") === undefined)) {
 									rootLocations.add(location);
 								}
 							}});
@@ -399,14 +406,16 @@ define(
 					}
 					
 					if(rootLocations.length > 0) {
-						for(i = 0; i < rootLocations.models.length; i++) {//for each root location, walk through the location tree
+						//for each root location, walk through the location tree
+						for(i = 0; i < rootLocations.models.length; i++) {
 							var rootLoc = rootLocations.models[i];
 							
 							if(rootLoc !== null && rootLoc !== undefined) {
-								var locationModel = cur.createLocationModel(rootLoc.get("display"), rootLoc.get("uuid"), rootLoc.get("links")[0].uri);
+								var locationModel = cur.createLocationModel(rootLoc.get("display"), 
+										rootLoc.get("uuid"), rootLoc.get("links")[0].uri);
 								
 								reorderedLocations.add(locationModel);
-								cur.loadChildLocations(rootLoc, cur, undefined, reorderedLocations, 0);
+								cur.loadChildLocations(rootLoc, cur, reorderedLocations, 0);
 							}
 						}
 					}
@@ -422,12 +431,14 @@ define(
 			},
 			
 		   /**
-		    * Moves through the rootLocation and their children's properties and picks out their inherent locations/children and arranges them next to them
+		    * Moves through the rootLocation and their children's properties and picks out their inherent 
+		    * locations/children and arranges them next to them
 			*/
-			loadChildLocations: function(location, cur, selfInvokingInstance, reorderedLocations, depth) {
+			loadChildLocations: function(location, cur, reorderedLocations, depth) {
 				var url = location.get("links")[0].uri;
 				
-				$.ajax({async:false, url: url,//using location.fetch overwrites the last location in reorderedLocations
+				//using location.fetch overwrites the last location in reorderedLocations
+				$.ajax({async:false, url: url,
 					success: function(fetchedLocation) {
 						if(fetchedLocation !== undefined && fetchedLocation !== null) {
 							var children = fetchedLocation.childLocations;
@@ -439,14 +450,11 @@ define(
 										indentation += "&nbsp;&nbsp;";
 									}
 									
-									var childModel = cur.createLocationModel(indentation + child.display, child.uuid, child.links[0].uri);
+									var childModel = cur.createLocationModel(indentation +
+											child.display, child.uuid, child.links[0].uri);
 									
 									reorderedLocations.add(childModel);
-									if(selfInvokingInstance !== undefined) {
-										selfInvokingInstance(childModel, cur, selfInvokingInstance, reorderedLocations, depth + 1);
-									} else {
-										cur.__proto__.loadChildLocations(childModel, cur, cur.__proto__.loadChildLocations, reorderedLocations, depth + 1);
-									}
+									cur.loadChildLocations(childModel, cur, reorderedLocations, depth + 1);
 								});
 							}
 						}
