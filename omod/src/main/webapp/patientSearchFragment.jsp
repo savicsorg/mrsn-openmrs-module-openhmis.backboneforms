@@ -16,6 +16,7 @@
 	This is pretty much a direct copy of the openmrs findPatient.jsp portlet. The doSelectionHandler method cannot be
 	overriden when this fragment is loaded from javascript.
  --%>
+<%@ include file="localHeader.jsp"%>
 <div id="patient-view">
 	<div id="patient-details" style="display: none;">
 	</div>
