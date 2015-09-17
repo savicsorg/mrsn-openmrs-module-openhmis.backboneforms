@@ -78,7 +78,7 @@ define(
 			},
 			
 			endVisit: function() {
-				if (confirm(__("Are you sure you want to end this patient's visit now?"))) {
+				if (confirm(__(openhmis.getMessage('openhmis.backboneforms.patient.visit.end.prompt')))) {
 					var $endVisit = this.$("#endVisit");
 					var $spinner = this.$(".spinner");
 					var self = this;

@@ -19,8 +19,8 @@ define(
 	function(openhmis, __) {
 		openhmis.User = openhmis.GenericModel.extend({
 			meta: {
-				name: __("User"),
-				namePlural: __("users"),
+				name: __(openhmis.getMessage('openhmis.backboneforms.user.name')),
+				namePlural: __(openhmis.getMessage('openhmis.backboneforms.user.namePlural')),
 				restUrl: 'v1/user'
 			},
 

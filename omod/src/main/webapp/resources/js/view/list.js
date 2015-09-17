@@ -291,7 +291,7 @@ define(
                 //If so create a shared error
                 var fieldError = {
                     type: 'list',
-                    message: 'Some of the items in the list failed validation',
+                    message: openhmis.getMessage('openhmis.backboneforms.list.validation.fail.message'),
                     errors: errors
                 };
 

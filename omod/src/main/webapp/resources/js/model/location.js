@@ -19,8 +19,8 @@ define(
 	function(openhmis, __) {
 		openhmis.Location = openhmis.GenericModel.extend({
 			meta: {
-				name: __("Location"),
-				namePlural: __("Locations"),
+				name: __(openhmis.getMessage('openhmis.backboneforms.location.name')),
+				namePlural: __(openhmis.getMessage('openhmis.backboneforms.location.namePlural')),
 				restUrl: 'v1/location'
 			},
 
