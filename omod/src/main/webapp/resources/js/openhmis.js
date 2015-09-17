@@ -39,19 +39,19 @@ define(openhmis.url.backboneBase + "js/openhmis",
 			var handleErrorResp = function (resp) {
 				var o = (typeof resp === "string") ? $.parseJSON(resp).error : resp;
 				if (o.detail.indexOf("ContextAuthenticationException") !== -1) {
-					alert(__(openhmis.getMessage('${project.parent.artifactId}.session.expire.alert')));
+					alert(__(openhmis.getMessage('openhmis.backboneforms.session.expire.alert')));
 					window.location.reload();
 				}
 				else if (o.detail.indexOf("AccessControlException") !== -1) {
 					if (o.detail.indexOf("refund") !== -1) {
-						alert(__(openhmis.getMessage('${project.parent.artifactId}.required.refund.privileges.alert')));
+						alert(__(openhmis.getMessage('openhmis.backboneforms.required.refund.privileges.alert')));
 					}
 					else if (o.detail.indexOf("adjust") !== -1) {
-						alert(__(openhmis.getMessage('${project.parent.artifactId}.required.bill.adjust.privileges.alert')));
+						alert(__(openhmis.getMessage('openhmis.backboneforms.required.bill.adjust.privileges.alert')));
 					}
 				}
 				else if (o.message && o.message.indexOf("no rounding item ID") !== -1) {
-					alert(__(o.message + openhmis.getMessage('${project.parent.artifactId}.required.rounding.item.alert')));
+					alert(__(o.message + openhmis.getMessage('openhmis.backboneforms.required.rounding.item.alert')));
 				}
 				else {
 					var firstLfPos = o.detail.indexOf('\n');
