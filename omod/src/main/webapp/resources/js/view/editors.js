@@ -368,7 +368,113 @@ define(
 		editors.LocationSelect = editors.GenericModelSelect.extend({
 			modelType: openhmis.Location,
 			displayAttr: "name",
-			allowNull: true
+			allowNull: true,
+
+			// Overriding renderOptions function to support hierarchical locations display
+            renderOptions: function(options) {
+            	options.models = this.reorderLocations(options.models);
+            	editors.GenericModelSelect.prototype.renderOptions.call(this, options);
+            },
+		
+		   /**
+			* Re-orders the locations models collection in such a way as to get all children 
+			* next to their parents while supporting all depth indentation
+			*/
+			reorderLocations: function(locationModels) {
+				var cur = this;
+				var reorderedLocations = new Backbone.Collection();
+				
+				if(locationModels !== null && locationModels !== undefined 
+						&& locationModels.length > 0) {
+					var rootLocations = new Backbone.Collection();
+					
+					//look through all locations and pick out the root locations
+					for(i = 0; i < locationModels.length; i++) {
+						var location = locationModels[i];
+						
+						if(location !== null && location !== undefined) {
+							//loads the location model with all its properties
+							location.fetch({async:false, success: function(fetchedLocation) {
+								//true means fecthedLoc is a root location
+								if(fetchedLocation !== null && fetchedLocation !== undefined && 
+										(fetchedLocation.get("parentLocation") === null || 
+												fetchedLocation.get("parentLocation") === undefined)) {
+									rootLocations.add(location);
+								}
+							}});
+						}
+					}
+					
+					if(rootLocations.length > 0) {
+						//for each root location, walk through the location tree
+						for(i = 0; i < rootLocations.models.length; i++) {
+							var rootLoc = rootLocations.models[i];
+							
+							if(rootLoc !== null && rootLoc !== undefined) {
+								var locationModel = cur.createLocationModel(rootLoc.get("display"), 
+										rootLoc.get("uuid"), rootLoc.get("links")[0].uri);
+								
+								reorderedLocations.add(locationModel);
+								cur.loadChildLocations(rootLoc, cur, reorderedLocations, 0);
+							}
+						}
+					}
+					
+					if(reorderedLocations.models.length === locationModels.length) {
+						return reorderedLocations.models;
+					} else {
+						return locationModels;
+					}
+				} else {
+					return locationModels;
+				}
+			},
+			
+		   /**
+		    * Moves through the rootLocation and their children's properties and picks out their inherent 
+		    * locations/children and arranges them next to them
+			*/
+			loadChildLocations: function(location, cur, reorderedLocations, depth) {
+				var url = location.get("links")[0].uri;
+				
+				//using location.fetch overwrites the last location in reorderedLocations
+				$.ajax({async:false, url: url,
+					success: function(fetchedLocation) {
+						if(fetchedLocation !== undefined && fetchedLocation !== null) {
+							var children = fetchedLocation.childLocations;
+							
+							if(children !== null && children !== undefined && children.length > 0) {
+								children.forEach(function(child) {
+									var indentation = "";
+									for(t = 0; t <= depth; t++) {
+										indentation += "&nbsp;&nbsp;";
+									}
+									
+									var childModel = cur.createLocationModel(indentation +
+											child.display, child.uuid, child.links[0].uri);
+									
+									reorderedLocations.add(childModel);
+									cur.loadChildLocations(childModel, cur, reorderedLocations, depth + 1);
+								});
+							}
+						}
+					}
+				});
+			},
+			
+		   /**
+		    * Recreates a valid location model whose display supports child location indentations
+		    */
+			createLocationModel: function(display, uuid, link) {
+				var locationModel = new openhmis.Location();
+				
+				locationModel.id = uuid;
+				locationModel.set("uuid", uuid);
+				locationModel.set("display", display);
+				locationModel.set("links", [{"uri":link}]);
+				
+				return locationModel;
+			}
 		});
 
 		editors.UserSelect = editors.GenericModelSelect.extend({
