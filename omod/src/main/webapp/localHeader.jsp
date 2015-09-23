@@ -1,4 +1,3 @@
-<%@ page import="org.openmrs.module.openhmis.backboneforms.web.BackboneWebConstants" %>
 <%--
   ~ The contents of this file are subject to the OpenMRS Public License
   ~ Version 2.0 (the "License"); you may not use this file except in
@@ -12,4 +11,5 @@
   ~
   ~ Copyright (C) OpenHMIS.  All Rights Reserved.
   --%>
+<%@ page import="org.openmrs.module.openhmis.backboneforms.web.BackboneWebConstants" %>
 <openmrs:htmlInclude file="<%= BackboneWebConstants.MESSAGE_PROPERTIES_JS %>" />
