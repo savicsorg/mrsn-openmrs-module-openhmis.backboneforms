@@ -5,11 +5,11 @@
  * http://license.openmrs.org
  *
  * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+ * the License for the specific language governing rights and
+ * limitations under the License.
  *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenHMIS.  All Rights Reserved.
  */
 package org.openmrs.module.openhmis.backboneforms.web;
 
@@ -23,4 +23,8 @@ public class BackboneWebConstants extends WebConstants {
 	public static final String BACKBONE_CURL_JS = MODULE_RESOURCE_ROOT + "js/curl.js";
 
 	public static final String INIT_JS_URI = MODULE_ROOT + "init.js";
+
+	public static final String MESSAGE_PROPERTIES_JS_URI = MODULE_ROOT + "backboneformsMessageProperties.js";
+	public static final String MESSAGE_PAGE = MODULE_ROOT + "backboneformsMessageProperties";
+	public static final String MESSAGE_PROPERTIES_JS = "/ws/module/openhmis/backboneforms/backboneformsMessageProperties.js";
 }

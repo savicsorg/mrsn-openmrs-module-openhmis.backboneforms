@@ -3,7 +3,7 @@
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>openhmis.backboneforms</artifactId>
-	<version>2.3.4</version>
+	<version>2.4.0</version>
 	<packaging>pom</packaging>
 	<name>OpenHMIS Backbone Forms Module</name>
 	<description>Use Backbone-based forms with OpenMRS</description>
@@ -15,6 +15,11 @@
 			<name>Modules</name>
 			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/modules/</url>
 		</repository>
+		<snapshotRepository>
+    		<id>openhmis-repo</id>
+			<name>Snapshots</name>
+    		<url>http://mavenrepo.openhmisafrica.org/content/repositories/snapshots</url>
+  		</snapshotRepository>
 	</distributionManagement>
 
 	<developers>
@@ -22,7 +27,7 @@
 			<name>OpenHMIS</name>
 		</developer>
 	</developers>
-	
+
 	<organization>
 		<name>OpenMRS</name>
 		<url>http://openmrs.org</url>
@@ -32,24 +37,24 @@
 		<connection>scm:git:git@github.com:OpenHMIS/openmrs-module-openhmis.backboneforms.git</connection>
 		<developerConnection>scm:git:git@github.com:OpenHMIS/openmrs-module-openhmis.backboneforms.git</developerConnection>
 		<url>scm:git:git@github.com:OpenHMIS/openmrs-module-openhmis.backboneforms.git</url>
-	  <tag>v2.3.4</tag>
+	  <tag>v2.4.0</tag>
   </scm>
 
 	<modules>
 		<module>api</module>
 		<module>omod</module>
 	</modules>
-	
+
 	<properties>
-		<openMRSVersion>1.9.8</openMRSVersion>
+		<openMRSVersion>1.9.9</openMRSVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
-		
+
 			<!-- Begin OpenMRS core -->
-			
+
 			<dependency>
 				<groupId>org.openmrs.api</groupId>
 				<artifactId>openmrs-api</artifactId>
@@ -65,7 +70,7 @@
 				<type>jar</type>
 				<scope>provided</scope>
 			</dependency>
-						
+
 			<dependency>
 				<groupId>org.openmrs.api</groupId>
 				<artifactId>openmrs-api</artifactId>
@@ -73,7 +78,7 @@
 				<type>test-jar</type>
 				<scope>test</scope>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.openmrs.web</groupId>
 				<artifactId>openmrs-web</artifactId>
@@ -81,7 +86,7 @@
 				<type>test-jar</type>
 				<scope>test</scope>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.openmrs.test</groupId>
 				<artifactId>openmrs-test</artifactId>
@@ -89,27 +94,27 @@
 				<type>pom</type>
 				<scope>test</scope>
 			</dependency>
-						
+
 			<!-- End OpenMRS core -->
-			
+
 			<dependency>
 				<groupId>org.openmrs.module</groupId>
 				<artifactId>webservices.rest-omod</artifactId>
 				<version>2.9</version>
 				<scope>provided</scope>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.openmrs.module</groupId>
 				<artifactId>openhmis.commons-api</artifactId>
-				<version>3.0.3</version>
+				<version>3.1.0</version>
 				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
 				<groupId>org.openmrs.module</groupId>
 				<artifactId>openhmis.commons-omod</artifactId>
-				<version>3.0.3</version>
+				<version>3.1.0</version>
 				<scope>provided</scope>
 			</dependency>
 		</dependencies>

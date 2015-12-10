@@ -13,25 +13,28 @@
  */
 package org.openmrs.module.openhmis.backboneforms.web.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
-import org.openmrs.web.taglib.fieldgen.FieldGenHandlerFactory;
+import org.openmrs.module.openhmis.backboneforms.web.BackboneWebConstants;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
+/**
+ * Controller for the message properties fragment.
+ */
 @Controller
-@RequestMapping(value = "/fieldgenhandlers.json")
-public class FieldGenHandlerController {
+@RequestMapping(BackboneWebConstants.MESSAGE_PROPERTIES_JS_URI)
+public class BackboneMessageRenderController {
+
 	@RequestMapping(method = RequestMethod.GET)
-	@ResponseBody
-	public Map<String, Set<String>> fieldgenhandlers() {
-		Map<String, Set<String>> container = new HashMap<String, Set<String>>();
-		container.put("results", new TreeSet<String>(FieldGenHandlerFactory.getSingletonInstance().getHandlers().keySet()));
-		return container;
+	public ModelAndView render(HttpServletRequest request) {
+		Locale locale = RequestContextUtils.getLocale(request);
+		ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", locale);
+		return new ModelAndView(BackboneWebConstants.MESSAGE_PAGE, "keys", resourceBundle.getKeys());
 	}
 }
