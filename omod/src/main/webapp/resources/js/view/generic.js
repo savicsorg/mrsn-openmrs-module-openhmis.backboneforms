@@ -219,7 +219,7 @@ define(
 
 			/** Unretire or unvoid an existing model */
 			unretireOrUnvoid: function() {
-				if (confirm(openhmis.getMessage('${project.parent.artifactId}.system.unretire.message'))) {
+				if (confirm(openhmis.getMessage('openhmis.backboneforms.system.unretire.message'))) {
 					var view = this;
 					this.model.unretire({
 						success: function(model, resp) {
@@ -233,7 +233,7 @@ define(
 
 			/** Purge an existing model */
 			purge: function() {
-				if (confirm(__(openhmis.getMessage('${project.parent.artifactId}.system.purge.message')))) {
+				if (confirm(__(openhmis.getMessage('openhmis.backboneforms.system.purge.message')))) {
 					var view = this;
 					this.model.purge({
 						success: function(model) {
@@ -403,7 +403,7 @@ define(
 			 * @param {event} event Optional. Triggering event.
 			 */
 			onRemove: function(event) {
-				if (confirm(__(openhmis.getMessage('${project.parent.artifactId}.system.remove.selected.item.prompt.message')))) {
+				if (confirm(__(openhmis.getMessage('openhmis.backboneforms.system.remove.selected.item.prompt.message')))) {
 					this._removeItem(event);
 					return true;
 				} else {
