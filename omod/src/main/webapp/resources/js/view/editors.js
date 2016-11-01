@@ -410,7 +410,7 @@ define(
 						for(i = 0; i < rootLocations.models.length; i++) {
 							var rootLoc = rootLocations.models[i];
 							
-							if(rootLoc !== null && rootLoc !== undefined) {
+							if(rootLoc !== null && rootLoc !== undefined && rootLoc.get("links") != null) {
 								var locationModel = cur.createLocationModel(rootLoc.get("display"), 
 										rootLoc.get("uuid"), rootLoc.get("links")[0].uri);
 								
