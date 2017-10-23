@@ -46,9 +46,9 @@
 	</modules>
 
 	<properties>
-		<openMRSVersion>2.0.5</openMRSVersion>
+		<openMRSVersion>1.9.9</openMRSVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<javaCompilerVersion>1.8</javaCompilerVersion>
+		<javaCompilerVersion>1.7</javaCompilerVersion>
 	</properties>
 
 	<dependencyManagement>
@@ -214,6 +214,7 @@
 			<id>openmrs-2.0</id>
 			<properties>
 				<openMRSVersion>2.0.5</openMRSVersion>
+				<javaCompilerVersion>1.8</javaCompilerVersion>
 			</properties>
 		</profile>
 	</profiles>
