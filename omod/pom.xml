@@ -89,6 +89,11 @@
 			<groupId>org.openmrs.module</groupId>
 			<artifactId>openhmis.commons-omod</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>legacyui-omod</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -250,6 +255,7 @@
 	      <plugin>
 		      <groupId>net.alchim31.maven</groupId>
               <artifactId>yuicompressor-maven-plugin</artifactId>
+			  <version>1.5.1</version>
               <executions>
                   <execution>
                       <goals>
