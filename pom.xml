@@ -3,7 +3,7 @@
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>openhmis.backboneforms</artifactId>
-	<version>2.4.0</version>
+	<version>3.0.0</version>
 	<packaging>pom</packaging>
 	<name>OpenHMIS Backbone Forms Module</name>
 	<description>Use Backbone-based forms with OpenMRS</description>
@@ -13,7 +13,7 @@
 		<repository>
 			<id>openmrs-repo</id>
 			<name>Modules</name>
-			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/modules/</url>
+			<url>https://openmrs.jfrog.io/openmrs/modules/</url>
 		</repository>
 		<snapshotRepository>
     		<id>openhmis-repo</id>
@@ -37,7 +37,7 @@
 		<connection>scm:git:git@github.com:OpenHMIS/openmrs-module-openhmis.backboneforms.git</connection>
 		<developerConnection>scm:git:git@github.com:OpenHMIS/openmrs-module-openhmis.backboneforms.git</developerConnection>
 		<url>scm:git:git@github.com:OpenHMIS/openmrs-module-openhmis.backboneforms.git</url>
-	  <tag>v2.4.0</tag>
+	  <tag>v3.0.0</tag>
   </scm>
 
 	<modules>
@@ -48,6 +48,7 @@
 	<properties>
 		<openMRSVersion>1.9.9</openMRSVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<javaCompilerVersion>1.7</javaCompilerVersion>
 	</properties>
 
 	<dependencyManagement>
@@ -107,14 +108,21 @@
 			<dependency>
 				<groupId>org.openmrs.module</groupId>
 				<artifactId>openhmis.commons-api</artifactId>
-				<version>3.2.0</version>
+				<version>4.0.0</version>
 				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
 				<groupId>org.openmrs.module</groupId>
 				<artifactId>openhmis.commons-omod</artifactId>
-				<version>3.2.0</version>
+				<version>4.0.0</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.openmrs.module</groupId>
+				<artifactId>legacyui-omod</artifactId>
+				<version>0.2.1</version>
 				<scope>provided</scope>
 			</dependency>
 		</dependencies>
@@ -127,8 +135,8 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<configuration>
-						<target>1.6</target>
-						<source>1.6</source>
+						<target>${javaCompilerVersion}</target>
+						<source>${javaCompilerVersion}</source>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -186,7 +194,7 @@
 		<repository>
 			<id>openmrs-repo</id>
 			<name>OpenMRS Nexus Repository</name>
-			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
+			<url>https://openmrs.jfrog.io/openmrs/public</url>
 		</repository>
 	</repositories>
 
@@ -194,11 +202,21 @@
 		<pluginRepository>
 			<id>openmrs-repo</id>
 			<name>OpenMRS Nexus Repository</name>
-			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
+			<url>https://openmrs.jfrog.io/openmrs/public</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
 		</pluginRepository>
 	</pluginRepositories>
+
+	<profiles>
+		<profile>
+			<id>openmrs-2.0</id>
+			<properties>
+				<openMRSVersion>2.0.5</openMRSVersion>
+				<javaCompilerVersion>1.8</javaCompilerVersion>
+			</properties>
+		</profile>
+	</profiles>
 
 </project>
